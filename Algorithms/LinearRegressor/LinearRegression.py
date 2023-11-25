@@ -76,23 +76,31 @@ class LinearRegression():
         Predict = self.Weights
         plt.figure()
         plt.scatter(X, Y, c='blue')
-        if Predict is not None:
-            # 绘制预测的参数
-            gap = max(X) - min(X)
-            PX = np.arange(min(X) - 0.1 * gap, max(X) + 0.1 * gap, 0.1)
-            PX = PX.reshape(-1, 1)
-            PX_B = np.concatenate((PX, np.ones((len(PX), 1))), axis=1)
-            PY = PX_B.dot(Predict)
-            plt.plot(PX, PY, c='orange', linewidth=5)
         if Truth is not None:
             # 绘制真实的参数
-            gap = max(X) - min(X)
-            PX = np.arange(min(X) - 0.1 * gap, max(X) + 0.1 * gap, 0.1)
-            PX = PX.reshape(-1, 1)
-            PX_B = np.concatenate((PX, np.ones((len(PX), 1))), axis=1)
-            PY = PX_B.dot(Truth)
-            plt.plot(PX, PY, c='red', linewidth=2)
+            PX, PU = self.get_PXU(X, Truth)
+            plt.plot(PX, PU, c='orange', linewidth=5)
+        if Predict is not None:
+            # 绘制预测的参数
+            PX, PU = self.get_PXU(X, Predict)
+            plt.plot(PX, PU, c='red', linewidth=2)
         plt.show()
+
+    def get_PXU(self, X, Weights, ratio=0.1, step=0.1):
+        """
+        获取画图使用的X和其他未知变量
+        :param X: 要画图的已知变量
+        :param Weights: 要画图的权重
+        :param ratio: 两边伸展的额外比例
+        :param step: 采样频率
+        :return:
+        """
+        gap = max(X) - min(X)
+        PX = np.arange(min(X) - ratio * gap, max(X) + ratio * gap, step)
+        PX_B = np.concatenate((PX.reshape(-1, 1), np.ones((len(PX), 1))), axis=1)
+        PU = PX_B.dot(Weights)
+        return PX, PU
+
 
 
 if __name__ == '__main__':
@@ -100,4 +108,6 @@ if __name__ == '__main__':
     X_train, Y_train, Truth_Weights = model.random_generate(X_size=100)
     model.get_data(X_train, Y_train)
     model.train(X_train, Y_train)
+    print(Truth_Weights)
+    print(model.Weights)
     model.plat_2D(Truth=Truth_Weights)
