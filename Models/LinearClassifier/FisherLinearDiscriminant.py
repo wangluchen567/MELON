@@ -26,7 +26,7 @@ class FisherLinearDiscriminant():
         S1 = (self.X_train[Y_F == 1] - M1).T.dot((self.X_train[Y_F == 1] - M1))
         S2 = (self.X_train[Y_F == -1] - M2).T.dot((self.X_train[Y_F == -1] - M2))
         # 求最优投影方向
-        Vec = (S1 + S2).T.dot(M1 - M2)
+        Vec = np.linalg.inv(S1 + S2).dot(M1 - M2)
         # 求判别函数阈值
         T = Vec.dot((N1 * M1 + N2 * M2)) / (N1 + N2)
         self.Weights = np.concatenate((Vec, np.array([T]))).reshape(1, -1)
@@ -42,7 +42,7 @@ class FisherLinearDiscriminant():
         :param X_upper: 随机生成的数据的上界
         :param lower: 随机生成的范围最小值
         :param upper: 随机生成的范围最大值
-        :return: 训练数据
+        :return: 训练数据和真实参数
         """
         X_train = np.random.uniform(X_lower, X_upper, size=(X_size, X_feat))
         X_mids = (np.max(X_train, axis=0) + np.min(X_train, axis=0)) / 2
@@ -54,6 +54,36 @@ class FisherLinearDiscriminant():
         Y_train[X_B.dot(TruthWeights.T) < 0] = -1
         return X_train, Y_train, TruthWeights
 
+    @staticmethod
+    def random_generate_double(X_size, X_feat=2, X_lower=-1, X_upper=1):
+        """
+        随机生成两点散布的数据
+        :param X_size: 数据集大小
+        :param X_feat: 数据集特征数
+        :param X_lower: 随机生成的数据的下界
+        :param X_upper: 随机生成的数据的上界
+        :param lower: 随机生成的范围最小值
+        :param upper: 随机生成的范围最大值
+        :return: 训练数据
+        """
+        # 确定随机的两个点坐标
+        point1 = np.zeros(X_feat)
+        # 先随机生成前n-1个变量值
+        point1[:-1] = np.random.uniform(X_lower, X_upper, size=(1, X_feat - 1))
+        # 得到剩下的一个变量值
+        point1[-1] = np.sqrt(1 - np.sum(point1[:-1] ** 2))
+        point2 = -point1
+        conv = np.eye(len(point1)) * (X_upper - X_lower) * 0.1
+        X1 = np.random.multivariate_normal(point1, conv, size=int(X_size / 2))
+        X2 = np.random.multivariate_normal(point2, conv, size=int(X_size / 2))
+        X_train = np.concatenate((X1, X2))
+        Y_train = np.ones((len(X_train), 1))
+        Y_train[:len(X1), :] = -1
+        rand_index = np.arange(0, len(X_train))
+        np.random.shuffle(rand_index)
+        X_train = X_train[rand_index, :]
+        Y_train = Y_train[rand_index, :]
+        return X_train, Y_train
 
 
     def plat_2D(self, Truth=None, pause=False):
@@ -72,8 +102,8 @@ class FisherLinearDiscriminant():
             # 绘制预测的参数
             PX, PU = self.get_PXU(X, Predict)
             plt.plot(PX, PU, c='red', linewidth=2)
-            plt.xlim([-1, 1])
-            plt.ylim([-1, 1])
+            plt.xlim([-2, 2])
+            plt.ylim([-2, 2])
         if pause:
             plt.pause(0.3)
         else:
@@ -99,9 +129,9 @@ class FisherLinearDiscriminant():
 
 if __name__ == '__main__':
     model = FisherLinearDiscriminant()
-    X_train, Y_train, TruthWeights = model.random_generate(100)
+    # X_train, Y_train, TruthWeights = model.random_generate(100)
+    X_train, Y_train = model.random_generate_double(100)
     model.get_data(X_train, Y_train)
     model.train(X_train, Y_train)
-    print(TruthWeights)
-    print(model.Weights)
-    model.plat_2D(TruthWeights)
+    print("ModelWeights:",model.Weights)
+    model.plat_2D()

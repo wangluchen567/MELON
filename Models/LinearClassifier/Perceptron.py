@@ -39,7 +39,7 @@ class Perceptron():
         :param X_upper: 随机生成的数据的上界
         :param lower: 随机生成的范围最小值
         :param upper: 随机生成的范围最大值
-        :return: 训练数据
+        :return: 训练数据和真实参数
         """
         X_train = np.random.uniform(X_lower, X_upper, size=(X_size, X_feat))
         X_mids = (np.max(X_train, axis=0) + np.min(X_train, axis=0)) / 2
