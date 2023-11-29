@@ -1,33 +1,36 @@
-"""
-感知机
-Perceptron
-"""
 import numpy as np
 import matplotlib.pyplot as plt
 
-class Perceptron():
-    def __init__(self, X_train=None, Y_train=None, grad_type='SGD'):
+
+class FisherLinearDiscriminant():
+    def __init__(self, X_train=None, Y_train=None):
         self.X_train = X_train  # 训练数据
         self.Y_train = Y_train  # 真实标签
         self.Weights = None  # 模型参数
-        # 梯度法类型
-        self.grad_type = grad_type
 
     def get_data(self, X_train, Y_train):
         self.X_train = X_train
         self.Y_train = Y_train
 
-    def train(self, X_train, Y_train, epochs=30):
-        self.X_train = np.concatenate((X_train, np.ones((len(X_train), 1))), axis=1)
+    def train(self, X_train, Y_train):
+        self.X_train = X_train
         self.Y_train = Y_train
-        learning_rate = 1
-        self.Weights = np.random.uniform(-1, 1, size=(1, self.X_train.shape[1]))
-        for i in range(epochs):
-            # 分类错误的才有损失，先取出分类错误的
-            ErrorPos = self.Y_train * self.X_train.dot(self.Weights.T) < 0
-            grad = np.sum((-1 * self.Y_train * self.X_train)[ErrorPos.flatten()], axis=0) / len(ErrorPos)
-            self.Weights -= learning_rate * grad
-            self.plat_2D(pause=True)
+        # 标签展开，方便取值
+        Y_F = self.Y_train.flatten()
+        # 求两类样本的个数
+        N1, N2 = len(Y_F == 1), len(Y_F == -1)
+        # 求两类样本的均值
+        M1 = np.mean(self.X_train[Y_F == 1], axis=0)
+        M2 = np.mean(self.X_train[Y_F == -1], axis=0)
+        # 求两类样本的协方差
+        S1 = (self.X_train[Y_F == 1] - M1).T.dot((self.X_train[Y_F == 1] - M1))
+        S2 = (self.X_train[Y_F == -1] - M2).T.dot((self.X_train[Y_F == -1] - M2))
+        # 求最优投影方向
+        Vec = (S1 + S2).T.dot(M1 - M2)
+        # 求判别函数阈值
+        T = Vec.dot((N1 * M1 + N2 * M2)) / (N1 + N2)
+        self.Weights = np.concatenate((Vec, np.array([T]))).reshape(1, -1)
+        print(self.Weights)
 
     @staticmethod
     def random_generate(X_size, X_feat=2, X_lower=-1, X_upper=1, lower=-1, upper=1):
@@ -50,6 +53,8 @@ class Perceptron():
         Y_train = np.ones((len(X_train), 1))
         Y_train[X_B.dot(TruthWeights.T) < 0] = -1
         return X_train, Y_train, TruthWeights
+
+
 
     def plat_2D(self, Truth=None, pause=False):
         X = self.X_train
@@ -74,7 +79,8 @@ class Perceptron():
         else:
             plt.show()
 
-    def get_PXU(self, X, Weights, ratio=0.1, step=0.1):
+    @staticmethod
+    def get_PXU(X, Weights, ratio=0.1, step=0.1):
         """
         获取画图使用的X和其他未知变量
         :param X: 要画图的已知变量
@@ -92,7 +98,7 @@ class Perceptron():
 
 
 if __name__ == '__main__':
-    model = Perceptron()
+    model = FisherLinearDiscriminant()
     X_train, Y_train, TruthWeights = model.random_generate(100)
     model.get_data(X_train, Y_train)
     model.train(X_train, Y_train)
