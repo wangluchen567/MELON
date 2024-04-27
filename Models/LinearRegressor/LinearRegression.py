@@ -4,16 +4,24 @@ Linear Regression
 """
 import numpy as np
 import matplotlib.pyplot as plt
+from Models.GradientOptimizer.Optimizer import *
 
 
 class LinearRegression():
-    def __init__(self, X_train=None, Y_train=None, Lambda=0, mode=0, grad_type='Adam'):
+    def __init__(self, X_train=None, Y_train=None, Lambda=0, mode=0, epochs=30, lr=0.01, grad_type='Adam'):
         self.X_train = X_train  # 训练数据
         self.Y_train = Y_train  # 真实标签
         self.Lambda = Lambda  # 正则化系数
         self.Weights = None  # 模型参数
-        # 求解模式，默认是直接求解
+        self.Grad = 0  # 模型梯度
+        # 求解模式，0为默认直接求解，否则使用梯度法
         self.mode = mode
+        # 若使用梯度方法则记录参数变化情况
+        self.history = []
+        # 使用梯度方法求解时需要指定优化步数
+        self.epochs = epochs
+        # 指定优化的学习率
+        self.lr = lr
         # 梯度法类型
         self.grad_type = grad_type
 
@@ -21,14 +29,25 @@ class LinearRegression():
         self.X_train = X_train
         self.Y_train = Y_train
 
-    def train(self, X_train, Y_train, Lambda=0, mode=0, grad_type='Adam'):
+    def get_optimizer(self):
+        """获取优化器"""
+        dict = {'GD': GradientDescent, 'Momentum': Momentum, 'AdaGrad': AdaGrad, 'RMSProp': RMSProp, 'Adam': Adam}
+        self.optimizer = dict[self.grad_type](self, self.lr)
+
+    def init_weights(self):
+        X_feat = self.X_train.shape[1]
+        self.Weights = np.random.uniform(-1, 1, size=(X_feat + 1, 1))
+
+    def train(self, X_train, Y_train, Lambda=0, mode=0, epochs=30, lr=0.01, grad_type='Adam'):
         self.X_train = X_train
         self.Y_train = Y_train
         self.Lambda = Lambda
         self.mode = mode
+        self.epochs = epochs
+        self.lr = lr
         self.grad_type = grad_type
         if self.mode:
-            pass
+            self.train_grad()
         else:
             self.train_direct()
 
@@ -44,6 +63,22 @@ class LinearRegression():
             # 若没有正则化项，则直接利用伪逆求
             # 公式: (XT .* X) ^ -1 .* XT .* Y
             self.Weights = np.linalg.pinv(X_B).dot(self.Y_train)
+
+    def cal_grad(self):
+        """计算梯度值"""
+        # 在数据最后一列添加一列单位矩阵作为转置b
+        X_B = np.concatenate((self.X_train, np.ones((len(self.X_train), 1))), axis=1)
+        self.Grad = X_B.T @ (X_B @ self.Weights - self.Y_train) / len(self.X_train)
+
+    def train_grad(self):
+        """使用梯度下降方法进行优化"""
+        self.init_weights()
+        self.get_optimizer()
+        for i in range(self.epochs):
+            self.cal_grad()
+            self.optimizer.step()
+            self.history.append(self.Weights)
+            self.plat_2D(pause=True, iter=i + 1)
 
     @staticmethod
     def random_generate(X_size, X_feat=1, X_lower=0, X_upper=20, lower=-1, upper=1, loc=0, scale=1):
@@ -70,11 +105,12 @@ class LinearRegression():
         Y_train += np.random.normal(loc, scale, size=Y_train.shape)
         return X_train, Y_train, Truth_Weights
 
-    def plat_2D(self, Truth=None):
+    def plat_2D(self, Truth=None, pause=False, iter=None):
         X = self.X_train
         Y = self.Y_train
         Predict = self.Weights
-        plt.figure()
+        if not pause: plt.figure()
+        plt.clf()
         plt.scatter(X, Y, c='blue')
         if Truth is not None:
             # 绘制真实的参数
@@ -84,7 +120,15 @@ class LinearRegression():
             # 绘制预测的参数
             PX, PU = self.get_PXU(X, Predict)
             plt.plot(PX, PU, c='red', linewidth=2)
-        plt.show()
+
+            plt.xlim([(4 * np.min(X) - np.max(X)) / 3, (4 * np.max(X) - np.min(X)) / 3])
+            plt.ylim([(4 * np.min(Y) - np.max(Y)) / 3, (4 * np.max(Y) - np.min(Y)) / 3])
+        if pause:
+            if iter:
+                plt.title("iter: " + str(iter))
+            plt.pause(0.1)
+        else:
+            plt.show()
 
     def get_PXU(self, X, Weights, ratio=0.1, step=0.1):
         """
@@ -102,12 +146,20 @@ class LinearRegression():
         return PX, PU
 
 
-
 if __name__ == '__main__':
     model = LinearRegression()
     X_train, Y_train, Truth_Weights = model.random_generate(X_size=100)
     model.get_data(X_train, Y_train)
+    # 使用直接计算的方法求解
+    print("Direct Solve:")
     model.train(X_train, Y_train)
-    print(Truth_Weights)
-    print(model.Weights)
+    print("Truth Weights: ", Truth_Weights)
+    print("Predict Weights: ", model.Weights)
     model.plat_2D(Truth=Truth_Weights)
+    # 使用梯度的方法求解
+    print("Gradient Solve:")
+    model.train(X_train, Y_train, mode=1, epochs=30, lr=0.01, grad_type='GD')
+    print("Truth_Weights: ", Truth_Weights)
+    print("Predict_Weights: ", model.Weights)
+    model.plat_2D(Truth=Truth_Weights)
+
