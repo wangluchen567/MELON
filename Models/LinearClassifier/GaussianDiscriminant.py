@@ -1,3 +1,7 @@
+"""
+高斯判别分析
+Gaussian Discriminant
+"""
 import numpy as np
 import matplotlib.pyplot as plt
 

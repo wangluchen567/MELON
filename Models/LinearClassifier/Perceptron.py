@@ -27,7 +27,7 @@ class Perceptron():
             ErrorPos = self.Y_train * self.X_train.dot(self.Weights.T) < 0
             grad = np.sum((-1 * self.Y_train * self.X_train)[ErrorPos.flatten()], axis=0) / len(ErrorPos)
             self.Weights -= learning_rate * grad
-            self.plat_2D(pause=True)
+            self.plat_2D(pause=True, iter=i+1)
 
     @staticmethod
     def random_generate(X_size, X_feat=2, X_lower=-1, X_upper=1, lower=-1, upper=1):
@@ -51,7 +51,7 @@ class Perceptron():
         Y_train[X_B.dot(TruthWeights.T) < 0] = -1
         return X_train, Y_train, TruthWeights
 
-    def plat_2D(self, Truth=None, pause=False):
+    def plat_2D(self, Truth=None, pause=False, iter=None):
         X = self.X_train
         Y = self.Y_train
         Predict = self.Weights
@@ -70,6 +70,8 @@ class Perceptron():
             plt.xlim([-1, 1])
             plt.ylim([-1, 1])
         if pause:
+            if iter:
+                plt.title("iter: " + str(iter))
             plt.pause(0.3)
         else:
             plt.show()

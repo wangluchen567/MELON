@@ -1,3 +1,7 @@
+"""
+Fisher线性判别分析
+Fisher Linear Discriminant
+"""
 import numpy as np
 import matplotlib.pyplot as plt
 
