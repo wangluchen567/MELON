@@ -9,19 +9,19 @@ class Function():
     def __init__(self, cal_func, cal_grad, init_value, grad_type, learning_rate):
         self.cal_func = cal_func  # 求函数值的函数
         self.cal_grad = cal_grad  # 求梯度值的函数
-        self.weight = init_value  # 要优化的初始值
-        self.grad = 0  # 初始化梯度值
+        self.Weights = init_value  # 要优化的初始值
+        self.Grad = 0  # 初始化梯度值
         dict = {'GD': GradientDescent, 'Momentum': Momentum, 'AdaGrad': AdaGrad, 'RMSProp': RMSProp, 'Adam': Adam}
         self.optimizer = dict[grad_type](self, learning_rate)
-        self.history = [self.weight]
+        self.history = [self.Weights]
 
     def optimize(self, epochs=100):
         """调用则进行优化"""
         for i in range(epochs):
-            self.grad = self.cal_grad(self.weight)
+            self.Grad = self.cal_grad(self.Weights)
             self.optimizer.step()
-            # print(self.weight)
-            self.history.append(self.weight)
+            # print(self.Weights)
+            self.history.append(self.Weights)
 
     def plat_2D(self, x_range):
         """画二维图像"""

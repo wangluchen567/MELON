@@ -31,11 +31,11 @@ class GradientDescent(Optimizer):
 
     def update_v(self):
         """更新梯度更新速度"""
-        self.v = - self.learning_rate * self.model.grad
+        self.v = - self.learning_rate * self.model.Grad
 
     def update(self):
         """更新权重"""
-        self.model.weight = self.model.weight + self.v
+        self.model.Weights = self.model.Weights + self.v
 
 
 class Momentum(Optimizer):
@@ -54,11 +54,11 @@ class Momentum(Optimizer):
 
     def update_v(self):
         """更新梯度更新速度"""
-        self.v = self.momentum * self.v - self.learning_rate * self.model.grad
+        self.v = self.momentum * self.v - self.learning_rate * self.model.Grad
 
     def update(self):
         """更新权重"""
-        self.model.weight = self.model.weight + self.v
+        self.model.Weights = self.model.Weights + self.v
 
 
 class AdaGrad(Optimizer):
@@ -76,11 +76,11 @@ class AdaGrad(Optimizer):
 
     def update_s(self):
         """更新梯度各分量平方更新速度"""
-        self.s = self.s + self.model.grad * self.model.grad
+        self.s = self.s + self.model.Grad * self.model.Grad
 
     def update(self):
         """更新权重"""
-        self.model.weight = self.model.weight - self.learning_rate * self.model.grad / np.sqrt(self.s + 1e-9)
+        self.model.Weights = self.model.Weights - self.learning_rate * self.model.Grad / np.sqrt(self.s + 1e-9)
 
 
 class RMSProp(Optimizer):
@@ -101,11 +101,11 @@ class RMSProp(Optimizer):
 
     def update_s(self):
         """更新梯度各分量平方更新速度"""
-        self.s = self.beta * self.s + (1 - self.beta) * self.model.grad * self.model.grad
+        self.s = self.beta * self.s + (1 - self.beta) * self.model.Grad * self.model.Grad
 
     def update(self):
         """更新权重"""
-        self.model.weight = self.model.weight - self.learning_rate * self.model.grad / np.sqrt(self.s + 1e-9)
+        self.model.Weights = self.model.Weights - self.learning_rate * self.model.Grad / np.sqrt(self.s + 1e-9)
 
 
 class Adam(Optimizer):
@@ -133,12 +133,12 @@ class Adam(Optimizer):
 
     def update_v(self):
         """更新梯度更新速度"""
-        self.v = self.beta_1 * self.v + (1 - self.beta_1) * self.model.grad
+        self.v = self.beta_1 * self.v + (1 - self.beta_1) * self.model.Grad
 
     def update_s(self):
         """更新梯度各分量平方更新速度"""
-        self.s = self.beta_2 * self.s + (1 - self.beta_2) * self.model.grad * self.model.grad
+        self.s = self.beta_2 * self.s + (1 - self.beta_2) * self.model.Grad * self.model.Grad
 
     def update(self):
         """更新权重"""
-        self.model.weight = self.model.weight - self.learning_rate * self.v / np.sqrt(self.s + 1e-9)
+        self.model.Weights = self.model.Weights - self.learning_rate * self.v / np.sqrt(self.s + 1e-9)
