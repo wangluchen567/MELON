@@ -18,14 +18,15 @@ class Perceptron():
         self.Y_train = Y_train
 
     def train(self, X_train, Y_train, epochs=30):
-        self.X_train = np.concatenate((X_train, np.ones((len(X_train), 1))), axis=1)
+        self.get_data(X_train, Y_train)
+        X_B = np.concatenate((X_train, np.ones((len(X_train), 1))), axis=1)
         self.Y_train = Y_train
         learning_rate = 1
-        self.Weights = np.random.uniform(-1, 1, size=(1, self.X_train.shape[1]))
+        self.Weights = np.random.uniform(-1, 1, size=(X_B.shape[1], 1))
         for i in range(epochs):
             # 分类错误的才有损失，先取出分类错误的
-            ErrorPos = self.Y_train * self.X_train.dot(self.Weights.T) < 0
-            grad = np.sum((-1 * self.Y_train * self.X_train)[ErrorPos.flatten()], axis=0) / len(ErrorPos)
+            ErrorPos = self.Y_train * X_B.dot(self.Weights) < 0
+            grad = np.sum((-1 * self.Y_train * X_B)[ErrorPos.flatten()], axis=0).reshape(-1, 1) / len(ErrorPos)
             self.Weights -= learning_rate * grad
             self.plat_2D(pause=True, iter=i+1)
 
@@ -43,12 +44,12 @@ class Perceptron():
         """
         X_train = np.random.uniform(X_lower, X_upper, size=(X_size, X_feat))
         X_mids = (np.max(X_train, axis=0) + np.min(X_train, axis=0)) / 2
-        TruthWeights = np.random.uniform(lower, upper, size=(1, X_feat))
-        Bias = -TruthWeights.dot(X_mids.reshape(-1, 1))
-        TruthWeights = np.concatenate((TruthWeights, Bias), axis=1)
+        TruthWeights = np.random.uniform(lower, upper, size=(X_feat, 1))
+        Bias = - X_mids.reshape(1, -1) @ TruthWeights
+        TruthWeights = np.concatenate((TruthWeights, Bias), axis=0)
         X_B = np.concatenate((X_train, np.ones((len(X_train), 1))), axis=1)
         Y_train = np.ones((len(X_train), 1))
-        Y_train[X_B.dot(TruthWeights.T) < 0] = -1
+        Y_train[X_B.dot(TruthWeights) < 0] = -1
         return X_train, Y_train, TruthWeights
 
     def plat_2D(self, Truth=None, pause=False, iter=None):
@@ -89,16 +90,15 @@ class Perceptron():
         gap = max(X[:, 0]) - min(X[:, 0])
         PX = np.arange(min(X[:, 0]) - ratio * gap, max(X[:, 0]) + ratio * gap, step)
         PX_B = np.concatenate((PX.reshape(-1, 1), np.ones((len(PX), 1))), axis=1)
-        W = np.concatenate((Weights[:, :-2], Weights[:, -1].reshape(-1, 1)), axis=1) / -Weights[:, -2]
+        W = np.concatenate((Weights[:-2, :], Weights[-1, :].reshape(-1, 1)), axis=1) / -Weights[-2, :]
         PU = PX_B.dot(W.T)
         return PX, PU
 
 
 if __name__ == '__main__':
     model = Perceptron()
-    X_train, Y_train, TruthWeights = model.random_generate(100)
-    model.get_data(X_train, Y_train)
+    X_train, Y_train, TruthWeights = model.random_generate(X_size=100)
     model.train(X_train, Y_train)
-    print(TruthWeights)
-    print(model.Weights)
+    print("Truth Weights: ", TruthWeights.T)
+    print("Predict Weights: ", model.Weights.T)
     model.plat_2D(TruthWeights)

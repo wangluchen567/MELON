@@ -17,8 +17,7 @@ class FisherLinearDiscriminant():
         self.Y_train = Y_train
 
     def train(self, X_train, Y_train):
-        self.X_train = X_train
-        self.Y_train = Y_train
+        self.get_data(X_train, Y_train)
         # 标签展开，方便取值
         Y_F = self.Y_train.flatten()
         # 求两类样本的个数
@@ -33,8 +32,7 @@ class FisherLinearDiscriminant():
         Vec = np.linalg.inv(S1 + S2).dot(M1 - M2)
         # 求判别函数阈值
         T = Vec.dot((N1 * M1 + N2 * M2)) / (N1 + N2)
-        self.Weights = np.concatenate((Vec, np.array([T]))).reshape(1, -1)
-        print(self.Weights)
+        self.Weights = np.concatenate((Vec, np.array([T]))).reshape(-1, 1)
 
     @staticmethod
     def random_generate(X_size, X_feat=2, X_lower=-1, X_upper=1, lower=-1, upper=1):
@@ -126,16 +124,14 @@ class FisherLinearDiscriminant():
         gap = max(X[:, 0]) - min(X[:, 0])
         PX = np.arange(min(X[:, 0]) - ratio * gap, max(X[:, 0]) + ratio * gap, step)
         PX_B = np.concatenate((PX.reshape(-1, 1), np.ones((len(PX), 1))), axis=1)
-        W = np.concatenate((Weights[:, :-2], Weights[:, -1].reshape(-1, 1)), axis=1) / -Weights[:, -2]
+        W = np.concatenate((Weights[:-2, :], Weights[-1, :].reshape(-1, 1)), axis=1) / -Weights[-2, :]
         PU = PX_B.dot(W.T)
         return PX, PU
 
 
 if __name__ == '__main__':
     model = FisherLinearDiscriminant()
-    # X_train, Y_train, TruthWeights = model.random_generate(100)
-    X_train, Y_train = model.random_generate_double(100)
-    model.get_data(X_train, Y_train)
+    X_train, Y_train = model.random_generate_double(X_size=100)
     model.train(X_train, Y_train)
-    print("ModelWeights:",model.Weights)
+    print("ModelWeights:",model.Weights.T)
     model.plat_2D()
