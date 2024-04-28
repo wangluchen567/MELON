@@ -5,6 +5,7 @@ Gaussian Discriminant
 import numpy as np
 import matplotlib.pyplot as plt
 
+
 class GaussianDiscriminant():
     def __init__(self, X_train=None, Y_train=None):
         self.X_train = X_train  # 训练数据
@@ -130,9 +131,10 @@ class GaussianDiscriminant():
         PU = PX_B.dot(W.T)
         return PX, PU
 
+
 if __name__ == '__main__':
     model = GaussianDiscriminant()
     X_train, Y_train = model.random_generate_double(X_size=100)
     model.train(X_train, Y_train)
-    print("ModelWeights:",model.Weights.T)
+    print("ModelWeights:", model.Weights.T)
     model.plat_2D()
