@@ -51,6 +51,17 @@ class LinearRegression():
         else:
             self.train_direct()
 
+    def predict(self, X_data):
+        if X_data.ndim == 2:
+            pass
+        elif X_data.ndim == 1:
+            X_data = X_data.reshape(1, -1)
+        else:
+            raise ValueError("Unable to process data with dimensions of 3 or more")
+        X_B = np.concatenate((X_data, np.ones((len(X_data), 1))), axis=1)
+        Y_data = X_B.dot(self.Weights)
+        return Y_data
+
     def train_direct(self):
         # 在数据最后一列添加一列单位矩阵作为转置b
         X_B = np.concatenate((self.X_train, np.ones((len(self.X_train), 1))), axis=1)
@@ -105,13 +116,15 @@ class LinearRegression():
         Y_train += np.random.normal(loc, scale, size=Y_train.shape)
         return X_train, Y_train, Truth_Weights
 
-    def plat_2D(self, Truth=None, pause=False, iter=None):
+    def plat_2D(self, X_data=None, Y_data=None, Truth=None, pause=False, iter=None):
         X = self.X_train
         Y = self.Y_train
         Predict = self.Weights
         if not pause: plt.figure()
         plt.clf()
         plt.scatter(X, Y, c='blue')
+        if X_data is not None and Y_data is not None:  # 用于画预测的点
+            plt.scatter(X_data, Y_data, c='blue', marker='*')
         if Truth is not None:
             # 绘制真实的参数
             PX, PU = self.get_PXU(X, Truth)
@@ -120,7 +133,7 @@ class LinearRegression():
             # 绘制预测的参数
             PX, PU = self.get_PXU(X, Predict)
             plt.plot(PX, PU, c='red', linewidth=2)
-
+            # 为了方便展示，两边进行额外延伸
             plt.xlim([(4 * np.min(X) - np.max(X)) / 3, (4 * np.max(X) - np.min(X)) / 3])
             plt.ylim([(4 * np.min(Y) - np.max(Y)) / 3, (4 * np.max(Y) - np.min(Y)) / 3])
         if pause:
@@ -147,19 +160,27 @@ class LinearRegression():
 
 
 if __name__ == '__main__':
+    # 调用指定模型
     model = LinearRegression()
+    # 生成数据集
     X_train, Y_train, Truth_Weights = model.random_generate(X_size=100)
+    # 使用数据集对模型训练
     model.get_data(X_train, Y_train)
     # 使用直接计算的方法求解
     print("Direct Solve:")
     model.train(X_train, Y_train)
-    print("Truth Weights: ", Truth_Weights)
-    print("Predict Weights: ", model.Weights)
+    print("Truth Weights: ", Truth_Weights.flatten())
+    print("Predict Weights: ", model.Weights.flatten())
     model.plat_2D(Truth=Truth_Weights)
     # 使用梯度的方法求解
     print("Gradient Solve:")
     model.train(X_train, Y_train, mode=1, epochs=30, lr=0.01, grad_type='GD')
-    print("Truth_Weights: ", Truth_Weights)
-    print("Predict_Weights: ", model.Weights)
+    print("Truth_Weights: ", Truth_Weights.flatten())
+    print("Predict_Weights: ", model.Weights.flatten())
     model.plat_2D(Truth=Truth_Weights)
-
+    # 随机生成数据用于预测
+    x_data = np.random.uniform(0, 20, size=(1, 1))
+    y_data = model.predict(x_data)
+    print("predict labels: ", y_data.flatten())
+    # 画图展示效果
+    model.plat_2D(x_data, y_data)

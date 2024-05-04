@@ -38,6 +38,18 @@ class GaussianDiscriminant():
         B = 0.5 * (M1.T.dot(Sigma_i).dot(M1) - M2.T.dot(Sigma_i).dot(M2)) + np.log(1 - Phi) - np.log(Phi)
         self.Weights = np.concatenate((A, np.array([B]))).reshape(-1, 1)
 
+    def predict(self, X_data):
+        if X_data.ndim == 2:
+            pass
+        elif X_data.ndim == 1:
+            X_data = X_data.reshape(1, -1)
+        else:
+            raise ValueError("Unable to process data with dimensions of 3 or more")
+        X_B = np.concatenate((X_data, np.ones((len(X_data), 1))), axis=1)
+        Y_data = np.ones((len(X_data), 1))
+        Y_data[X_B.dot(self.Weights) < 0] = -1
+        return Y_data
+
     @staticmethod
     def random_generate(X_size, X_feat=2, X_lower=-1, X_upper=1, lower=-1, upper=1):
         """
@@ -91,7 +103,7 @@ class GaussianDiscriminant():
         Y_train = Y_train[rand_index, :]
         return X_train, Y_train
 
-    def plat_2D(self, Truth=None, pause=False):
+    def plat_2D(self, X_data=None, Y_data=None, Truth=None, pause=False):
         X = self.X_train
         Y = self.Y_train
         Predict = self.Weights
@@ -99,6 +111,9 @@ class GaussianDiscriminant():
         plt.clf()
         plt.scatter(X[Y.flatten() == 1, 0], X[Y.flatten() == 1, 1], c='red')
         plt.scatter(X[Y.flatten() == -1, 0], X[Y.flatten() == -1, 1], c='blue')
+        if X_data is not None and Y_data is not None:  # 用于画预测的点
+            plt.scatter(X_data[Y_data.flatten() == 1, 0], X_data[Y_data.flatten() == 1, 1], c='red', marker='*')
+            plt.scatter(X_data[Y_data.flatten() == -1, 0], X_data[Y_data.flatten() == -1, 1], c='blue', marker='*')
         if Truth is not None:
             # 绘制真实的参数
             PX, PU = self.get_PXU(X, Truth)
@@ -133,8 +148,18 @@ class GaussianDiscriminant():
 
 
 if __name__ == '__main__':
+    # 调用指定模型
     model = GaussianDiscriminant()
+    # 生成数据集
     X_train, Y_train = model.random_generate_double(X_size=100)
+    # 使用数据集对模型训练
     model.train(X_train, Y_train)
-    print("ModelWeights:", model.Weights.T)
+    print("ModelWeights:", model.Weights.flatten())
+    # 画图展示效果
     model.plat_2D()
+    # 随机生成数据用于预测
+    x_data = np.random.uniform(-1, 1, size=(1, 2))
+    y_data = model.predict(x_data)
+    print("predict labels: ", y_data.flatten())
+    # 画图展示效果
+    model.plat_2D(x_data, y_data)

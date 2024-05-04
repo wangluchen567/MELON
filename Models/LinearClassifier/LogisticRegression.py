@@ -46,6 +46,18 @@ class LogisticRegression():
         self.grad_type = grad_type
         self.train_grad()
 
+    def predict(self, X_data):
+        if X_data.ndim == 2:
+            pass
+        elif X_data.ndim == 1:
+            X_data = X_data.reshape(1, -1)
+        else:
+            raise ValueError("Unable to process data with dimensions of 3 or more")
+        X_B = np.concatenate((X_data, np.ones((len(X_data), 1))), axis=1)
+        Y_data = np.ones((len(X_data), 1))
+        Y_data[self.sigmoid(X_B.dot(self.Weights)) < 1/2] = 0
+        return Y_data
+
     def cal_grad(self):
         """计算梯度值"""
         # 在数据最后一列添加一列单位矩阵作为转置b
@@ -98,7 +110,7 @@ class LogisticRegression():
         Y_train[X_B.dot(TruthWeights) < 0] = 0
         return X_train, Y_train, TruthWeights
 
-    def plat_2D(self, Truth=None, pause=False, iter=None):
+    def plat_2D(self, X_data=None, Y_data=None, Truth=None, pause=False, iter=None):
         X = self.X_train
         Y = self.Y_train
         Predict = self.Weights
@@ -108,6 +120,9 @@ class LogisticRegression():
         """注意！！！使用逻辑回归时负类标签为 0 ！"""
         # plt.scatter(X[Y.flatten() == -1, 0], X[Y.flatten() == -1, 1], c='blue')
         plt.scatter(X[Y.flatten() == 0, 0], X[Y.flatten() == 0, 1], c='blue')
+        if X_data is not None and Y_data is not None:  # 用于画预测的点
+            plt.scatter(X_data[Y_data.flatten() == 1, 0], X_data[Y_data.flatten() == 1, 1], c='red', marker='*')
+            plt.scatter(X_data[Y_data.flatten() == 0, 0], X_data[Y_data.flatten() == 0, 1], c='blue', marker='*')
         if Truth is not None:
             # 绘制真实的参数
             PX, PU = self.get_PXU(X, Truth)
@@ -144,10 +159,20 @@ class LogisticRegression():
 
 
 if __name__ == '__main__':
+    # 调用指定模型
     model = LogisticRegression()
+    # 生成数据集
     X_train, Y_train, TruthWeights = model.random_generate(X_size=100)
+    # 使用数据集对模型训练
     model.get_data(X_train, Y_train)
     model.train(X_train, Y_train, epochs=50, lr=0.1, grad_type='Adam')
-    print("Truth Weights: ", TruthWeights.T)
-    print("Predict Weights: ", model.Weights.T)
-    model.plat_2D(TruthWeights)
+    print("Truth Weights: ", TruthWeights.flatten())
+    print("Predict Weights: ", model.Weights.flatten())
+    # 画图展示效果
+    model.plat_2D(Truth=TruthWeights)
+    # 随机生成数据用于预测
+    x_data = np.random.uniform(-1, 1, size=(1, 2))
+    y_data = model.predict(x_data)
+    print("predict labels: ", y_data.flatten())
+    # 画图展示效果
+    model.plat_2D(x_data, y_data)
