@@ -13,6 +13,7 @@ class LogisticRegression():
         self.Y_train = Y_train  # 真实标签
         self.Weights = None  # 模型参数
         self.Grad = 0  # 模型梯度
+        self.optimizer = None  # 初始化优化器
         # 求解模式，0为默认直接求解，否则使用梯度法
         self.mode = mode
         # 若使用梯度方法则记录参数变化情况
@@ -38,8 +39,7 @@ class LogisticRegression():
         self.Weights = np.random.uniform(-1, 1, size=(X_feat + 1, 1))
 
     def train(self, X_train, Y_train, mode=0, epochs=30, lr=0.01, grad_type='Adam'):
-        self.X_train = X_train
-        self.Y_train = Y_train
+        self.get_data(X_train, Y_train)
         self.mode = mode
         self.epochs = epochs
         self.lr = lr
