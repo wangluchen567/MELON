@@ -116,8 +116,8 @@ class Perceptron():
             # 绘制预测的参数
             PX, PU = self.get_PXU(X, Predict)
             plt.plot(PX, PU, c='red', linewidth=2)
-            plt.xlim([-1, 1])
-            plt.ylim([-1, 1])
+            # plt.xlim([-1, 1])
+            # plt.ylim([-1, 1])
         if pause:
             if iter:
                 plt.title("iter: " + str(iter))
@@ -138,8 +138,8 @@ class Perceptron():
         gap = max(X[:, 0]) - min(X[:, 0])
         PX = np.arange(min(X[:, 0]) - ratio * gap, max(X[:, 0]) + ratio * gap, step)
         PX_B = np.concatenate((PX.reshape(-1, 1), np.ones((len(PX), 1))), axis=1)
-        W = np.concatenate((Weights[:-2, :], Weights[-1, :].reshape(-1, 1)), axis=1) / -Weights[-2, :]
-        PU = PX_B.dot(W.T)
+        PW = np.concatenate((Weights[:-2, :], Weights[-1, :].reshape(-1, 1)), axis=1) / -Weights[-2, :]
+        PU = PX_B.dot(PW.T)
         return PX, PU
 
 

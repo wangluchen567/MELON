@@ -21,7 +21,7 @@ class GaussianDiscriminant():
         # 标签展开，方便取值
         Y_F = self.Y_train.flatten()
         # 求两类样本的个数
-        N1, N2 = len(Y_F == 1), len(Y_F == -1)
+        N1, N2 = sum(Y_F == 1), sum(Y_F == -1)
         # 求两类样本的均值
         M1 = np.mean(self.X_train[Y_F == 1], axis=0)
         M2 = np.mean(self.X_train[Y_F == -1], axis=0)
@@ -36,7 +36,8 @@ class GaussianDiscriminant():
         # 求分界面参数
         A = Sigma_i.dot(M1 - M2)
         B = 0.5 * (M1.T.dot(Sigma_i).dot(M1) - M2.T.dot(Sigma_i).dot(M2)) + np.log(1 - Phi) - np.log(Phi)
-        self.Weights = np.concatenate((A, np.array([B]))).reshape(-1, 1)
+        Bias = -B  # 判别阈值在判别时移项后变号
+        self.Weights = np.concatenate((A, np.array([Bias]))).reshape(-1, 1)
 
     def predict(self, X_data):
         if X_data.ndim == 2:
@@ -122,8 +123,8 @@ class GaussianDiscriminant():
             # 绘制预测的参数
             PX, PU = self.get_PXU(X, Predict)
             plt.plot(PX, PU, c='red', linewidth=2)
-            plt.xlim([-2, 2])
-            plt.ylim([-2, 2])
+            # plt.xlim([-2, 2])
+            # plt.ylim([-2, 2])
         if pause:
             plt.pause(0.3)
         else:
@@ -142,8 +143,8 @@ class GaussianDiscriminant():
         gap = max(X[:, 0]) - min(X[:, 0])
         PX = np.arange(min(X[:, 0]) - ratio * gap, max(X[:, 0]) + ratio * gap, step)
         PX_B = np.concatenate((PX.reshape(-1, 1), np.ones((len(PX), 1))), axis=1)
-        W = np.concatenate((Weights[:-2, :], Weights[-1, :].reshape(-1, 1)), axis=1) / -Weights[-2, :]
-        PU = PX_B.dot(W.T)
+        PW = np.concatenate((Weights[:-2, :], Weights[-1, :].reshape(-1, 1)), axis=1) / -Weights[-2, :]
+        PU = PX_B.dot(PW.T)
         return PX, PU
 
 
@@ -151,7 +152,7 @@ if __name__ == '__main__':
     # 调用指定模型
     model = GaussianDiscriminant()
     # 生成数据集
-    X_train, Y_train = model.random_generate_double(X_size=100)
+    X_train, Y_train, _ = model.random_generate(X_size=100, X_lower=2, X_upper=10)
     # 使用数据集对模型训练
     model.train(X_train, Y_train)
     print("ModelWeights:", model.Weights.flatten())

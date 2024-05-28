@@ -131,8 +131,8 @@ class LogisticRegression():
             # 绘制预测的参数
             PX, PU = self.get_PXU(X, Predict)
             plt.plot(PX, PU, c='red', linewidth=2)
-            plt.xlim([-1, 1])
-            plt.ylim([-1, 1])
+            # plt.xlim([-1, 1])
+            # plt.ylim([-1, 1])
         if pause:
             if iter:
                 plt.title("iter: " + str(iter))
