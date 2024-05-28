@@ -2,9 +2,10 @@
 线性回归
 Linear Regression
 """
+import warnings
 import numpy as np
-import matplotlib.pyplot as plt
-from Models.GradientOptimizer.Optimizer import *
+from Models.GradientOptimizer.Optimizer import GradientDescent, Momentum, AdaGrad, RMSProp, Adam
+from Models.Utils import plat_2dim_regression, run_uniform_regression, run_contrast_regression
 
 
 class LinearRegression():
@@ -25,9 +26,30 @@ class LinearRegression():
         # 梯度法类型
         self.grad_type = grad_type
 
-    def get_data(self, X_train, Y_train):
+    def set_train_data(self, X_train, Y_train):
+        """重新修改训练数据集"""
+        if any(var is not None for var in [self.X_train, self.Y_train]):
+            warnings.warn("Training data will be overwritten")
         self.X_train = X_train
         self.Y_train = Y_train
+
+    def set_parameters(self, Lambda, mode, epochs, lr, grad_type):
+        """重新修改相关参数"""
+        if self.Lambda is not None and Lambda is not None:
+            warnings.warn("Parameter 'Lambda' be overwritten")
+            self.Lambda = Lambda
+        if self.mode is not None and mode is not None:
+            warnings.warn("Parameter 'mode' be overwritten")
+            self.mode = mode
+        if self.epochs is not None and epochs is not None:
+            warnings.warn("Parameter 'epochs' be overwritten")
+            self.epochs = epochs
+        if self.lr is not None and lr is not None:
+            warnings.warn("Parameters 'lr' be overwritten")
+            self.lr = lr
+        if self.grad_type is not None and grad_type is not None:
+            warnings.warn("Parameters 'grad_type' be overwritten")
+            self.grad_type = grad_type
 
     def get_optimizer(self):
         """获取优化器"""
@@ -35,29 +57,27 @@ class LinearRegression():
         self.optimizer = dict[self.grad_type](self, self.lr)
 
     def init_weights(self):
+        """初始化参数 (权重)"""
         X_feat = self.X_train.shape[1]
         self.Weights = np.random.uniform(-1, 1, size=(X_feat + 1, 1))
 
-    def train(self, X_train, Y_train, Lambda=0, mode=0, epochs=30, lr=0.01, grad_type='Adam'):
-        self.X_train = X_train
-        self.Y_train = Y_train
-        self.Lambda = Lambda
-        self.mode = mode
-        self.epochs = epochs
-        self.lr = lr
-        self.grad_type = grad_type
+    def train(self, X_train, Y_train, Lambda=None, mode=None, epochs=None, lr=None, grad_type=None):
+        """使用数据集训练模型"""
+        self.set_train_data(X_train, Y_train)
+        self.set_parameters(Lambda, mode, epochs, lr, grad_type)
         if self.mode:
             self.train_grad()
         else:
             self.train_direct()
 
     def predict(self, X_data):
+        """模型对测试集进行预测"""
         if X_data.ndim == 2:
             pass
         elif X_data.ndim == 1:
             X_data = X_data.reshape(1, -1)
         else:
-            raise ValueError("Unable to process data with dimensions of 3 or more")
+            raise ValueError("Cannot handle data with a shape of 3 dimensions or more")
         X_B = np.concatenate((X_data, np.ones((len(X_data), 1))), axis=1)
         Y_data = X_B.dot(self.Weights)
         return Y_data
@@ -89,98 +109,15 @@ class LinearRegression():
             self.cal_grad()
             self.optimizer.step()
             self.history.append(self.Weights)
-            self.plat_2D(pause=True, iter=i + 1)
+            self.plat_2dim(pause=True, n_iter=i + 1)
 
-    @staticmethod
-    def random_generate(X_size, X_feat=1, X_lower=0, X_upper=20, lower=-1, upper=1, loc=0, scale=1):
-        """
-        随机生成数据
-        :param X_size: 数据集大小
-        :param X_feat: 数据集特征数
-        :param X_lower: 随机生成的数据的下界
-        :param X_upper: 随机生成的数据的上界
-        :param lower: 随机生成的参数范围最小值
-        :param upper: 随机生成的参数范围最大值
-        :param loc: 扰动期望
-        :param scale: 扰动方差
-        :return: 训练数据与真实参数
-        """
-        X_train = np.random.uniform(X_lower, X_upper, size=(X_size, X_feat))
-        # 在数据最后一列添加一列单位矩阵作为转置b
-        X_B = np.concatenate((X_train, np.ones((len(X_train), 1))), axis=1)
-        # 随机生成的模型参数
-        Truth_Weights = np.random.uniform(lower, upper, size=(X_feat + 1, 1))
-        # 计算输出值
-        Y_train = X_B.dot(Truth_Weights)
-        # 加入扰动，正态分布扰动
-        Y_train += np.random.normal(loc, scale, size=Y_train.shape)
-        return X_train, Y_train, Truth_Weights
-
-    def plat_2D(self, X_data=None, Y_data=None, Truth=None, pause=False, iter=None):
-        X = self.X_train
-        Y = self.Y_train
-        Predict = self.Weights
-        if not pause: plt.figure()
-        plt.clf()
-        plt.scatter(X, Y, c='blue')
-        if X_data is not None and Y_data is not None:  # 用于画预测的点
-            plt.scatter(X_data, Y_data, c='blue', marker='*')
-        if Truth is not None:
-            # 绘制真实的参数
-            PX, PU = self.get_PXU(X, Truth)
-            plt.plot(PX, PU, c='orange', linewidth=5)
-        if Predict is not None:
-            # 绘制预测的参数
-            PX, PU = self.get_PXU(X, Predict)
-            plt.plot(PX, PU, c='red', linewidth=2)
-            # 为了方便展示，两边进行额外延伸
-            plt.xlim([(4 * np.min(X) - np.max(X)) / 3, (4 * np.max(X) - np.min(X)) / 3])
-            plt.ylim([(4 * np.min(Y) - np.max(Y)) / 3, (4 * np.max(Y) - np.min(Y)) / 3])
-        if pause:
-            if iter:
-                plt.title("iter: " + str(iter))
-            plt.pause(0.1)
-        else:
-            plt.show()
-
-    def get_PXU(self, X, Weights, ratio=0.1, step=0.1):
-        """
-        获取画图使用的X和其他未知变量
-        :param X: 要画图的已知变量
-        :param Weights: 要画图的权重
-        :param ratio: 两边伸展的额外比例
-        :param step: 采样频率
-        :return:
-        """
-        gap = max(X) - min(X)
-        PX = np.arange(min(X) - ratio * gap, max(X) + ratio * gap, step)
-        PX_B = np.concatenate((PX.reshape(-1, 1), np.ones((len(PX), 1))), axis=1)
-        PU = PX_B.dot(Weights)
-        return PX, PU
+    def plat_2dim(self, X_data=None, Y_data=None, Truth=None, pause=False, n_iter=None):
+        """为二维回归数据集和结果画图"""
+        plat_2dim_regression(self.X_train, self.Y_train, self.Weights, X_data, Y_data, Truth=Truth,
+                             pause=pause, n_iter=n_iter)
 
 
 if __name__ == '__main__':
-    # 调用指定模型
     model = LinearRegression()
-    # 生成数据集
-    X_train, Y_train, Truth_Weights = model.random_generate(X_size=100)
-    # 使用数据集对模型训练
-    model.get_data(X_train, Y_train)
-    # 使用直接计算的方法求解
-    print("Direct Solve:")
-    model.train(X_train, Y_train)
-    print("Truth Weights: ", Truth_Weights.flatten())
-    print("Predict Weights: ", model.Weights.flatten())
-    model.plat_2D(Truth=Truth_Weights)
-    # 使用梯度的方法求解
-    print("Gradient Solve:")
-    model.train(X_train, Y_train, mode=1, epochs=30, lr=0.01, grad_type='GD')
-    print("Truth_Weights: ", Truth_Weights.flatten())
-    print("Predict_Weights: ", model.Weights.flatten())
-    model.plat_2D(Truth=Truth_Weights)
-    # 随机生成数据用于预测
-    x_data = np.random.uniform(0, 20, size=(1, 1))
-    y_data = model.predict(x_data)
-    print("predict labels: ", y_data.flatten())
-    # 画图展示效果
-    model.plat_2D(x_data, y_data)
+    run_uniform_regression(model, num_predict=10)
+    run_contrast_regression(model, num_predict=10)
