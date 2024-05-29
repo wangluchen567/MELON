@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-
+from mpl_toolkits.mplot3d import Axes3D
 
 def random_generate_classification(X_size, X_feat=2, X_lower=-1, X_upper=1, lower=-1, upper=1):
     """
@@ -80,6 +80,26 @@ def random_generate_regression(X_size, X_feat=1, X_lower=0, X_upper=20, lower=-1
     return X_train, Y_train, Truth_Weights
 
 
+def plat_data(X, hold=False):
+    """对任意维度数据进行绘图"""
+    plt.figure()
+    X_dim = X.shape[1]
+    if X_dim == 2:
+        plt.scatter(X[:, 0], X[:, 1], marker="o", c="blue")
+        plt.grid()
+    elif X_dim == 3:
+        ax = plt.subplot(111, projection='3d')
+        ax.scatter(X[:, 0], X[:, 1], X[:, 2], marker="o", c="blue")
+        # 设置三维图像角度(仰角方位角)
+        # ax.view_init(elev=20, azim=20)
+    else:
+        x = np.arange(1, X_dim + 1)
+        for i in range(len(X)):
+            plt.plot(x, X[i, :])
+    if not hold:
+        plt.show()
+
+
 def plat_2dim_classification(X_train, Y_train, Weights, X_data=None, Y_data=None, neg_label=-1, Truth=None, ratio=0.15,
                              pause=False, n_iter=None, pause_time=0.15):
     """
@@ -124,6 +144,7 @@ def plat_2dim_classification(X_train, Y_train, Weights, X_data=None, Y_data=None
         X1_gap = (X1_max - X1_min) * ratio
         plt.xlim([X0_min - X0_gap, X0_max + X0_gap])
         plt.ylim([X1_min - X1_gap, X1_max + X1_gap])
+    plt.grid()
     if pause:
         if n_iter:
             plt.title("iter: " + str(n_iter))
