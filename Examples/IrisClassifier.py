@@ -73,22 +73,41 @@ def load_classifier_data(feat_pos, chose_label=None, pos_label=1, neg_label=-1, 
     return X_train, Y_train, X_valid, Y_valid
 
 
-if __name__ == '__main__':
+def run_iris_classifier(model):
+    # 设置正负标签值
+    pos_label, neg_label = 1, -1
+    model_name = type(model).__name__
+    print("Model: ", model_name)
+    if model_name == 'LogisticRegression':
+        neg_label = 0
     # 获取数据集
-    X_train, Y_train, X_valid, Y_valid = load_classifier_data(feat_pos=[0, 1], chose_label=[0, 2], pos_label=1, neg_label=-1, ratio=0.8)
-    # 调用指定模型
-    model = FisherLinearDiscriminant()
+    X_train, Y_train, X_valid, Y_valid = load_classifier_data(feat_pos=[0, 1], chose_label=[0, 2], pos_label=pos_label,
+                                                              neg_label=neg_label, ratio=0.8)
     # 使用数据集对模型训练
     model.train(X_train, Y_train)
-    # # 调用指定模型
-    # model = LogisticRegression()
-    # # 使用数据集对模型训练
-    # model.train(X_train, Y_train, epochs=30, lr=0.5, grad_type='Adam')
-    print("ModelWeights: ", model.Weights.flatten())
+    # 训练后的模型参数
+    print("Model Weights: ", model.Weights.flatten())
     # 画图展示效果
-    model.plat_2D()
+    model.plat_2dim()
+    # 训练准确率计算
+    Y_Pred = model.predict(X_train)
+    # 计算训练准确率
+    train_accuracy = np.array(Y_Pred == Y_train, dtype=int).sum() / len(Y_train)
+    print("Train Accuracy:  {:.3f} %".format(train_accuracy * 100))
     # 对验证集进行预测
     y_predict = model.predict(X_valid)
-    print("predict labels: ", y_predict.flatten())
+    print("Predict Labels: ", y_predict.flatten())
+    # 计算验证集准确率
+    valid_accuracy = np.array(y_predict == Y_valid, dtype=int).sum() / len(Y_valid)
+    print("Valid Accuracy:  {:.3f} %".format(valid_accuracy * 100))
     # 画图展示效果
-    model.plat_2D(X_valid, y_predict)
+    model.plat_2dim(X_valid, Y_valid)
+
+
+if __name__ == '__main__':
+    models = [FisherLinearDiscriminant(),
+              GaussianDiscriminant(),
+              LogisticRegression(epochs=100, lr=0.01, grad_type='Adam'),
+              Perceptron(epochs=100, lr=0.01, grad_type='Adam')]
+    model = models[0]
+    run_iris_classifier(model)
