@@ -10,8 +10,9 @@ from Models.Utils import plat_2dim_classification, run_uniform_classification, r
 
 class LogisticRegression():
     def __init__(self, X_train=None, Y_train=None, epochs=50, lr=0.01, grad_type='Adam'):
-        self.X_train = X_train  # 训练数据
-        self.Y_train = Y_train  # 真实标签
+        self.X_train = None  # 训练数据
+        self.Y_train = None  # 真实标签
+        self.set_train_data(X_train, Y_train)
         self.Weights = None  # 模型参数
         self.Grad = 0  # 模型梯度
         self.optimizer = None  # 初始化优化器
@@ -28,10 +29,12 @@ class LogisticRegression():
         """重新修改训练数据集"""
         if any(var is not None for var in [self.X_train, self.Y_train]):
             warnings.warn("Training data will be overwritten")
-        self.X_train = X_train
-        self.Y_train = Y_train
-        # 使用逻辑回归时负类标签为0
-        self.Y_train[self.Y_train == -1] = 0
+        if X_train is not None:
+            self.X_train = X_train.copy()
+        if Y_train is not None:
+            self.Y_train = Y_train.copy()
+            # 使用逻辑回归时负类标签为0
+            self.Y_train[self.Y_train == -1] = 0
 
     def set_parameters(self, epochs=None, lr=None, grad_type=None):
         """重新修改相关参数"""

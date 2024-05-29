@@ -10,8 +10,9 @@ from Models.Utils import plat_2dim_regression, run_uniform_regression, run_contr
 
 class LinearRegression():
     def __init__(self, X_train=None, Y_train=None, Lambda=0, mode=0, epochs=30, lr=0.01, grad_type='Adam'):
-        self.X_train = X_train  # 训练数据
-        self.Y_train = Y_train  # 真实标签
+        self.X_train = None  # 训练数据
+        self.Y_train = None  # 真实标签
+        self.set_train_data(X_train, Y_train)
         self.Lambda = Lambda  # 正则化系数
         self.Weights = None  # 模型参数
         self.Grad = 0  # 模型梯度
@@ -27,11 +28,13 @@ class LinearRegression():
         self.grad_type = grad_type
 
     def set_train_data(self, X_train, Y_train):
-        """重新修改训练数据集"""
+        """给定训练数据集和标签数据"""
         if any(var is not None for var in [self.X_train, self.Y_train]):
             warnings.warn("Training data will be overwritten")
-        self.X_train = X_train
-        self.Y_train = Y_train
+        if X_train is not None:
+            self.X_train = X_train.copy()
+        if Y_train is not None:
+            self.Y_train = Y_train.copy()
 
     def set_parameters(self, Lambda, mode, epochs, lr, grad_type):
         """重新修改相关参数"""
