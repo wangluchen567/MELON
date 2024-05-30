@@ -58,7 +58,7 @@ class LogisticRegression():
         X_feat = self.X_train.shape[1]
         self.Weights = np.random.uniform(-1, 1, size=(X_feat + 1, 1))
 
-    def train(self, X_train, Y_train, epochs=None, lr=None, grad_type=None):
+    def train(self, X_train=None, Y_train=None, epochs=None, lr=None, grad_type=None):
         """使用数据集训练模型"""
         self.set_train_data(X_train, Y_train)
         self.set_parameters(epochs, lr, grad_type)

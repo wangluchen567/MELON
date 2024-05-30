@@ -38,12 +38,12 @@ class PrincipalComponentAnalysis():
             warnings.warn("Parameters 'threshold' be overwritten")
             self.threshold = threshold
 
-    def run_dim_reduce(self, X, num_top=None, threshold=0.9):
+    def train(self, X=None, num_top=None, threshold=0.9):
         """对数据进行降维"""
         self.set_data(X)
         self.set_parameters(num_top, threshold)
         # 标准化数据
-        self.X_stand = self.standardize_data(X)
+        self.X_stand = self.standardize_data(self.X)
         # 计算协方差矩阵
         covar_mat = np.cov(self.X_stand.T)
         # 计算特征值和特征向量
@@ -57,7 +57,7 @@ class PrincipalComponentAnalysis():
         self.cum_contribution_rate = np.cumsum(self.contribution_rate)
         # 若未指定要选择的特征数量，则根据阈值选择
         if self.num_top is None:
-            self.num_top = np.argmax(self.cum_contribution_rate >= threshold) + 1
+            self.num_top = np.argmax(self.cum_contribution_rate >= self.threshold) + 1
         # 选择前num_top个特征向量
         eigen_vec_top = self.sorted_eigen_vec[:, :self.num_top]
         # 将数据投影到主成分上
@@ -87,7 +87,7 @@ def run_reduce_instance(model, X_size, X_feat):
     # 随机生成回归数据进行PCA降维(方便查看效果)
     X, Y, _ = random_generate_regression(X_size, X_feat, X_lower=0, X_upper=20, loc=0, scale=0.3)
     X_data = np.concatenate((X, Y), axis=1)
-    X_reduced = model.run_dim_reduce(X_data)
+    X_reduced = model.train(X_data)
     model.plat_contribution()
     plat_data(X_data, hold=True)
     plat_data(X_reduced)

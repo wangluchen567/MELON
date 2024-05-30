@@ -23,7 +23,7 @@ class GaussianDiscriminant():
         if Y_train is not None:
             self.Y_train = Y_train.copy()
 
-    def train(self, X_train, Y_train):
+    def train(self, X_train=None, Y_train=None):
         """使用数据集训练模型"""
         self.set_train_data(X_train, Y_train)
         # 标签展开，方便取值
