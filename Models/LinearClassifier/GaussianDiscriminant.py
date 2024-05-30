@@ -16,11 +16,13 @@ class GaussianDiscriminant():
 
     def set_train_data(self, X_train, Y_train):
         """给定训练数据集和标签数据"""
-        if any(var is not None for var in [self.X_train, self.Y_train]):
-            warnings.warn("Training data will be overwritten")
         if X_train is not None:
+            if self.X_train is not None:
+                warnings.warn("Training data will be overwritten")
             self.X_train = X_train.copy()
         if Y_train is not None:
+            if self.Y_train is not None:
+                warnings.warn("Training data will be overwritten")
             self.Y_train = Y_train.copy()
 
     def train(self, X_train=None, Y_train=None):

@@ -23,10 +23,10 @@ class PrincipalComponentAnalysis():
         self.cum_contribution_rate = None  # 特征值累计贡献率
 
     def set_data(self, X):
-        """给定训练数据集和标签数据"""
-        if self.X is not None:
-            warnings.warn("Training data will be overwritten")
+        """给定训练数据"""
         if X is not None:
+            if self.X is not None:
+                warnings.warn("Training data will be overwritten")
             self.X = X.copy()
 
     def set_parameters(self, num_top, threshold):
