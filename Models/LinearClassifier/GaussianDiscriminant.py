@@ -69,5 +69,5 @@ class GaussianDiscriminant():
 
 if __name__ == '__main__':
     model = GaussianDiscriminant()
-    run_uniform_classification(model, num_predict=10)
-    run_double_classification(model, num_predict=10)
+    run_uniform_classification(model, train_ratio=0.8)
+    run_double_classification(model, train_ratio=0.8)

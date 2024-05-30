@@ -122,5 +122,5 @@ class LinearRegression():
 
 if __name__ == '__main__':
     model = LinearRegression()
-    run_uniform_regression(model, num_predict=10)
-    run_contrast_regression(model, num_predict=10)
+    run_uniform_regression(model, train_ratio=0.8)
+    run_contrast_regression(model, train_ratio=0.8)

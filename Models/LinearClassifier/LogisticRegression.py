@@ -12,6 +12,7 @@ class LogisticRegression():
     def __init__(self, X_train=None, Y_train=None, epochs=50, lr=0.01, grad_type='Adam'):
         self.X_train = None  # 训练数据
         self.Y_train = None  # 真实标签
+        self.Y_train_ = None  # 逻辑回归特殊标签
         self.set_train_data(X_train, Y_train)
         self.Weights = None  # 模型参数
         self.Grad = 0  # 模型梯度
@@ -35,8 +36,9 @@ class LogisticRegression():
             if self.Y_train is not None:
                 warnings.warn("Training data will be overwritten")
             self.Y_train = Y_train.copy()
-            # 使用逻辑回归时负类标签为0
-            self.Y_train[self.Y_train == -1] = 0
+            self.Y_train_ = Y_train.copy()
+            # 使用逻辑回归时负类标签为0，在此使用特殊标签
+            self.Y_train_[self.Y_train_ == -1] = 0
 
     def set_parameters(self, epochs=None, lr=None, grad_type=None):
         """重新修改相关参数"""
@@ -76,14 +78,15 @@ class LogisticRegression():
             raise ValueError("Cannot handle data with a shape of 3 dimensions or more")
         X_B = np.concatenate((X_data, np.ones((len(X_data), 1))), axis=1)
         Y_data = np.ones((len(X_data), 1))
-        Y_data[self.sigmoid(X_B.dot(self.Weights)) < 1 / 2] = 0
+        Y_data[self.sigmoid(X_B.dot(self.Weights)) < 1 / 2] = -1
         return Y_data
 
     def cal_grad(self):
         """计算梯度值"""
         # 在数据最后一列添加一列单位矩阵作为转置b
         X_B = np.concatenate((self.X_train, np.ones((len(self.X_train), 1))), axis=1)
-        self.Grad = X_B.T @ (self.sigmoid(X_B @ self.Weights) - self.Y_train) / len(self.X_train)
+        # 这里使用的是特殊标签矩阵Y_train_ (0/1)
+        self.Grad = X_B.T @ (self.sigmoid(X_B @ self.Weights) - self.Y_train_) / len(self.X_train)
 
     def train_grad(self):
         """使用梯度下降方法进行优化"""
@@ -109,11 +112,10 @@ class LogisticRegression():
 
     def plat_2dim(self, X_data=None, Y_data=None, Truth=None, pause=False, n_iter=None):
         """为二维分类数据集和结果画图"""
-        plat_2dim_classification(self.X_train, self.Y_train, self.Weights, X_data, Y_data, Truth=Truth, neg_label=0,
-                                 pause=pause, n_iter=n_iter)
+        plat_2dim_classification(self.X_train, self.Y_train, self.Weights, X_data, Y_data, Truth=Truth, pause=pause, n_iter=n_iter)
 
 
 if __name__ == '__main__':
     model = LogisticRegression(epochs=50, lr=0.1, grad_type='Adam')
-    run_uniform_classification(model, num_predict=10)
-    run_double_classification(model, num_predict=10)
+    run_uniform_classification(model, train_ratio=0.8)
+    run_double_classification(model, train_ratio=0.8)
