@@ -7,6 +7,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from Models.Utils import plat_data, random_generate_regression
 
+
 class PrincipalComponentAnalysis():
     def __init__(self, X=None, num_top=None, threshold=None):
         self.X = None  # 需要降维的数据
@@ -95,4 +96,3 @@ def run_reduce_instance(model, X_size, X_feat):
 if __name__ == '__main__':
     model = PrincipalComponentAnalysis(num_top=2)
     run_reduce_instance(model, X_size=100, X_feat=2)
-
