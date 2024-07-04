@@ -4,7 +4,7 @@ K-Means Cluster
 """
 import warnings
 import numpy as np
-from Models.Utils import plat_cluster, random_generate_cluster
+from Models.Utils import plot_cluster, random_generate_cluster
 
 class KMeans():
     def __init__(self, X=None, k=None, num_iter=None):
@@ -44,7 +44,7 @@ class KMeans():
         # 找到每个数据点最近的聚类中心
         self.labels = np.argmin(distances, axis=1)
         # 画图展示聚类效果
-        self.plat_cluster(pause=True, n_iter=0)
+        self.plot_cluster(pause=True, n_iter=0)
         # 再根据当前聚类结果计算新的聚类中心
         for i in range(self.num_iter):
             # 创建簇掩码矩阵
@@ -59,11 +59,11 @@ class KMeans():
             distances = np.linalg.norm(self.X[:, np.newaxis, :] - self.centers[np.newaxis, :, :], axis=2)
             # 找到每个数据点最近的聚类中心
             self.labels = np.argmin(distances, axis=1)
-            self.plat_cluster(pause=True, n_iter=i+1)
+            self.plot_cluster(pause=True, n_iter=i+1)
         return self.labels, self.centers
 
-    def plat_cluster(self, pause=False, n_iter=None, pause_time=0.15):
-        plat_cluster(self.X, self.labels, self.centers, pause, n_iter, pause_time)
+    def plot_cluster(self, pause=False, n_iter=None, pause_time=0.15):
+        plot_cluster(self.X, self.labels, self.centers, pause, n_iter, pause_time)
 
 
 if __name__ == '__main__':
@@ -71,4 +71,4 @@ if __name__ == '__main__':
     X, Y = random_generate_cluster(X_size=300, X_feat=2, k=3)
     model = KMeans(X, k=3, num_iter=20)
     model.train()
-    model.plat_cluster()
+    model.plot_cluster()

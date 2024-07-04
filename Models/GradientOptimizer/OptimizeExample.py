@@ -12,7 +12,7 @@ def example_2D():
 
     func = Function(cal_func, cal_grad, init_value=5, grad_type='Adam', learning_rate=0.1)
     func.optimize(epochs=20)
-    func.plat_2D(x_range=[-5, 5])
+    func.plot_2D(x_range=[-5, 5])
 
 
 def example_contour():
@@ -22,7 +22,7 @@ def example_contour():
 
     func = Function(cal_func, cal_grad, init_value=np.array([3, 4]), grad_type='Adam', learning_rate=0.1)
     func.optimize(epochs=100)
-    func.plat_contour(x_range=[-5, 5], y_range=[-5, 5])
+    func.plot_contour(x_range=[-5, 5], y_range=[-5, 5])
 
 
 def example_3D():
@@ -32,7 +32,7 @@ def example_3D():
 
     func = Function(cal_func, cal_grad, init_value=np.array([4, 0.001]), grad_type='Adam', learning_rate=0.1)
     func.optimize(epochs=50)
-    func.plat_3D(x_range=[-5, 5], y_range=[-5, 5])
+    func.plot_3D(x_range=[-5, 5], y_range=[-5, 5])
 
 
 def contrast_2D():
@@ -49,7 +49,7 @@ def contrast_2D():
 
     x_range = [-5, 5]
     color_dict = {'GD': 'red', 'Momentum': 'blue', 'AdaGrad': 'orange', 'RMSProp': 'teal', 'Adam': 'purple'}
-    plat_contrast_2D(cal_func, x_range, X_dict, color_dict)
+    plot_contrast_2D(cal_func, x_range, X_dict, color_dict)
 
 
 def contrast_contour():
@@ -67,7 +67,7 @@ def contrast_contour():
     x_range = [-5, 5]
     y_range = [-5, 5]
     color_dict = {'GD': 'red', 'Momentum': 'blue', 'AdaGrad': 'orange', 'RMSProp': 'teal', 'Adam': 'purple'}
-    plat_contrast_contour(cal_func, x_range, y_range, XY_dict, color_dict)
+    plot_contrast_contour(cal_func, x_range, y_range, XY_dict, color_dict)
 
 
 def contrast_contour2():
@@ -85,7 +85,7 @@ def contrast_contour2():
     x_range = [-5, 5]
     y_range = [-5, 5]
     color_dict = {'GD': 'red', 'Momentum': 'blue', 'AdaGrad': 'orange', 'RMSProp': 'teal', 'Adam': 'purple'}
-    plat_contrast_contour(cal_func, x_range, y_range, XY_dict, color_dict)
+    plot_contrast_contour(cal_func, x_range, y_range, XY_dict, color_dict)
 
 
 def contrast_3D():
@@ -103,7 +103,7 @@ def contrast_3D():
     x_range = [-5, 5]
     y_range = [-5, 5]
     color_dict = {'GD': 'red', 'Momentum': 'blue', 'AdaGrad': 'orange', 'RMSProp': 'teal', 'Adam': 'purple'}
-    plat_contrast_3D(cal_func, x_range, y_range, XY_dict, color_dict)
+    plot_contrast_3D(cal_func, x_range, y_range, XY_dict, color_dict)
 
 
 if __name__ == '__main__':

@@ -23,7 +23,7 @@ class Function():
             # print(self.Weights)
             self.history.append(self.Weights)
 
-    def plat_2D(self, x_range):
+    def plot_2D(self, x_range):
         """画二维图像"""
         X = np.arange(x_range[0], x_range[1], step=0.1)
         Y = self.cal_func(X)
@@ -40,7 +40,7 @@ class Function():
             plt.pause(0.1)
         plt.show()
 
-    def plat_contour(self, x_range, y_range):
+    def plot_contour(self, x_range, y_range):
         """画等高线图像"""
         x = np.linspace(x_range[0], x_range[1], 100)
         y = np.linspace(y_range[0], y_range[1], 100)
@@ -60,7 +60,7 @@ class Function():
             plt.pause(0.1)
         plt.show()
 
-    def plat_3D(self, x_range, y_range):
+    def plot_3D(self, x_range, y_range):
         """画三维图像"""
         x = np.linspace(x_range[0], x_range[1], 100)
         y = np.linspace(y_range[0], y_range[1], 100)

@@ -137,7 +137,7 @@ def random_generate_cluster(X_size=100, X_feat=2, k=3, cluster_std=1.0, lower=-1
     return X_data, Y_data
 
 
-def plat_data(X, hold=False):
+def plot_data(X, hold=False):
     """对任意维度数据进行绘图"""
     plt.figure()
     X_dim = X.shape[1]
@@ -150,14 +150,13 @@ def plat_data(X, hold=False):
         # 设置三维图像角度(仰角方位角)
         # ax.view_init(elev=20, azim=20)
     else:
-        x = np.arange(1, X_dim + 1)
         for i in range(len(X)):
-            plt.plot(x, X[i, :])
+            plt.plot(np.arange(1, X_dim + 1), X[i, :])
     if not hold:
         plt.show()
 
 
-def plat_2dim_classification(X_data, Y_data, Weights, X_test=None, Y_test=None, neg_label=-1, Truth=None, ratio=0.15,
+def plot_2dim_classification(X_data, Y_data, Weights, X_test=None, Y_test=None, neg_label=-1, Truth=None, ratio=0.15,
                              pause=False, n_iter=None, pause_time=0.15):
     """
     为二维分类数据集和结果画图 (可动态迭代)
@@ -227,7 +226,7 @@ def get_PXU_classification(X, Weights, ratio=0.3, step=0.1):
     return PX, PU
 
 
-def plat_2dim_regression(X_data, Y_data, Weights, X_test=None, Y_test=None, Truth=None, ratio=0.15, pause=False,
+def plot_2dim_regression(X_data, Y_data, Weights, X_test=None, Y_test=None, Truth=None, ratio=0.15, pause=False,
                          n_iter=None, pause_time=0.15):
     """
     为二维回归数据集和结果画图(可动态迭代)
@@ -290,7 +289,7 @@ def get_PXU_regression(X, Weights, ratio=0.3, step=0.1):
     return PX, PU
 
 
-def plat_cluster(X, labels, centers=None, pause=False, n_iter=None, pause_time=0.15):
+def plot_cluster(X, labels, centers=None, pause=False, n_iter=None, pause_time=0.15):
     """
     为聚类结果进行画图（可迭代）
     :param X: 数据集
@@ -304,7 +303,7 @@ def plat_cluster(X, labels, centers=None, pause=False, n_iter=None, pause_time=0
     if not pause: plt.figure()
     plt.clf()
     X_dim = X.shape[1]
-    k = np.max(labels) + 1
+    k = len(np.unique(labels))
     if X_dim == 2:
         for i in range(k):
             plt.scatter(X[labels == i, 0], X[labels == i, 1], marker="o")
@@ -358,7 +357,7 @@ def run_uniform_classification(model, X_size=100, X_feat=2, X_lower=-1, X_upper=
     train_accuracy = calculate_accuracy(Y_train, Y_train_pred)
     print("Train Accuracy:  {:.3f} %".format(train_accuracy * 100))
     # 画图展示效果
-    # model.plat_2dim(Truth=Truth_Weights)
+    # model.plot_2dim(Truth=Truth_Weights)
     # 对测试集进行预测
     Y_test_pred = model.predict(X_test)
     print("Truth Values: ", Y_test.flatten())
@@ -367,7 +366,7 @@ def run_uniform_classification(model, X_size=100, X_feat=2, X_lower=-1, X_upper=
     test_accuracy = calculate_accuracy(Y_test, Y_test_pred)
     print("Test Accuracy:  {:.3f} %".format(test_accuracy * 100))
     # 对结果进行画图
-    model.plat_2dim(X_test, Y_test, Truth=Truth_Weights)
+    model.plot_2dim(X_test, Y_test, Truth=Truth_Weights)
 
 
 def run_double_classification(model, X_size=100, X_feat=2, X_lower=-1, X_upper=1, train_ratio=0.8):
@@ -396,7 +395,7 @@ def run_double_classification(model, X_size=100, X_feat=2, X_lower=-1, X_upper=1
     train_accuracy = calculate_accuracy(Y_train, Y_train_pred)
     print("Train Accuracy:  {:.3f} %".format(train_accuracy * 100))
     # 画图展示效果
-    # model.plat_2dim()
+    # model.plot_2dim()
     # 对测试集进行预测
     Y_test_pred = model.predict(X_test)
     print("Truth Values: ", Y_test.flatten())
@@ -405,7 +404,7 @@ def run_double_classification(model, X_size=100, X_feat=2, X_lower=-1, X_upper=1
     test_accuracy = calculate_accuracy(Y_test, Y_test_pred)
     print("Test Accuracy:  {:.3f} %".format(test_accuracy * 100))
     # 画图展示效果
-    model.plat_2dim(X_test, Y_test)
+    model.plot_2dim(X_test, Y_test)
 
 
 def run_uniform_regression(model, X_size=100, X_feat=1, X_lower=0, X_upper=20, train_ratio=0.8):
@@ -435,7 +434,7 @@ def run_uniform_regression(model, X_size=100, X_feat=1, X_lower=0, X_upper=20, t
     train_mse = cal_mse_metrics(Y_train, Y_train_pred)
     print("Train MSE Metrics:  {:.3f}".format(train_mse))
     # 对结果进行画图
-    # model.plat_2dim(Truth=Truth_Weights)
+    # model.plot_2dim(Truth=Truth_Weights)
     # 对测试集进行预测
     Y_test_pred = model.predict(X_test)
     print("Truth Values: ", Y_test.flatten())
@@ -444,7 +443,7 @@ def run_uniform_regression(model, X_size=100, X_feat=1, X_lower=0, X_upper=20, t
     test_mse = cal_mse_metrics(Y_test, Y_test_pred)
     print("Test MSE Metrics:  {:.3f}".format(test_mse))
     # 对结果进行画图
-    model.plat_2dim(X_test, Y_test, Truth=Truth_Weights)
+    model.plot_2dim(X_test, Y_test, Truth=Truth_Weights)
 
 
 def run_contrast_regression(model, X_size=100, X_feat=1, X_lower=0, X_upper=20, train_ratio=0.8):
@@ -497,4 +496,4 @@ def run_contrast_regression(model, X_size=100, X_feat=1, X_lower=0, X_upper=20, 
     test_mse = cal_mse_metrics(Y_test, Y_test_pred)
     print("Test MSE Metrics:  {:.3f}".format(test_mse))
     # 对结果进行画图
-    model.plat_2dim(X_test, Y_test, Truth=Truth_Weights)
+    model.plot_2dim(X_test, Y_test, Truth=Truth_Weights)

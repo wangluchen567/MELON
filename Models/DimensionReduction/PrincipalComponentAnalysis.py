@@ -5,7 +5,7 @@ Principal Component Analysis
 import warnings
 import numpy as np
 import matplotlib.pyplot as plt
-from Models.Utils import plat_data, random_generate_regression
+from Models.Utils import plot_data, random_generate_regression
 
 
 class PrincipalComponentAnalysis():
@@ -72,7 +72,7 @@ class PrincipalComponentAnalysis():
         X_standardized = (X - X_mean) / X_std
         return X_standardized
 
-    def plat_contribution(self):
+    def plot_contribution(self):
         """画特征贡献度的结果图"""
         plt.figure()
         plt.plot(range(1, len(self.cum_contribution_rate) + 1), self.cum_contribution_rate, marker='o')
@@ -88,9 +88,9 @@ def run_reduce_instance(model, X_size, X_feat):
     X, Y, _ = random_generate_regression(X_size, X_feat, X_lower=0, X_upper=20, loc=0, scale=0.3)
     X_data = np.concatenate((X, Y), axis=1)
     X_reduced = model.train(X_data)
-    model.plat_contribution()
-    plat_data(X_data, hold=True)
-    plat_data(X_reduced)
+    model.plot_contribution()
+    plot_data(X_data, hold=True)
+    plot_data(X_reduced)
 
 
 if __name__ == '__main__':

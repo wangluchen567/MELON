@@ -5,7 +5,7 @@ Logistic Regression
 import warnings
 import numpy as np
 from Models.GradientOptimizer.Optimizer import GradientDescent, Momentum, AdaGrad, RMSProp, Adam
-from Models.Utils import plat_2dim_classification, run_uniform_classification, run_double_classification
+from Models.Utils import plot_2dim_classification, run_uniform_classification, run_double_classification
 
 
 class LogisticRegression():
@@ -96,7 +96,7 @@ class LogisticRegression():
             self.cal_grad()
             self.optimizer.step()
             self.history.append(self.Weights)
-            self.plat_2dim(pause=True, n_iter=i + 1)
+            self.plot_2dim(pause=True, n_iter=i + 1)
 
     @staticmethod
     def sigmoid(x):
@@ -110,9 +110,9 @@ class LogisticRegression():
         y[indices_neg] = np.exp(x[indices_neg]) / (1 + np.exp(x[indices_neg]))
         return y
 
-    def plat_2dim(self, X_data=None, Y_data=None, Truth=None, pause=False, n_iter=None):
+    def plot_2dim(self, X_data=None, Y_data=None, Truth=None, pause=False, n_iter=None):
         """为二维分类数据集和结果画图"""
-        plat_2dim_classification(self.X_train, self.Y_train, self.Weights, X_data, Y_data, Truth=Truth, pause=pause, n_iter=n_iter)
+        plot_2dim_classification(self.X_train, self.Y_train, self.Weights, X_data, Y_data, Truth=Truth, pause=pause, n_iter=n_iter)
 
 
 if __name__ == '__main__':

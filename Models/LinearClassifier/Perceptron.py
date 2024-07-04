@@ -5,7 +5,7 @@ Perceptron
 import warnings
 import numpy as np
 from Models.GradientOptimizer.Optimizer import GradientDescent, Momentum, AdaGrad, RMSProp, Adam
-from Models.Utils import plat_2dim_classification, run_uniform_classification, run_double_classification
+from Models.Utils import plot_2dim_classification, run_uniform_classification, run_double_classification
 
 
 class Perceptron():
@@ -85,7 +85,7 @@ class Perceptron():
             self.cal_grad()
             self.optimizer.step()
             self.history.append(self.Weights)
-            self.plat_2dim(pause=True, n_iter=i + 1)
+            self.plot_2dim(pause=True, n_iter=i + 1)
 
     def cal_grad(self):
         """计算梯度值"""
@@ -94,9 +94,9 @@ class Perceptron():
         ErrorPos = self.Y_train * X_B.dot(self.Weights) < 0
         self.Grad = np.sum((-1 * self.Y_train * X_B)[ErrorPos.flatten()], axis=0).reshape(-1, 1) / len(ErrorPos)
 
-    def plat_2dim(self, X_data=None, Y_data=None, Truth=None, pause=False, n_iter=None):
+    def plot_2dim(self, X_data=None, Y_data=None, Truth=None, pause=False, n_iter=None):
         """为二维分类数据集和结果画图"""
-        plat_2dim_classification(self.X_train, self.Y_train, self.Weights, X_data, Y_data, Truth=Truth,
+        plot_2dim_classification(self.X_train, self.Y_train, self.Weights, X_data, Y_data, Truth=Truth,
                                  pause=pause, n_iter=n_iter)
 
 

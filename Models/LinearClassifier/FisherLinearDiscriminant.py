@@ -4,7 +4,7 @@ Fisher Linear Discriminant
 """
 import warnings
 import numpy as np
-from Models.Utils import plat_2dim_classification, run_uniform_classification, run_double_classification
+from Models.Utils import plot_2dim_classification, run_uniform_classification, run_double_classification
 
 
 class FisherLinearDiscriminant():
@@ -58,9 +58,9 @@ class FisherLinearDiscriminant():
         Y_data[X_B.dot(self.Weights) < 0] = -1
         return Y_data
 
-    def plat_2dim(self, X_data=None, Y_data=None, Truth=None, pause=False):
+    def plot_2dim(self, X_data=None, Y_data=None, Truth=None, pause=False):
         """为二维分类数据集和结果画图"""
-        plat_2dim_classification(self.X_train, self.Y_train, self.Weights, X_data, Y_data, Truth=Truth, pause=pause)
+        plot_2dim_classification(self.X_train, self.Y_train, self.Weights, X_data, Y_data, Truth=Truth, pause=pause)
 
 
 if __name__ == '__main__':

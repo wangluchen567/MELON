@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
 
-def plat_contrast_2D(cal_func, x_range, X_dict, color_dict):
+def plot_contrast_2D(cal_func, x_range, X_dict, color_dict):
     X = np.arange(x_range[0], x_range[1], step=0.1)
     Y = cal_func(X)
     Y_dict = dict()
@@ -30,7 +30,7 @@ def plat_contrast_2D(cal_func, x_range, X_dict, color_dict):
     plt.show()
 
 
-def plat_contrast_contour(cal_func, x_range, y_range, XY_dict, color_dict):
+def plot_contrast_contour(cal_func, x_range, y_range, XY_dict, color_dict):
     x = np.linspace(x_range[0], x_range[1], 100)
     y = np.linspace(y_range[0], y_range[1], 100)
     X, Y = np.meshgrid(x, y)
@@ -58,7 +58,7 @@ def plat_contrast_contour(cal_func, x_range, y_range, XY_dict, color_dict):
     plt.show()
 
 
-def plat_contrast_3D(cal_func, x_range, y_range, XY_dict, color_dict):
+def plot_contrast_3D(cal_func, x_range, y_range, XY_dict, color_dict):
     x = np.linspace(x_range[0], x_range[1], 100)
     y = np.linspace(y_range[0], y_range[1], 100)
     X, Y = np.meshgrid(x, y)

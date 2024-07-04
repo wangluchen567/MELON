@@ -5,7 +5,7 @@ Linear Regression
 import warnings
 import numpy as np
 from Models.GradientOptimizer.Optimizer import GradientDescent, Momentum, AdaGrad, RMSProp, Adam
-from Models.Utils import plat_2dim_regression, run_uniform_regression, run_contrast_regression
+from Models.Utils import plot_2dim_regression, run_uniform_regression, run_contrast_regression
 
 
 class LinearRegression():
@@ -112,11 +112,11 @@ class LinearRegression():
             self.cal_grad()
             self.optimizer.step()
             self.history.append(self.Weights)
-            self.plat_2dim(pause=True, n_iter=i + 1)
+            self.plot_2dim(pause=True, n_iter=i + 1)
 
-    def plat_2dim(self, X_data=None, Y_data=None, Truth=None, pause=False, n_iter=None):
+    def plot_2dim(self, X_data=None, Y_data=None, Truth=None, pause=False, n_iter=None):
         """为二维回归数据集和结果画图"""
-        plat_2dim_regression(self.X_train, self.Y_train, self.Weights, X_data, Y_data, Truth=Truth,
+        plot_2dim_regression(self.X_train, self.Y_train, self.Weights, X_data, Y_data, Truth=Truth,
                              pause=pause, n_iter=n_iter)
 
 
