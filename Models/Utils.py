@@ -156,8 +156,8 @@ def plot_data(X, hold=False):
         plt.show()
 
 
-def plot_2dim_classification(X_data, Y_data, Weights, X_test=None, Y_test=None, neg_label=-1, Truth=None, ratio=0.15,
-                             pause=False, n_iter=None, pause_time=0.15):
+def plot_2dim_classification(X_data, Y_data, Weights, X_test=None, Y_test=None, neg_label=-1, Truth=None, support=None,
+                             ratio=0.15, pause=False, n_iter=None, pause_time=0.15):
     """
     为二维分类数据集和结果画图 (可动态迭代)
     :param X_data: 训练数据
@@ -167,6 +167,7 @@ def plot_2dim_classification(X_data, Y_data, Weights, X_test=None, Y_test=None, 
     :param Y_test: 预测数据的标签
     :param neg_label: 负标签的值 (-1/0)
     :param Truth: 数据集生成时的真实参数
+    :param support: 是否是支持向量
     :param ratio: 设置两边伸展的额外比例
     :param pause: 画图是否暂停 (为实现动态迭代)
     :param n_iter: 当前迭代的代数
@@ -185,6 +186,8 @@ def plot_2dim_classification(X_data, Y_data, Weights, X_test=None, Y_test=None, 
                     edgecolors='black', linewidths=0.5)
         plt.scatter(X_test[Y_test.flatten() == neg_label, 0], X_test[Y_test.flatten() == neg_label, 1], c='blue',
                     marker='*', s=120, edgecolors='black', linewidths=0.5)
+    if support is not None:
+        plt.scatter(X[support, 0], X[support, 1], s=150, c='none', linewidth=1.5, edgecolor='red')
     if Truth is not None:
         # 绘制真实的参数
         PX, PU = get_PXU_classification(X, Truth)
