@@ -79,7 +79,7 @@ def run_iris_classifier(model):
     # 训练后的模型参数
     print("Model Weights: ", model.Weights.flatten())
     # 画图展示效果
-    model.plat_2dim()
+    model.plot_2dim()
     # 训练准确率计算
     Y_train_pred = model.predict(X_train)
     # 计算训练准确率
@@ -92,7 +92,7 @@ def run_iris_classifier(model):
     test_accuracy = np.array(Y_test_pred == Y_test, dtype=int).sum() / len(Y_test)
     print("Test Accuracy:  {:.3f} %".format(test_accuracy * 100))
     # 画图展示效果
-    model.plat_2dim(X_test, Y_test)
+    model.plot_2dim(X_test, Y_test)
 
 
 if __name__ == '__main__':
