@@ -5,14 +5,19 @@ Support Vector Classifier
 import warnings
 import numpy as np
 from SequentialMinimalOptimization import smo_greedy_step, smo_random
-from Models.Utils import plot_2dim_classification, run_uniform_classification, run_double_classification
+from Models.Utils import (plot_2dim_classification, run_uniform_classification, run_double_classification,
+                          plot_2dim_classification_sample, run_circle_classification)
 
 
 class SupportVectorClassifier():
     # 定义核函数类型
     LINEAR = 0
+    POLY = 1
+    RBF = GAUSSIAN = 2
+    SIGMOID = 3
 
-    def __init__(self, X_train=None, Y_train=None, C=1.0, tol=1.e-4, num_iter=1000):
+    def __init__(self, X_train=None, Y_train=None, C=1.0, tol=1.e-4,
+                 kernel_type=LINEAR, gamma=None, degree=3, const=1, num_iter=1000):
         self.X_train = None  # 训练数据
         self.Y_train = None  # 真实标签
         self.Y_train_ = None  # 逻辑回归特殊标签
@@ -22,6 +27,10 @@ class SupportVectorClassifier():
         self.alphas, self.b = None, None  # 乘子参数
         self.C = C  # 惩罚系数
         self.tol = tol  # 残差收敛条件（容忍系数）
+        self.kernel_type = kernel_type  # 核函数类型
+        self.gamma = gamma  # 核函数系数（乘数项）
+        self.degree = degree  # 核函数系数（指数项）
+        self.const = const  # 核函数系数（常数项）
         self.num_iter = num_iter  # 迭代优化次数
 
     def set_train_data(self, X_train, Y_train):
@@ -35,28 +44,71 @@ class SupportVectorClassifier():
                 warnings.warn("Training data will be overwritten")
             self.Y_train = Y_train.copy()
 
-    def set_parameters(self, C=None, tol=None, num_iter=None):
+    def set_parameters(self, C=None, tol=None, kernel_type=None,
+                       gamma=None, degree=None, const=None, num_iter=None):
         """重新修改相关参数"""
-        if self.C is not None and C is not None:
-            warnings.warn("Parameter 'C' be overwritten")
-            self.C = C
-        if self.tol is not None and tol is not None:
-            warnings.warn("Parameters 'tol' be overwritten")
-            self.tol = tol
-        if self.num_iter is not None and num_iter is not None:
-            warnings.warn("Parameters 'num_iter' be overwritten")
-            self.num_iter = num_iter
+        parameters = ['C', 'tol', 'kernel_type', 'gamma', 'degree', 'const', 'num_iter']
+        values = [C, tol, kernel_type, gamma, degree, const, num_iter]
+        for param, value in zip(parameters, values):
+            if value is not None and getattr(self, param) is not None:
+                warnings.warn(f"Parameter '{param}' will be overwritten")
+                setattr(self, param, value)
 
-    def cal_kernel_mat(self):
-        """计算核函数矩阵"""
-        self.kernel_mat = self.X_train @ self.X_train.T
+    def cal_kernel_mat(self, X, Y):
+        """给定数据计算核函数矩阵"""
+        if self.kernel_type == self.LINEAR:
+            return self.linear_kernel_mat(X, Y)
+        elif self.kernel_type == self.POLY:
+            return self.poly_kernel_mat(X, Y, self.gamma, self.degree, self.const)
+        elif self.kernel_type == self.RBF or self.kernel_type == self.GAUSSIAN:
+            return self.rbf_kernel_mat(X, Y, self.gamma)
+        elif self.kernel_type == self.SIGMOID:
+            return self.sigmoid_kernel_mat(X, Y, self.const)
+        else:
+            raise ValueError("There is no such kernel function type")
 
-    def train(self, X_train=None, Y_train=None, C=None, tol=None, num_iter=None):
+    @staticmethod
+    def linear_kernel_mat(X, Y):
+        kernel_mat = X @ Y.T
+        return kernel_mat
+
+    @staticmethod
+    def poly_kernel_mat(X, Y, gamma=None, degree=3, const=1):
+        """计算多项式核函数矩阵"""
+        # 如果 gamma未指定，则设置为 1/特征数量
+        if gamma is None:
+            gamma = 1.0 / X.shape[1]
+        # 使用多项式核函数公式计算核函数矩阵
+        kernel_mat = (gamma * (X @ Y.T) + const) ** degree
+        return kernel_mat
+
+    @staticmethod
+    def rbf_kernel_mat(X, Y, gamma=None):
+        """计算径向基核（高斯核）函数矩阵"""
+        # 如果 gamma 未指定，则设置为 1/特征数量
+        if gamma is None:
+            gamma = 1.0 / X.shape[1]
+        # 使用 NumPy 的广播机制，计算核函数矩阵
+        kernel_mat = np.exp(-gamma * np.sum((X[:, np.newaxis, :] - Y[np.newaxis, :, :]) ** 2, axis=2))
+        return kernel_mat
+
+    @staticmethod
+    def sigmoid_kernel_mat(X, Y, gamma=None, const=1):
+        """计算sigmoid核函数矩阵"""
+        # 如果 gamma 未指定，则设置为 1/特征数量
+        if gamma is None:
+            gamma = 1.0 / X.shape[1]
+        # 使用Sigmoid核函数公式计算核函数矩阵
+        kernel_mat = np.tanh(gamma * (X @ Y.T) + const)
+        return kernel_mat
+
+    def train(self, X_train=None, Y_train=None, C=None, tol=None,
+              kernel_type=None, gamma=None, degree=None, const=None, num_iter=None):
         """使用数据集训练模型"""
         self.set_train_data(X_train, Y_train)
-        self.set_parameters(C, tol, num_iter)
+        self.set_parameters(C, tol, kernel_type, gamma, degree, const, num_iter)
         # 计算核函数矩阵
-        self.cal_kernel_mat()
+        self.kernel_mat = self.cal_kernel_mat(self.X_train, self.X_train)
         # 使用smo算法计算乘子参数
         self.smo_algorithm()
         # 计算模型参数
@@ -70,9 +122,19 @@ class SupportVectorClassifier():
             X_data = X_data.reshape(1, -1)
         else:
             raise ValueError("Cannot handle data with a shape of 3 dimensions or more")
-        X_B = np.concatenate((X_data, np.ones((len(X_data), 1))), axis=1)
-        Y_data = np.ones((len(X_data), 1))
-        Y_data[X_B.dot(self.Weights) < 0] = -1
+        # 为简化运算，这里使用线性核函数时利用参数直接求结果
+        if self.kernel_type == self.LINEAR:
+            X_B = np.concatenate((X_data, np.ones((len(X_data), 1))), axis=1)
+            Y_data = np.ones((len(X_data), 1))
+            Y_data[X_B.dot(self.Weights) < 0] = -1
+        else:  # 否则通过核函数求结果
+            # 先得到非零的位置，以简化运算
+            non_zeros = np.nonzero(self.alphas.flatten())[0]
+            # 计算预测数据的核函数矩阵
+            kernel_mat_predict = self.cal_kernel_mat(self.X_train[non_zeros], X_data)
+            Y_data = (self.alphas[non_zeros] * self.Y_train[non_zeros]).T @ kernel_mat_predict + self.b
+            Y_data[Y_data >= 0] = 1
+            Y_data[Y_data < 0] = -1
         return Y_data
 
     def cal_weights(self):
@@ -101,12 +163,15 @@ class SupportVectorClassifier():
 
     def plot_2dim(self, X_data=None, Y_data=None, Truth=None, pause=False, n_iter=None):
         """为二维分类数据集和结果画图"""
-        plot_2dim_classification(self.X_train, self.Y_train, self.Weights, X_data, Y_data, Truth=Truth,
-                                 support=(self.alphas.flatten() != 0.0), pause=pause, n_iter=n_iter)
+        # plot_2dim_classification(self.X_train, self.Y_train, self.Weights, X_data, Y_data, Truth=Truth,
+        #                          support=(self.alphas.flatten() != 0.0), pause=pause, n_iter=n_iter)
+        plot_2dim_classification_sample(self, self.X_train, self.Y_train, X_data, Y_data, neg_label=-1,
+                                        support=(self.alphas.flatten() != 0.0), pause=pause, n_iter=n_iter)
 
 
 if __name__ == '__main__':
-    np.random.seed(0)
-    model = SupportVectorClassifier(C=10, num_iter=1000)
-    run_uniform_classification(model, train_ratio=0.8, X_size=100)
-    run_double_classification(model, train_ratio=0.8, X_size=100)
+    np.random.seed(100)
+    model = SupportVectorClassifier(C=10, kernel_type=SupportVectorClassifier.POLY, num_iter=100)
+    # run_uniform_classification(model, train_ratio=0.8, X_size=100)
+    # run_double_classification(model, train_ratio=0.8, X_size=100)
+    run_circle_classification(model, train_ratio=0.8, X_size=100)

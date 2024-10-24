@@ -1,4 +1,5 @@
 import numpy as np
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
@@ -58,8 +59,6 @@ def random_generate_double(X_size=100, X_feat=2, X_lower=-1, X_upper=1):
     :param X_feat: 数据集特征数
     :param X_lower: 随机生成的数据的下界
     :param X_upper: 随机生成的数据的上界
-    :param lower: 随机生成的范围最小值
-    :param upper: 随机生成的范围最大值
     :return: 训练数据
     """
     # 确定随机的两个点坐标
@@ -500,3 +499,135 @@ def run_contrast_regression(model, X_size=100, X_feat=1, X_lower=0, X_upper=20, 
     print("Test MSE Metrics:  {:.3f}".format(test_mse))
     # 对结果进行画图
     model.plot_2dim(X_test, Y_test, Truth=Truth_Weights)
+
+
+def plot_2dim_classification_sample(model, X_data, Y_data, X_test=None, Y_test=None, neg_label=-1, support=None,
+                                    sample_steps=200, extra=0.05, pause=False, n_iter=None, pause_time=0.15):
+    """
+    利用采样为二维二分类数据集和结果画图 (可动态迭代)
+    :param model: 给定模型
+    :param X_data: 训练数据
+    :param Y_data: 训练数据的标签
+    :param X_test: 预测数据
+    :param Y_test: 预测数据的标签
+    :param neg_label: 负标签的值 (-1/0)
+    :param support: 是否是支持向量
+    :param sample_steps: 采样步数
+    :param extra: 额外绘制图像的比例
+    :param pause: 画图是否暂停 (为实现动态迭代)
+    :param n_iter: 当前迭代的代数
+    :param pause_time: 迭代过程中暂停的时间间隔
+    :return: None
+    """
+    X = X_data
+    Y = Y_data
+    if not pause: plt.figure()
+    plt.clf()
+    x1_min, x1_max = np.min(X_data[:, 0], axis=0), np.max(X_data[:, 0], axis=0)  # 第0列数据的范围
+    x2_min, x2_max = np.min(X_data[:, 1], axis=0), np.max(X_data[:, 1], axis=0)  # 第1列数据的范围
+    # 注意：这里为了更好看一些，采样数据时会多采样一部分
+    x1_min -= extra * (x1_max - x1_min)
+    x1_max += extra * (x1_max - x1_min)
+    x2_min -= extra * (x2_max - x2_min)
+    x2_max += extra * (x2_max - x2_min)
+    t1 = np.linspace(x1_min, x1_max, sample_steps)
+    t2 = np.linspace(x2_min, x2_max, sample_steps)
+    x1, x2 = np.meshgrid(t1, t2)  # 生成网格采样点
+    x_sample = np.stack((x1.flat, x2.flat), axis=1)  # 生成采样数据
+    y_sample = model.predict(x_sample)  # 使用模型得到预测数据
+    y_sample = y_sample.reshape(x1.shape)  # 改变形状与采样点相同
+    # 为方便绘制图像，这里将y_sample中-1标签转换为1标签
+    y_sample[y_sample == -1] = 0
+    cm_light = mpl.colors.ListedColormap(['#A0A0FF', '#FF8080'])
+    # 绘制采样图像
+    plt.pcolormesh(x1, x2, y_sample, cmap=cm_light)
+    # 绘制数据集位置点
+    plt.scatter(X[Y.flatten() == 1, 0], X[Y.flatten() == 1, 1], c='red')
+    plt.scatter(X[Y.flatten() == neg_label, 0], X[Y.flatten() == neg_label, 1], c='blue')
+    if X_test is not None and Y_test is not None:  # 用于画预测的点
+        plt.scatter(X_test[Y_test.flatten() == 1, 0], X_test[Y_test.flatten() == 1, 1], c='red', marker='*', s=120,
+                    edgecolors='black', linewidths=0.5)
+        plt.scatter(X_test[Y_test.flatten() == neg_label, 0], X_test[Y_test.flatten() == neg_label, 1], c='blue',
+                    marker='*', s=120, edgecolors='black', linewidths=0.5)
+    if support is not None:
+        plt.scatter(X[support, 0], X[support, 1], s=150, c='none', linewidth=1.5, edgecolor='red')
+
+    plt.grid()
+    if pause:
+        if n_iter:
+            plt.title("iter: " + str(n_iter))
+        plt.pause(pause_time)
+    else:
+        plt.show()
+
+
+def random_make_circles(n_samples=100, factor=0.8, noise=0.01, shuffle=True):
+    """
+    随机创建同心圆数据
+    :param n_samples: 采样的数据大小
+    :param factor: 内外圆之间的比例因子
+    :param noise: 是否加入噪音
+    :param shuffle: 是否打乱数据集
+    :return: None
+    """
+    if factor > 1 or factor < 0:
+        raise ValueError("'factor' has to be between 0 and 1.")
+    linspace = np.linspace(0, 2 * np.pi, n_samples // 2 + 1)[:-1]
+    outer_circ_x = np.cos(linspace)
+    outer_circ_y = np.sin(linspace)
+    inner_circ_x = outer_circ_x * factor
+    inner_circ_y = outer_circ_y * factor
+
+    X = np.vstack((np.append(outer_circ_x, inner_circ_x),
+                   np.append(outer_circ_y, inner_circ_y))).T
+    y = np.hstack([np.zeros(n_samples // 2, dtype=np.intp),
+                   np.ones(n_samples // 2, dtype=np.intp)])
+    Y = y.reshape(-1, 1)
+    if shuffle:
+        random_index = np.arange(n_samples)
+        np.random.shuffle(random_index)
+        X = X[random_index]
+        Y = Y[random_index]
+
+    if noise is not None:
+        X += np.random.normal(scale=noise, size=X.shape)
+
+    return X, Y
+
+
+def run_circle_classification(model, X_size=100, factor=0.8, noise=0.01, train_ratio=0.8):
+    """
+    指定模型对同心圆数据的分类测试
+    :param model: 指定模型
+    :param X_size: 随机生成的数据集大小
+    :param factor: 内外圆之间的比例因子
+    :param noise: 是否加入噪音
+    :param lower: 随机生成参数的范围最小值
+    :param upper: 随机生成参数的范围最大值
+    :param train_ratio: 训练集所占比例
+    :return: None
+    """
+    # 生成数据集
+    X_data, Y_data = random_make_circles(X_size, factor, noise)
+    Y_data[Y_data == 0] = -1
+    # 划分训练集和测试集
+    train_size = int(train_ratio * len(X_data))
+    X_train, Y_train = X_data[:train_size], Y_data[:train_size]
+    X_test, Y_test = X_data[train_size:], Y_data[train_size:]
+    # 使用数据集对模型训练
+    model.train(X_train, Y_train)
+    print("Model Weights: ", model.Weights.flatten())
+    # 对训练集进行预测
+    Y_train_pred = model.predict(X_train)
+    # 计算训练准确率
+    train_accuracy = calculate_accuracy(Y_train, Y_train_pred)
+    print("Train Accuracy:  {:.3f} %".format(train_accuracy * 100))
+    # 对测试集进行预测
+    Y_test_pred = model.predict(X_test)
+    print("Truth Values: ", Y_test.flatten())
+    print("Predict Values: ", Y_test_pred.flatten())
+    # 计算测试集准确率
+    test_accuracy = calculate_accuracy(Y_test, Y_test_pred)
+    print("Test Accuracy:  {:.3f} %".format(test_accuracy * 100))
+    # 对结果进行画图
+    model.plot_2dim(X_test, Y_test)
