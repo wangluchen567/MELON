@@ -118,8 +118,6 @@ class SupportVectorClassifier():
         self.init_weights()
         # 使用smo算法计算乘子参数
         self.smo_algorithm()
-        # 计算模型参数
-        self.cal_weights()
 
     def predict(self, X_data):
         """模型对测试集进行预测"""
