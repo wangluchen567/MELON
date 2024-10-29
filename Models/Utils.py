@@ -39,7 +39,7 @@ def random_generate_classification(X_size=100, X_feat=2, X_lower=-1, X_upper=1, 
     :param X_upper: 随机生成的数据的上界
     :param lower: 随机生成参数的范围最小值
     :param upper: 随机生成参数的范围最大值
-    :return: 训练数据和真实参数
+    :return: 生成的数据集和真实参数
     """
     X_data = np.random.uniform(X_lower, X_upper, size=(X_size, X_feat))
     X_mids = (np.max(X_data, axis=0) + np.min(X_data, axis=0)) / 2
@@ -59,7 +59,7 @@ def random_generate_double(X_size=100, X_feat=2, X_lower=-1, X_upper=1):
     :param X_feat: 数据集特征数
     :param X_lower: 随机生成的数据的下界
     :param X_upper: 随机生成的数据的上界
-    :return: 训练数据
+    :return: 生成的数据集和真实值
     """
     # 确定随机的两个点坐标
     point1 = np.zeros(X_feat)
@@ -92,7 +92,7 @@ def random_generate_regression(X_size=100, X_feat=1, X_lower=0, X_upper=20, lowe
     :param upper: 随机生成的参数范围最大值
     :param loc: 扰动期望
     :param scale: 扰动方差
-    :return: 训练数据与真实参数
+    :return: 生成的数据集与真实参数
     """
     X_data = np.random.uniform(X_lower, X_upper, size=(X_size, X_feat))
     # 在数据最后一列添加一列单位矩阵作为转置b
@@ -115,7 +115,7 @@ def random_generate_cluster(X_size=100, X_feat=2, k=3, cluster_std=1.0, lower=-1
     :param cluster_std: 随机生成正态分布数据的标准差(宽度)
     :param lower: 聚类中心范围下界
     :param upper: 聚类中心范围上界
-    :return: 聚类数据和标签
+    :return: 聚类数据集和标签
     """
     # 随机得到聚类中心位置
     centers = np.random.uniform(lower, upper, size=(k, X_feat))
@@ -216,7 +216,7 @@ def get_PXU_classification(X, Weights, ratio=0.3, step=0.1):
     :param Weights: 要画图的权重
     :param ratio: 两边伸展的额外比例
     :param step: 采样频率
-    :return:
+    :return: 绘制分类线的采样点
     """
     gap = max(X[:, 0]) - min(X[:, 0])
     PX = np.arange(min(X[:, 0]) - ratio * gap, max(X[:, 0]) + ratio * gap, step)
@@ -281,7 +281,7 @@ def get_PXU_regression(X, Weights, ratio=0.3, step=0.1):
     :param Weights: 要画图的权重
     :param ratio: 两边伸展的额外比例
     :param step: 采样频率
-    :return:
+    :return: 绘制回归线的采样点
     """
     gap = max(X) - min(X)
     PX = np.arange(min(X) - ratio * gap, max(X) + ratio * gap, step)
@@ -566,7 +566,7 @@ def random_make_circles(num_samples=100, factor=0.8, noise=0.01, shuffle=True):
     :param factor: 内外圆之间的比例因子
     :param noise: 是否加入噪音
     :param shuffle: 是否打乱数据集
-    :return: X, Y
+    :return: 生成的数据集和真实值
     """
     if factor > 1 or factor < 0:
         raise ValueError("'factor' has to be between 0 and 1.")
@@ -682,7 +682,7 @@ def random_make_circular(num_samples=100, lower=0, upper=10, slope=0, bias=0, no
     :param bias: 生成的函数截距（偏置）
     :param noise: 噪声扰动程度
     :param shuffle: 是否打乱数据集
-    :return: X, Y
+    :return: 生成的数据集和真实值
     """
     X = np.linspace(lower, upper, num_samples)[:, np.newaxis]
     Y = 2 * (slope + 1) * np.sin(X) + slope * X + bias
@@ -733,7 +733,18 @@ def run_circular_regression(model, X_size=100, X_lower=0, X_upper=15, slope=3, b
     model.plot_2dim(X_test, Y_test)
 
 def random_make_poly(num_samples=100, lower=0, upper=10, degree=3, gamma=3, constant=3, noise=0.1, shuffle=True):
-    """随机创建多项式函数测试数据"""
+    """
+    随机创建多项式函数测试数据
+    :param num_samples: 数据集大小
+    :param lower: 随机生成的数据集下界
+    :param upper: 随机生成的数据集上界
+    :param degree: 多项式函数的次数
+    :param gamma: 高次项前的系数
+    :param constant: 常数项值
+    :param noise: 噪声扰动程度
+    :param shuffle: 是否打乱数据集
+    :return: 生成的数据集和真实值
+    """
     X = np.linspace(lower, upper, num_samples)[:, np.newaxis]
     Y = (gamma * X + constant) ** degree
     if noise is not None:
