@@ -173,31 +173,29 @@ def plot_2dim_classification(X_data, Y_data, Weights, X_test=None, Y_test=None, 
     :param pause_time: 迭代过程中暂停的时间间隔
     :return: None
     """
-    X = X_data
-    Y = Y_data
     Predict = Weights
     if not pause: plt.figure()
     plt.clf()
-    plt.scatter(X[Y.flatten() == 1, 0], X[Y.flatten() == 1, 1], c='red')
-    plt.scatter(X[Y.flatten() == neg_label, 0], X[Y.flatten() == neg_label, 1], c='blue')
+    plt.scatter(X_data[Y_data.flatten() == 1, 0], X_data[Y_data.flatten() == 1, 1], c='red')
+    plt.scatter(X_data[Y_data.flatten() == neg_label, 0], X_data[Y_data.flatten() == neg_label, 1], c='blue')
     if X_test is not None and Y_test is not None:  # 用于画预测的点
         plt.scatter(X_test[Y_test.flatten() == 1, 0], X_test[Y_test.flatten() == 1, 1], c='red', marker='*', s=120,
                     edgecolors='black', linewidths=0.5)
         plt.scatter(X_test[Y_test.flatten() == neg_label, 0], X_test[Y_test.flatten() == neg_label, 1], c='blue',
                     marker='*', s=120, edgecolors='black', linewidths=0.5)
     if support is not None:
-        plt.scatter(X[support, 0], X[support, 1], s=150, c='none', linewidth=1.5, edgecolor='red')
+        plt.scatter(X_data[support, 0], X_data[support, 1], s=150, c='none', linewidth=1.5, edgecolor='red')
     if Truth is not None:
         # 绘制真实的参数
-        PX, PU = get_PXU_classification(X, Truth)
+        PX, PU = get_PXU_classification(X_data, Truth)
         plt.plot(PX, PU, c='orange', linewidth=5)
     if Predict is not None:
         # 绘制预测的参数
-        PX, PU = get_PXU_classification(X, Predict)
+        PX, PU = get_PXU_classification(X_data, Predict)
         plt.plot(PX, PU, c='red', linewidth=2)
         # 为了方便展示，两边进行额外延伸
-        X0_min, X0_max = np.min(X[:, 0]), np.max(X[:, 0])
-        X1_min, X1_max = np.min(X[:, 1]), np.max(X[:, 1])
+        X0_min, X0_max = np.min(X_data[:, 0]), np.max(X_data[:, 0])
+        X1_min, X1_max = np.min(X_data[:, 1]), np.max(X_data[:, 1])
         X0_gap = (X0_max - X0_min) * ratio
         X1_gap = (X1_max - X1_min) * ratio
         plt.xlim([X0_min - X0_gap, X0_max + X0_gap])
@@ -228,8 +226,8 @@ def get_PXU_classification(X, Weights, ratio=0.3, step=0.1):
     return PX, PU
 
 
-def plot_2dim_regression(X_data, Y_data, Weights, X_test=None, Y_test=None, Truth=None, ratio=0.15, pause=False,
-                         n_iter=None, pause_time=0.15):
+def plot_2dim_regression(X_data, Y_data, Weights, X_test=None, Y_test=None, Truth=None, support=None,
+                         ratio=0.15, pause=False, n_iter=None, pause_time=0.15):
     """
     为二维回归数据集和结果画图(可动态迭代)
     :param X_data: 训练数据
@@ -238,31 +236,32 @@ def plot_2dim_regression(X_data, Y_data, Weights, X_test=None, Y_test=None, Trut
     :param X_test: 预测数据
     :param Y_test: 预测数据的标签
     :param Truth: 数据集生成时的真实参数
+    :param support: 是否是支持向量
     :param ratio: 设置两边伸展的额外比例
     :param pause: 画图是否暂停 (为实现动态迭代)
     :param n_iter: 当前迭代的代数
     :param pause_time: 迭代过程中暂停的时间间隔
     :return: None
     """
-    X = X_data
-    Y = Y_data
     Predict = Weights
     if not pause: plt.figure()
     plt.clf()
-    plt.scatter(X, Y, c='blue')
+    plt.scatter(X_data, Y_data, c='blue')
     if X_test is not None and Y_test is not None:  # 用于画预测的点
         plt.scatter(X_test, Y_test, c='red', marker='*', s=120, edgecolors='black', linewidths=0.5)
+    if support is not None:  # 用于绘制支持向量位置
+        plt.scatter(X_data[support], Y_data[support], s=150, c='none', linewidth=1.5, edgecolor='red')
     if Truth is not None:
         # 绘制真实的参数
-        PX, PU = get_PXU_regression(X, Truth)
+        PX, PU = get_PXU_regression(X_data, Truth)
         plt.plot(PX, PU, c='orange', linewidth=5)
     if Predict is not None:
         # 绘制预测的参数
-        PX, PU = get_PXU_regression(X, Predict)
+        PX, PU = get_PXU_regression(X_data, Predict)
         plt.plot(PX, PU, c='red', linewidth=2)
         # 为了方便展示，两边进行额外延伸
-        X_min, X_max = np.min(X), np.max(X)
-        Y_min, Y_max = np.min(Y), np.max(Y)
+        X_min, X_max = np.min(X_data), np.max(X_data)
+        Y_min, Y_max = np.min(Y_data), np.max(Y_data)
         X_gap = (X_max - X_min) * ratio
         Y_gap = (Y_max - Y_min) * ratio
         plt.xlim([X_min - X_gap, X_max + X_gap])
@@ -519,17 +518,16 @@ def plot_2dim_classification_sample(model, X_data, Y_data, X_test=None, Y_test=N
     :param pause_time: 迭代过程中暂停的时间间隔
     :return: None
     """
-    X = X_data
-    Y = Y_data
     if not pause: plt.figure()
     plt.clf()
     x1_min, x1_max = np.min(X_data[:, 0], axis=0), np.max(X_data[:, 0], axis=0)  # 第0列数据的范围
     x2_min, x2_max = np.min(X_data[:, 1], axis=0), np.max(X_data[:, 1], axis=0)  # 第1列数据的范围
     # 注意：这里为了更好看一些，采样数据时会多采样一部分
-    x1_min -= extra * (x1_max - x1_min)
-    x1_max += extra * (x1_max - x1_min)
-    x2_min -= extra * (x2_max - x2_min)
-    x2_max += extra * (x2_max - x2_min)
+    x1_range, x2_range = (x1_max - x1_min), (x2_max - x2_min)
+    x1_min -= extra * x1_range
+    x1_max += extra * x1_range
+    x2_min -= extra * x2_range
+    x2_max += extra * x2_range
     t1 = np.linspace(x1_min, x1_max, sample_steps)
     t2 = np.linspace(x2_min, x2_max, sample_steps)
     x1, x2 = np.meshgrid(t1, t2)  # 生成网格采样点
@@ -542,15 +540,15 @@ def plot_2dim_classification_sample(model, X_data, Y_data, X_test=None, Y_test=N
     # 绘制采样图像
     plt.pcolormesh(x1, x2, y_sample, cmap=cm_light)
     # 绘制数据集位置点
-    plt.scatter(X[Y.flatten() == 1, 0], X[Y.flatten() == 1, 1], c='red')
-    plt.scatter(X[Y.flatten() == neg_label, 0], X[Y.flatten() == neg_label, 1], c='blue')
+    plt.scatter(X_data[Y_data.flatten() == 1, 0], X_data[Y_data.flatten() == 1, 1], c='red')
+    plt.scatter(X_data[Y_data.flatten() == neg_label, 0], X_data[Y_data.flatten() == neg_label, 1], c='blue')
     if X_test is not None and Y_test is not None:  # 用于画预测的点
         plt.scatter(X_test[Y_test.flatten() == 1, 0], X_test[Y_test.flatten() == 1, 1], c='red', marker='*', s=120,
                     edgecolors='black', linewidths=0.5)
         plt.scatter(X_test[Y_test.flatten() == neg_label, 0], X_test[Y_test.flatten() == neg_label, 1], c='blue',
                     marker='*', s=120, edgecolors='black', linewidths=0.5)
     if support is not None:
-        plt.scatter(X[support, 0], X[support, 1], s=150, c='none', linewidth=1.5, edgecolor='red')
+        plt.scatter(X_data[support, 0], X_data[support, 1], s=150, c='none', linewidth=1.5, edgecolor='tomato')
 
     plt.grid()
     if pause:
@@ -561,30 +559,30 @@ def plot_2dim_classification_sample(model, X_data, Y_data, X_test=None, Y_test=N
         plt.show()
 
 
-def random_make_circles(n_samples=100, factor=0.8, noise=0.01, shuffle=True):
+def random_make_circles(num_samples=100, factor=0.8, noise=0.01, shuffle=True):
     """
     随机创建同心圆数据
-    :param n_samples: 采样的数据大小
+    :param num_samples: 采样的数据大小
     :param factor: 内外圆之间的比例因子
     :param noise: 是否加入噪音
     :param shuffle: 是否打乱数据集
-    :return: None
+    :return: X, Y
     """
     if factor > 1 or factor < 0:
         raise ValueError("'factor' has to be between 0 and 1.")
-    linspace = np.linspace(0, 2 * np.pi, n_samples // 2 + 1)[:-1]
-    outer_circ_x = np.cos(linspace)
-    outer_circ_y = np.sin(linspace)
+    line_space = np.linspace(0, 2 * np.pi, num_samples // 2 + 1)[:-1]
+    outer_circ_x = np.cos(line_space)
+    outer_circ_y = np.sin(line_space)
     inner_circ_x = outer_circ_x * factor
     inner_circ_y = outer_circ_y * factor
 
     X = np.vstack((np.append(outer_circ_x, inner_circ_x),
                    np.append(outer_circ_y, inner_circ_y))).T
-    y = np.hstack([np.zeros(n_samples // 2, dtype=np.intp),
-                   np.ones(n_samples // 2, dtype=np.intp)])
+    y = np.hstack([np.zeros(num_samples // 2, dtype=np.intp),
+                   np.ones(num_samples // 2, dtype=np.intp)])
     Y = y.reshape(-1, 1)
     if shuffle:
-        random_index = np.arange(n_samples)
+        random_index = np.arange(num_samples)
         np.random.shuffle(random_index)
         X = X[random_index]
         Y = Y[random_index]
@@ -595,15 +593,13 @@ def random_make_circles(n_samples=100, factor=0.8, noise=0.01, shuffle=True):
     return X, Y
 
 
-def run_circle_classification(model, X_size=100, factor=0.8, noise=0.01, train_ratio=0.8):
+def run_circle_classification(model, X_size=100, factor=0.5, noise=0.1, train_ratio=0.8):
     """
     指定模型对同心圆数据的分类测试
     :param model: 指定模型
     :param X_size: 随机生成的数据集大小
     :param factor: 内外圆之间的比例因子
-    :param noise: 是否加入噪音
-    :param lower: 随机生成参数的范围最小值
-    :param upper: 随机生成参数的范围最大值
+    :param noise: 噪声扰动程度
     :param train_ratio: 训练集所占比例
     :return: None
     """
@@ -629,5 +625,160 @@ def run_circle_classification(model, X_size=100, factor=0.8, noise=0.01, train_r
     # 计算测试集准确率
     test_accuracy = calculate_accuracy(Y_test, Y_test_pred)
     print("Test Accuracy:  {:.3f} %".format(test_accuracy * 100))
+    # 对结果进行画图
+    model.plot_2dim(X_test, Y_test)
+
+
+def plot_2dim_regression_sample(model, X_data, Y_data, X_test=None, Y_test=None, support=None,
+                                sample_steps=200, extra=0.05, pause=False, n_iter=None, pause_time=0.15):
+    """
+    利用采样为二维回归数据集和结果画图 (可动态迭代)
+    :param model: 给定模型
+    :param X_data: 训练数据
+    :param Y_data: 训练数据的标签
+    :param X_test: 预测数据
+    :param Y_test: 预测数据的标签
+    :param support: 是否是支持向量
+    :param sample_steps: 采样步数
+    :param extra: 额外绘制图像的比例
+    :param pause: 画图是否暂停 (为实现动态迭代)
+    :param n_iter: 当前迭代的代数
+    :param pause_time: 迭代过程中暂停的时间间隔
+    :return: None
+    """
+    if not pause: plt.figure()
+    plt.clf()
+    x_min, x_max = np.min(X_data, axis=0), np.max(X_data, axis=0)  # 得到数据范围
+    # 注意：这里为了更好看一些，采样数据时会多采样一部分
+    x_range = x_max - x_min
+    x_min -= extra * x_range
+    x_max += extra * x_range
+    x_sample = np.linspace(x_min, x_max, sample_steps)
+    y_sample = model.predict(x_sample)  # 使用模型得到预测数据
+    # 绘制预测值
+    plt.plot(x_sample, y_sample, c='red', linewidth=2)
+    # 绘制数据集位置点
+    plt.scatter(X_data, Y_data, c='blue')
+    if X_test is not None and Y_test is not None:  # 用于画预测的点
+        plt.scatter(X_test, Y_test, c='red', marker='*', s=120, edgecolors='black', linewidths=0.5)
+    if support is not None:  # 用于绘制支持向量位置
+        plt.scatter(X_data[support], Y_data[support], s=150, c='none', linewidth=1.5, edgecolor='tomato')
+    plt.grid()
+    if pause:
+        if n_iter:
+            plt.title("iter: " + str(n_iter))
+        plt.pause(pause_time)
+    else:
+        plt.show()
+
+
+def random_make_circular(num_samples=100, lower=0, upper=10, slope=0, bias=0, noise=0.1, shuffle=True):
+    """
+    随机创建三角函数（又称圆函数）测试数据
+    :param num_samples: 数据集大小
+    :param lower: 随机生成的数据集下界
+    :param upper: 随机生成的数据集上界
+    :param slope: 生成的函数斜率
+    :param bias: 生成的函数截距（偏置）
+    :param noise: 噪声扰动程度
+    :param shuffle: 是否打乱数据集
+    :return: X, Y
+    """
+    X = np.linspace(lower, upper, num_samples)[:, np.newaxis]
+    Y = 2 * (slope + 1) * np.sin(X) + slope * X + bias
+    if noise is not None:
+        Y += np.random.normal(scale=noise, size=Y.shape)
+    if shuffle:
+        random_index = np.arange(num_samples)
+        np.random.shuffle(random_index)
+        X = X[random_index]
+        Y = Y[random_index]
+    return X, Y
+
+
+def run_circular_regression(model, X_size=100, X_lower=0, X_upper=15, slope=3, bias=3, noise=0.1, train_ratio=0.8):
+    """
+    指定模型对三角函数(圆函数)数据的回归测试
+    :param model: 指定模型
+    :param X_size: 生成的数据集大小
+    :param X_lower: 随机生成的数据集下界
+    :param X_upper: 随机生成的数据集上界
+    :param slope: 生成的函数斜率
+    :param bias: 生成的函数截距（偏置）
+    :param noise: 噪声扰动程度
+    :param train_ratio: 训练集所占比例
+    :return: None
+    """
+    # 生成数据集
+    X_data, Y_data = random_make_circular(X_size, X_lower, X_upper, slope, bias, noise)
+    # 划分训练集和测试集
+    train_size = int(train_ratio * len(X_data))
+    X_train, Y_train = X_data[:train_size], Y_data[:train_size]
+    X_test, Y_test = X_data[train_size:], Y_data[train_size:]
+    # 使用数据集对模型训练
+    model.train(X_train, Y_train)
+    # 对训练集进行预测
+    Y_train_pred = model.predict(X_train)
+    # 计算训练结果的mse值
+    train_mse = cal_mse_metrics(Y_train, Y_train_pred)
+    print("Train MSE Metrics:  {:.3f}".format(train_mse))
+    # 对测试集进行预测
+    Y_test_pred = model.predict(X_test)
+    print("Truth Values: ", Y_test.flatten())
+    print("Predict Values: ", Y_test_pred.flatten())
+    # 计算测试结果的mse值
+    test_mse = cal_mse_metrics(Y_test, Y_test_pred)
+    print("Test MSE Metrics:  {:.3f}".format(test_mse))
+    # 对结果进行画图
+    model.plot_2dim(X_test, Y_test)
+
+def random_make_poly(num_samples=100, lower=0, upper=10, degree=3, gamma=3, constant=3, noise=0.1, shuffle=True):
+    """随机创建多项式函数测试数据"""
+    X = np.linspace(lower, upper, num_samples)[:, np.newaxis]
+    Y = (gamma * X + constant) ** degree
+    if noise is not None:
+        Y += np.random.normal(scale=noise, size=Y.shape)
+    if shuffle:
+        random_index = np.arange(num_samples)
+        np.random.shuffle(random_index)
+        X = X[random_index]
+        Y = Y[random_index]
+    return X, Y
+
+def run_poly_regression(model, X_size=100, X_lower=0, X_upper=5,
+                        degree=3, gamma=3, constant=3, noise=1, train_ratio=0.8):
+    """
+    指定模型对多项式函数数据的回归测试
+    :param model: 指定模型
+    :param X_size: 生成的数据集大小
+    :param X_lower: 随机生成的数据集下界
+    :param X_upper: 随机生成的数据集上界
+    :param degree: 多项式函数的次数
+    :param gamma: 高次项前的系数
+    :param constant: 常数项值
+    :param noise: 噪声扰动程度
+    :param train_ratio: 训练集所占比例
+    :return: None
+    """
+    # 生成数据集
+    X_data, Y_data = random_make_poly(X_size, X_lower, X_upper, degree, gamma, constant, noise)
+    # 划分训练集和测试集
+    train_size = int(train_ratio * len(X_data))
+    X_train, Y_train = X_data[:train_size], Y_data[:train_size]
+    X_test, Y_test = X_data[train_size:], Y_data[train_size:]
+    # 使用数据集对模型训练
+    model.train(X_train, Y_train)
+    # 对训练集进行预测
+    Y_train_pred = model.predict(X_train)
+    # 计算训练结果的mse值
+    train_mse = cal_mse_metrics(Y_train, Y_train_pred)
+    print("Train MSE Metrics:  {:.3f}".format(train_mse))
+    # 对测试集进行预测
+    Y_test_pred = model.predict(X_test)
+    print("Truth Values: ", Y_test.flatten())
+    print("Predict Values: ", Y_test_pred.flatten())
+    # 计算测试结果的mse值
+    test_mse = cal_mse_metrics(Y_test, Y_test_pred)
+    print("Test MSE Metrics:  {:.3f}".format(test_mse))
     # 对结果进行画图
     model.plot_2dim(X_test, Y_test)
