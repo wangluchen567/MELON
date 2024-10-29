@@ -1,5 +1,5 @@
 """
-支持向量机分类器
+支持向量机分类模型
 Support Vector Classifier
 """
 import warnings
@@ -16,7 +16,7 @@ class SupportVectorClassifier():
     RBF = GAUSSIAN = 2
     SIGMOID = 3
 
-    def __init__(self, X_train=None, Y_train=None, C=1.0, tol=1.e-4,
+    def __init__(self, X_train=None, Y_train=None, C=10, tol=1.e-4,
                  kernel_type=LINEAR, gamma=None, degree=3, const=1, num_iter=1000):
         self.X_train = None  # 训练数据
         self.Y_train = None  # 真实标签
@@ -102,6 +102,11 @@ class SupportVectorClassifier():
         kernel_mat = np.tanh(gamma * (X @ Y.T) + const)
         return kernel_mat
 
+    def init_weights(self):
+        """初始化参数 (权重)"""
+        X_feat = self.X_train.shape[1]
+        self.Weights = np.random.uniform(-1, 1, size=(X_feat + 1, 1))
+
     def train(self, X_train=None, Y_train=None, C=None, tol=None,
               kernel_type=None, gamma=None, degree=None, const=None, num_iter=None):
         """使用数据集训练模型"""
@@ -109,6 +114,8 @@ class SupportVectorClassifier():
         self.set_parameters(C, tol, kernel_type, gamma, degree, const, num_iter)
         # 计算核函数矩阵
         self.kernel_mat = self.cal_kernel_mat(self.X_train, self.X_train)
+        # 初始化权重参数
+        self.init_weights()
         # 使用smo算法计算乘子参数
         self.smo_algorithm()
         # 计算模型参数
@@ -131,8 +138,8 @@ class SupportVectorClassifier():
             # 先得到非零的位置，以简化运算
             non_zeros = np.nonzero(self.alphas.flatten())[0]
             # 计算预测数据的核函数矩阵
-            kernel_mat_predict = self.cal_kernel_mat(self.X_train[non_zeros], X_data)
-            Y_data = (self.alphas[non_zeros] * self.Y_train[non_zeros]).T @ kernel_mat_predict + self.b
+            kernel_predict = self.cal_kernel_mat(self.X_train[non_zeros], X_data)
+            Y_data = kernel_predict.T @ (self.alphas[non_zeros] * self.Y_train[non_zeros]) + self.b
             Y_data[Y_data >= 0] = 1
             Y_data[Y_data < 0] = -1
         return Y_data
@@ -141,7 +148,7 @@ class SupportVectorClassifier():
         """计算参数 (权重)"""
         X_feat = self.X_train.shape[1]
         self.Weights = np.zeros((X_feat + 1, 1))
-        self.Weights[:2] = (np.tile(self.Y_train, self.X_train.shape[1]) * self.X_train).T @ self.alphas
+        self.Weights[:X_feat] = (np.tile(self.Y_train, self.X_train.shape[1]) * self.X_train).T @ self.alphas
         self.Weights[-1] = self.b
 
     def smo_algorithm(self):
@@ -163,15 +170,17 @@ class SupportVectorClassifier():
 
     def plot_2dim(self, X_data=None, Y_data=None, Truth=None, pause=False, n_iter=None):
         """为二维分类数据集和结果画图"""
-        # plot_2dim_classification(self.X_train, self.Y_train, self.Weights, X_data, Y_data, Truth=Truth,
-        #                          support=(self.alphas.flatten() != 0.0), pause=pause, n_iter=n_iter)
-        plot_2dim_classification_sample(self, self.X_train, self.Y_train, X_data, Y_data, neg_label=-1,
-                                        support=(self.alphas.flatten() != 0.0), pause=pause, n_iter=n_iter)
+        if self.kernel_type == self.LINEAR and Truth is not None:
+            plot_2dim_classification(self.X_train, self.Y_train, self.Weights, X_data, Y_data, Truth=Truth,
+                                     support=(self.alphas.flatten() != 0.0), pause=pause, n_iter=n_iter)
+        else:
+            plot_2dim_classification_sample(self, self.X_train, self.Y_train, X_data, Y_data, neg_label=-1,
+                                     support=(self.alphas.flatten() != 0.0), pause=pause, n_iter=n_iter)
 
 
 if __name__ == '__main__':
     np.random.seed(100)
-    model = SupportVectorClassifier(C=10, kernel_type=SupportVectorClassifier.POLY, num_iter=100)
-    # run_uniform_classification(model, train_ratio=0.8, X_size=100)
-    # run_double_classification(model, train_ratio=0.8, X_size=100)
-    run_circle_classification(model, train_ratio=0.8, X_size=100)
+    model = SupportVectorClassifier(C=10, kernel_type=SupportVectorClassifier.RBF, num_iter=100)
+    # run_uniform_classification(model, train_ratio=0.8)
+    # run_double_classification(model, train_ratio=0.8)
+    run_circle_classification(model, train_ratio=0.8)
