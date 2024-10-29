@@ -94,13 +94,14 @@ class Perceptron():
         ErrorPos = self.Y_train * X_B.dot(self.Weights) < 0
         self.Grad = np.sum((-1 * self.Y_train * X_B)[ErrorPos.flatten()], axis=0).reshape(-1, 1) / len(ErrorPos)
 
-    def plot_2dim(self, X_data=None, Y_data=None, Truth=None, pause=False, n_iter=None):
+    def plot_2dim(self, X_test=None, Y_test=None, Truth=None, pause=False, n_iter=None):
         """为二维分类数据集和结果画图"""
-        plot_2dim_classification(self.X_train, self.Y_train, self.Weights, X_data, Y_data, Truth=Truth,
-                                 pause=pause, n_iter=n_iter)
+        plot_2dim_classification(self.X_train, self.Y_train, self.Weights, X_test, Y_test,
+                                 Truth=Truth, pause=pause, n_iter=n_iter)
 
 
 if __name__ == '__main__':
+    np.random.seed(100)
     model = Perceptron(epochs=50, lr=0.1, grad_type='Adam')
     run_uniform_classification(model, train_ratio=0.8)
     run_double_classification(model, train_ratio=0.8)

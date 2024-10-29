@@ -58,12 +58,13 @@ class FisherLinearDiscriminant():
         Y_data[X_B.dot(self.Weights) < 0] = -1
         return Y_data
 
-    def plot_2dim(self, X_data=None, Y_data=None, Truth=None, pause=False):
+    def plot_2dim(self, X_test=None, Y_test=None, Truth=None, pause=False):
         """为二维分类数据集和结果画图"""
-        plot_2dim_classification(self.X_train, self.Y_train, self.Weights, X_data, Y_data, Truth=Truth, pause=pause)
+        plot_2dim_classification(self.X_train, self.Y_train, self.Weights, X_test, Y_test, Truth=Truth, pause=pause)
 
 
 if __name__ == '__main__':
+    np.random.seed(100)
     model = FisherLinearDiscriminant()
     run_uniform_classification(model, train_ratio=0.8)
     run_double_classification(model, train_ratio=0.8)

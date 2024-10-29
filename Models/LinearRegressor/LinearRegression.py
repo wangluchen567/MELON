@@ -114,13 +114,14 @@ class LinearRegression():
             self.history.append(self.Weights)
             self.plot_2dim(pause=True, n_iter=i + 1)
 
-    def plot_2dim(self, X_data=None, Y_data=None, Truth=None, pause=False, n_iter=None):
+    def plot_2dim(self, X_test=None, Y_test=None, Truth=None, pause=False, n_iter=None):
         """为二维回归数据集和结果画图"""
-        plot_2dim_regression(self.X_train, self.Y_train, self.Weights, X_data, Y_data, Truth=Truth,
+        plot_2dim_regression(self.X_train, self.Y_train, self.Weights, X_test, Y_test, Truth=Truth,
                              pause=pause, n_iter=n_iter)
 
 
 if __name__ == '__main__':
+    np.random.seed(100)
     model = LinearRegression()
     run_uniform_regression(model, train_ratio=0.8)
     run_contrast_regression(model, train_ratio=0.8)

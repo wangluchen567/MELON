@@ -110,12 +110,14 @@ class LogisticRegression():
         y[indices_neg] = np.exp(x[indices_neg]) / (1 + np.exp(x[indices_neg]))
         return y
 
-    def plot_2dim(self, X_data=None, Y_data=None, Truth=None, pause=False, n_iter=None):
+    def plot_2dim(self, X_test=None, Y_test=None, Truth=None, pause=False, n_iter=None):
         """为二维分类数据集和结果画图"""
-        plot_2dim_classification(self.X_train, self.Y_train, self.Weights, X_data, Y_data, Truth=Truth, pause=pause, n_iter=n_iter)
+        plot_2dim_classification(self.X_train, self.Y_train, self.Weights, X_test, Y_test,
+                                 Truth=Truth, pause=pause, n_iter=n_iter)
 
 
 if __name__ == '__main__':
+    np.random.seed(100)
     model = LogisticRegression(epochs=50, lr=0.1, grad_type='Adam')
     run_uniform_classification(model, train_ratio=0.8)
     run_double_classification(model, train_ratio=0.8)
