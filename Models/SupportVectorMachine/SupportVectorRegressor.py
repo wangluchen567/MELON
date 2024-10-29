@@ -4,7 +4,7 @@ Support Vector Regression
 """
 import warnings
 import numpy as np
-from SequentialMinimalOptimization import smo_greedy_step_regression
+from Models.SupportVectorMachine.SequentialMinimalOptimization import smo_greedy_step_regression
 from Models.Utils import (plot_2dim_regression, run_uniform_regression,
                           plot_2dim_regression_sample, run_circular_regression, run_poly_regression)
 
@@ -17,7 +17,7 @@ class SupportVectorRegressor():
     SIGMOID = 3
 
     def __init__(self, X_train=None, Y_train=None, C=10, tol=1.e-4, epsilon=0.6,
-                 kernel_type=LINEAR, gamma=None, degree=3, const=1, num_iter=1000):
+                 kernel_type=LINEAR, gamma=None, degree=3, const=1, num_iter=100):
         self.X_train = None  # 训练数据
         self.Y_train = None  # 真实标签
         self.Y_train_ = None  # 逻辑回归特殊标签
