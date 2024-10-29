@@ -8,6 +8,7 @@ from SequentialMinimalOptimization import smo_greedy_step_regression
 from Models.Utils import (plot_2dim_regression, run_uniform_regression,
                           plot_2dim_regression_sample, run_circular_regression, run_poly_regression)
 
+
 class SupportVectorRegressor():
     # 定义核函数类型
     LINEAR = 0
@@ -169,7 +170,7 @@ class SupportVectorRegressor():
                                  support=(np.sum(self.alphas, axis=1) != 0.0), pause=pause, n_iter=n_iter)
         else:
             plot_2dim_regression_sample(self, self.X_train, self.Y_train, X_test, Y_test,
-                                 support=(np.sum(self.alphas, axis=1) != 0.0), pause=pause, n_iter=n_iter)
+                                        support=(np.sum(self.alphas, axis=1) != 0.0), pause=pause, n_iter=n_iter)
 
 
 if __name__ == '__main__':
@@ -178,4 +179,3 @@ if __name__ == '__main__':
     # run_uniform_regression(model, train_ratio=0.8)
     # run_poly_regression(model, train_ratio=0.8)
     run_circular_regression(model, train_ratio=0.8)
-

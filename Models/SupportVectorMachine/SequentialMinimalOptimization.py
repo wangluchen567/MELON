@@ -87,6 +87,7 @@ def smo_greedy_step(kernel_mat, x_train, y_train, alphas, b, C, tol=1.e-4):
 
     return alphas, b, False
 
+
 def smo_greedy_step_regression(kernel_mat, x_train, y_train, alphas, b, C, epsilon, tol=1.e-4):
     """
     SMO算法（贪婪运行一步）
