@@ -5,6 +5,7 @@ from Models.LinearClassifier.Perceptron import Perceptron
 from Models.LinearClassifier.LogisticRegression import LogisticRegression
 from Models.LinearClassifier.GaussianDiscriminant import GaussianDiscriminant
 from Models.LinearClassifier.FisherLinearDiscriminant import FisherLinearDiscriminant
+from Models.SupportVectorMachine.SupportVectorClassifier import SupportVectorClassifier
 
 
 def Normalize(data, min_value=0, max_value=1):
@@ -99,6 +100,7 @@ if __name__ == '__main__':
     models = [FisherLinearDiscriminant(),
               GaussianDiscriminant(),
               LogisticRegression(epochs=100, lr=0.01, grad_type='Adam'),
-              Perceptron(epochs=100, lr=0.01, grad_type='Adam')]
-    model = models[3]
+              Perceptron(epochs=100, lr=0.01, grad_type='Adam'),
+              SupportVectorClassifier(kernel_type=SupportVectorClassifier.RBF)]
+    model = models[4]
     run_iris_classifier(model)
