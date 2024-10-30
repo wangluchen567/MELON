@@ -1,4 +1,4 @@
-# Support Vector Classifier
+# 支持向量机分类器
 
 ## 目标函数定义
 
@@ -53,6 +53,8 @@ $$
 \text{s.t.} \quad y_i(w^Tx_i+b) \geq 1 - \xi_i, \quad \xi_i \geq 0
 $$
 
+其中C为惩罚值，C越大惩罚越严重，模型对训练数据分类越精确，但泛化性会变差。
+
 ## 拉格朗日函数定义
 
 将得到的目标函数中每个约束条件都加入拉格朗日乘子，得到拉格朗日函数为：
@@ -76,26 +78,21 @@ $$
 为了保证原问题与对偶问题求得的最优解相同，需要满足以下约束：
 $$
 \begin{align}
-& ①\quad \alpha_i \geq 0, \quad \beta_i \geq 0, \quad(乘子约束)\\
-& ②\quad \xi_i \geq 0, \quad y_i(w^Tx_i+b)-1+\xi_i \geq 0, \quad (原始约束)\\
-& ③\quad \alpha_i[y_i(w^Tx_i+b)-1+\xi_i] = 0, \quad \beta_i\xi_i=0, \quad (KKT条件)\\
-& ④\quad \frac{\partial L}{\partial w} = \frac{\partial L}{\partial b} = \frac{\partial L}{\partial \xi}=0. \quad (KKT条件)\\
+& ①\quad \alpha_i \geq 0, \quad \beta_i \geq 0, & (乘子约束)\\
+& ②\quad \xi_i \geq 0, \quad y_i(w^Tx_i+b)-1+\xi_i \geq 0, & (原始约束)\\
+& ③\quad \alpha_i[y_i(w^Tx_i+b)-1+\xi_i] = 0, \quad \beta_i\xi_i=0, & (KKT条件)\\
+& ④\quad \frac{\partial L}{\partial w} = \frac{\partial L}{\partial b} = \frac{\partial L}{\partial \xi}=0. & (KKT条件)\\
 \end{align}
 $$
 将最后的关于偏导的KKT条件计算得到：
 $$
 \begin{align}
-& \frac{\partial L}{\partial w} = w-\sum_{i=1}^{n}\alpha_iy_ix_i=0\\
-& \frac{\partial L}{\partial b} = \sum_{i=1}^{n}\alpha_iy_i=0\\
-& \frac{\partial L}{\partial \xi} = C-\alpha_i-\beta_i=0\\
-\end{align}
-$$
-从而有：
-$$
-\begin{align}
-& w=\sum_{i=1}^{n}\alpha_iy_ix_i\\
-& \sum_{i=1}^{n}\alpha_iy_i=0\\
-& \alpha_i+\beta_i=C\\
+& \frac{\partial L}{\partial w} = w-\sum_{i=1}^{n}\alpha_iy_ix_i=0 &\Leftrightarrow 
+\quad w=\sum_{i=1}^{n}\alpha_iy_ix_i \\
+& \frac{\partial L}{\partial b} = \sum_{i=1}^{n}\alpha_iy_i=0 &\Leftrightarrow 
+\quad \sum_{i=1}^{n}\alpha_iy_i=0\\
+& \frac{\partial L}{\partial \xi} = C-\alpha_i-\beta_i=0 &\Leftrightarrow 
+\quad \alpha_i+\beta_i=C
 \end{align}
 $$
 将上面得到的结果代入到拉格朗日函数中可得：
@@ -104,7 +101,7 @@ $$
 \max_{\alpha,\beta} L(w,b,\xi,\alpha, \beta) 
 & = \frac{1}{2}\|w\|^2 + C \sum_{i=1}^{n} \xi_i - \sum_{i=1}^{n}\alpha_i[y_i(w^Tx_i+b)-1+\xi_i]-\sum_{i=1}^{n}\beta_i\xi_i = \\
 \max_{\alpha,\beta} L(\alpha, \beta) & = \frac{1}{2}\|\sum_{i=1}^{n}\alpha_iy_ix_i\|^2 + \sum_{i=1}^{n} (C-\alpha_i-\beta_i)\xi_i - \sum_{i=1}^{n}\alpha_iy_i(\sum_{j=1}^{n}\alpha_jy_jx_j)x_i-b\sum_{i=1}^{n}\alpha_iy_i+\sum_{i=1}^{n}\alpha_i\\
-& = -\frac{1}{2}\sum_{i=1}^{n}\sum_{j=1}^{n}\alpha_i\alpha_jy_iy_j(\mathbf{x_i^T·x_j})+\sum_{i=1}^{n}\alpha_i\\
+& = -\frac{1}{2}\sum_{i=1}^{n}\sum_{j=1}^{n}\alpha_i\alpha_jy_iy_j(\vec{x_i}^T·\vec{x_j})+\sum_{i=1}^{n}\alpha_i\\
 \text{s.t.} & \quad \alpha_i \geq 0, \quad \beta_i \geq 0, \quad \alpha_i+\beta_i=C, \quad \sum_{i=1}^{n}\alpha_iy_i=0
 \end{align}
 $$
@@ -112,7 +109,7 @@ $$
 $$
 \begin{align}
 \max_{\alpha}L(\alpha) 
-& = \sum_{i=1}^{n}\alpha_i - \frac{1}{2}\sum_{i=1}^{n}\sum_{j=1}^{n}\alpha_i\alpha_jy_iy_j(\mathbf{x_i^T·x_j})\\
+& = \sum_{i=1}^{n}\alpha_i - \frac{1}{2}\sum_{i=1}^{n}\sum_{j=1}^{n}\alpha_i\alpha_jy_iy_j(\vec{x_i}^T·\vec{x_j})\\
 \text{s.t.} & \quad 0 \leq \alpha_i \leq C, \quad \sum_{i=1}^{n}\alpha_iy_i=0
 \end{align}
 $$
@@ -140,18 +137,10 @@ $$
 另外，为了方便讨论各个情况，我们使用的是还未代入的各个约束，并且为了方便表示，这里定义特征到结果的输出函数为$f(x)=w^Tx+b$
 $$
 \begin{align}
-& ①\quad \alpha_i \geq 0, \quad \beta_i \geq 0, \quad(乘子约束)\\
-& ②\quad \xi_i \geq 0, \quad y_if(x_i)-1+\xi_i \geq 0, \quad (原始约束)\\
-& ③\quad \alpha_i[y_if(x_i)-1+\xi_i] = 0, \quad \beta_i\xi_i=0, \quad (KKT条件)\\
-& ④\quad \frac{\partial L}{\partial w} = \frac{\partial L}{\partial b} = \frac{\partial L}{\partial \xi}=0. \quad (KKT条件)\\
-\end{align}
-$$
-其中最后的KKT条件得到的结果是：
-$$
-\begin{align}
-& w=\sum_{i=1}^{n}\alpha_iy_ix_i\\
-& \sum_{i=1}^{n}\alpha_iy_i=0\\
-& \alpha_i+\beta_i=C\\
+& ①\quad \alpha_i \geq 0, \quad \beta_i \geq 0, & (乘子约束)\\
+& ②\quad \xi_i \geq 0, \quad y_if(x_i)-1+\xi_i \geq 0, & (原始约束)\\
+& ③\quad \alpha_i[y_if(x_i)-1+\xi_i] = 0, \quad \beta_i\xi_i=0, & (KKT条件)\\
+& ④\quad w=\sum_{i=1}^{n}\alpha_iy_ix_i, \quad \sum_{i=1}^{n}\alpha_iy_i=0, \quad \alpha_i+\beta_i=C & (KKT条件)\\
 \end{align}
 $$
 接下来讨论约束的三种情况：
@@ -264,12 +253,22 @@ $$
 $$
 \begin{align}
 \max_{\alpha}L(\alpha) 
-& = \sum_{i=1}^{n}\alpha_i - \frac{1}{2}\sum_{i=1}^{n}\sum_{j=1}^{n}\alpha_i\alpha_jy_iy_j(\mathbf{x_i^T·x_j})\\
+& = \sum_{i=1}^{n}\alpha_i - \frac{1}{2}\sum_{i=1}^{n}\sum_{j=1}^{n}\alpha_i\alpha_jy_iy_j(\vec{x_i}^T·\vec{x_j})\\
 \text{s.t.} & \quad 0 \leq \alpha_i \leq C, \quad \sum_{i=1}^{n}\alpha_iy_i=0
 \end{align}
 $$
-考虑到$\mathbf{x_i^T·x_j}$为线性核函数，为了能推广到一般形式，也就是能使用非线性的核函数，将其替换为$K_{ij}$，关于各类核函数的定义如下：
-
+考虑到$\vec{x_i}^T·\vec{x_j}$为线性核函数，为了能推广到一般形式，也就是能使用非线性的核函数，将其替换为$K_{ij}$，关于各类核函数的定义如下：
+$$
+K_{ij}=K(\vec{x_i},\vec{x_j})=
+\begin{align}
+\begin{cases}
+\vec{x_i}^T·\vec{x_j} & (线性核)\\
+(\gamma \vec{x_i}^T·\vec{x_j}+r)^d & (多项式核)\\
+exp(-\gamma \|\vec{x_i}-\vec{x_j}\|^2) & (高斯核/径向基核)\\
+tanh(\gamma \vec{x_i}^T·\vec{x_j}+r) & (Sigmoid核)
+\end{cases}
+\end{align}
+$$
 
 
 所以推广到一般形式有：
