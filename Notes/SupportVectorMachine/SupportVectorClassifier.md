@@ -101,7 +101,7 @@ $$
 \max_{\alpha,\beta} L(w,b,\xi,\alpha, \beta) 
 & = \frac{1}{2}\|w\|^2 + C \sum_{i=1}^{n} \xi_i - \sum_{i=1}^{n}\alpha_i[y_i(w^Tx_i+b)-1+\xi_i]-\sum_{i=1}^{n}\beta_i\xi_i = \\
 \max_{\alpha,\beta} L(\alpha, \beta) & = \frac{1}{2}\|\sum_{i=1}^{n}\alpha_iy_ix_i\|^2 + \sum_{i=1}^{n} (C-\alpha_i-\beta_i)\xi_i - \sum_{i=1}^{n}\alpha_iy_i(\sum_{j=1}^{n}\alpha_jy_jx_j)x_i-b\sum_{i=1}^{n}\alpha_iy_i+\sum_{i=1}^{n}\alpha_i\\
-& = -\frac{1}{2}\sum_{i=1}^{n}\sum_{j=1}^{n}\alpha_i\alpha_jy_iy_j(\vec{x_i}^T·\vec{x_j})+\sum_{i=1}^{n}\alpha_i\\
+& = -\frac{1}{2}\sum_{i=1}^{n}\sum_{j=1}^{n}\alpha_i\alpha_jy_iy_j(\vec{x_i}^T\cdot\vec{x_j})+\sum_{i=1}^{n}\alpha_i\\
 \text{s.t.} & \quad \alpha_i \geq 0, \quad \beta_i \geq 0, \quad \alpha_i+\beta_i=C, \quad \sum_{i=1}^{n}\alpha_iy_i=0
 \end{align}
 $$
@@ -109,20 +109,20 @@ $$
 $$
 \begin{align}
 \max_{\alpha}L(\alpha) 
-& = \sum_{i=1}^{n}\alpha_i - \frac{1}{2}\sum_{i=1}^{n}\sum_{j=1}^{n}\alpha_i\alpha_jy_iy_j(\vec{x_i}^T·\vec{x_j})\\
+& = \sum_{i=1}^{n}\alpha_i - \frac{1}{2}\sum_{i=1}^{n}\sum_{j=1}^{n}\alpha_i\alpha_jy_iy_j(\vec{x_i}^T\cdot\vec{x_j})\\
 \text{s.t.} & \quad 0 \leq \alpha_i \leq C, \quad \sum_{i=1}^{n}\alpha_iy_i=0
 \end{align}
 $$
 
 ## 算法求解准备
 
-若要求解该函数，只需要在不违反约束的情况下，想办法改变$\alpha$的值，然后逐渐让该函数最大化，考虑到存在约束：
+若要求解该最优化函数，只需要在不违反约束的情况下，想办法改变$\alpha$的值，然后逐渐让该函数最大化，考虑到存在约束：
 $$
 \sum_{i=1}^{n}\alpha_iy_i=0, \quad y_i \in \{-1,1\}
 $$
-所以可以考虑只同时改变两个$\alpha$的值，然后在保证不违反约束的情况下，使目标函数最大化，该思路就是由John Platt于1996年提出的称为SMO（Sequential Minimal Optimization）的算法。SMO算法是将一个大的优化问题分解为多个小的优化问题来求解的。这些小的优化问题往往很容易求解，并且对它们进行顺序求解的结果与将它们作为整体来求解的结果是完全一致的。在使用SMO算法之前，需要先讨论在什么情况下是违反约束的。
+为了保证该约束可以一直成立，可以考虑只同时改变两个$\alpha$的值，然后在保证不违反约束的情况下，使目标函数最大化，该思路就是由John Platt于1996年提出的称为SMO（Sequential Minimal Optimization）的算法。SMO算法是将一个大的优化问题分解为多个小的优化问题来求解的。这些小的优化问题往往很容易求解，并且对它们进行顺序求解的结果与将它们作为整体来求解的结果是完全一致的。而在正式使用SMO算法之前，还需要先讨论在什么情况下是违反另一个约束的，以方便SMO算法优化求解。
 
-考虑到存在约束：
+考虑到还存在另一个约束：
 $$
 0 \leq \alpha_i \leq C
 $$
@@ -253,19 +253,19 @@ $$
 $$
 \begin{align}
 \max_{\alpha}L(\alpha) 
-& = \sum_{i=1}^{n}\alpha_i - \frac{1}{2}\sum_{i=1}^{n}\sum_{j=1}^{n}\alpha_i\alpha_jy_iy_j(\vec{x_i}^T·\vec{x_j})\\
+& = \sum_{i=1}^{n}\alpha_i - \frac{1}{2}\sum_{i=1}^{n}\sum_{j=1}^{n}\alpha_i\alpha_jy_iy_j(\vec{x_i}^T\cdot\vec{x_j})\\
 \text{s.t.} & \quad 0 \leq \alpha_i \leq C, \quad \sum_{i=1}^{n}\alpha_iy_i=0
 \end{align}
 $$
-考虑到$\vec{x_i}^T·\vec{x_j}$为线性核函数，为了能推广到一般形式，也就是能使用非线性的核函数，将其替换为$K_{ij}$，关于各类核函数的定义如下：
+考虑到$\vec{x_i}^T\cdot\vec{x_j}$为线性核函数，为了能推广到一般形式，也就是能使用非线性的核函数，将其替换为$K_{ij}$，关于各类核函数的定义如下：
 $$
 K_{ij}=K(\vec{x_i},\vec{x_j})=
 \begin{align}
 \begin{cases}
-\vec{x_i}^T·\vec{x_j} & (线性核)\\
-(\gamma \vec{x_i}^T·\vec{x_j}+r)^d & (多项式核)\\
+\vec{x_i}^T\cdot\vec{x_j} & (线性核)\\
+(\gamma \vec{x_i}^T\cdot\vec{x_j}+r)^d & (多项式核)\\
 exp(-\gamma \|\vec{x_i}-\vec{x_j}\|^2) & (高斯核/径向基核)\\
-tanh(\gamma \vec{x_i}^T·\vec{x_j}+r) & (Sigmoid核)
+tanh(\gamma \vec{x_i}^T\cdot\vec{x_j}+r) & (Sigmoid核)
 \end{cases}
 \end{align}
 $$
@@ -298,7 +298,8 @@ L(\alpha)
 \frac{1}{2}\sum_{i=3}^{n}\sum_{j=3}^{n}y_iy_j\alpha_i\alpha_jK_{ij}\\
 & = \alpha_1 + \alpha_2 - 
 \frac{1}{2}\alpha_1^2K_{11} - \frac{1}{2}\alpha_2^2K_{22} - y_1y_2\alpha_1\alpha_2K_{12}-
-y_1\alpha_1\sum_{j=3}^{n}\alpha_jy_jK_{1j}-y_2\alpha_2\sum_{j=3}^{n}\alpha_jy_jK_{2j} -
+y_1\alpha_1\sum_{j=3}^{n}\alpha_jy_jK_{1j}-y_2\alpha_2\sum_{j=3}^{n}\alpha_jy_jK_{2j} +
+\sum_{i=3}^{n}\alpha_i -
 \frac{1}{2}\sum_{i=3}^{n}\sum_{j=3}^{n}y_iy_j\alpha_i\alpha_jK_{ij}
 \end{align}
 $$
@@ -373,7 +374,7 @@ f(x_2)+y_1\alpha_1^{old}K_{12}+y_2\alpha_2^{old}K_{22}+b]\frac{1}{\eta}\\
 $$
 这里令$E_i=f(x_i)-y_i$表示误差项，$\eta = K_{11} + K_{22} - 2K_{12}$表示学习速率，那么最后可得到$\alpha_2$的更新公式为：
 $$
-\alpha_2^{new} = \alpha_2^{old} +\frac{y_2[E_1-E_2]}{\eta}
+\alpha_2^{new} = \alpha_2^{old} +\frac{y_2(E_1-E_2)}{\eta}
 $$
 在得到新的$\alpha_2^{new}$之后，我们还要使用之前推出的上下界对其进行裁剪，所以裁剪后的结果为：
 $$
@@ -401,7 +402,7 @@ y_1(w^Tx_1+b)=1
 $$
 两边同时乘以$y_1$，并将$w=\sum_{i=1}^{n}\alpha_iy_ix_i$代入有：
 $$
-\sum_{i=1}^{n}\alpha_iy_ix_i · x_1 + b = y_1
+\sum_{i=1}^{n}\alpha_iy_ix_i \cdot x_1 + b = y_1
 $$
 将核函数由线性核函数推广到一般形式后有：
 $$
@@ -456,17 +457,19 @@ $$
 1.找出违反约束的乘子$\alpha_i$和$\alpha_j$(违反下面的条件则违反约束)：
 $$
 \begin{cases}
-\alpha_i > 0, \quad y_if(x_i) > 1\\
-\alpha_i < C, \quad y_if(x_i) < 1 \\
+\alpha_i > 0, \quad y_if(x_i) > 1 \quad \Leftrightarrow \quad y_iE_i > 0\\
+\alpha_i < C, \quad y_if(x_i) < 1 \quad \Leftrightarrow \quad y_iE_i < 0
 \end{cases}
 $$
 
 $$
 \begin{cases}
-\alpha_j > 0, \quad y_jf(x_j) > 1\\
-\alpha_j < C, \quad y_jf(x_j) < 1 \\
+\alpha_j > 0, \quad y_jf(x_j) > 1 \quad \Leftrightarrow \quad y_jE_j > 0\\
+\alpha_j < C, \quad y_jf(x_j) < 1 \quad \Leftrightarrow \quad y_jE_j < 0
 \end{cases}
 $$
+
+（这里为避免重复计算，在具体实现时可以先计算误差，再检查是否违反约束）
 
 2.计算误差$E_i$和$E_j$：
 $$
