@@ -119,12 +119,13 @@ def smo_greedy_step_regression(kernel_mat, x_train, y_train, alphas, b, C, epsil
     condition1 = (betas < C) * (Z_mat * E_mat < -tol)
     condition2 = (betas > 0) * (Z_mat * E_mat > tol)
     # 还有一个约束是另一半是否是0，因为alpha和alpha*其中一个必为零
-    condition3 = np.hstack([alphas[:, 1] != 0, alphas[:, 0] != 0])
+    # 这里不用考虑该约束，因为alpha和alpha*后续计算时视为一了个整体
+    # condition3 = np.hstack([alphas[:, 1] != 0, alphas[:, 0] != 0])
     # 得到所有元素违反约束的程度
     violation = np.zeros_like(betas)
     violation[condition1] = C - betas[condition1]
     violation[condition2] = betas[condition2] - 0
-    violation[condition3] = 0.0
+    # violation[condition3] = 0.0
     # 精度裁剪（以免在取最大值时出问题）
     violation = np.round(violation, decimals=9).flatten()
     # 检查是否没有可优化的项了
@@ -152,7 +153,7 @@ def smo_greedy_step_regression(kernel_mat, x_train, y_train, alphas, b, C, epsil
     new_betas = np.min(np.hstack((new_betas, highers[:, np.newaxis])), axis=1)[:, np.newaxis]
     """巨坑！这里涉及取第一个最大时存在的精度问题，这里设置为小数点后9位"""
     diff_betas = np.round(np.abs(new_betas - betas), decimals=9).flatten()
-    diff_betas[condition3] = 0.0
+    # diff_betas[condition3] = 0.0
     diff_betas[i] = 0.0
     # 若没有更新则结束
     # 这里指定返回为True则是early stop
