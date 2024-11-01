@@ -35,12 +35,22 @@ ChEn's Machine Learning model Organized using Numpy
 
 ### 梯度优化器
 
-- 优化平方函数<br>
+- 各类梯度优化算法优化平方函数的表现<br>
 <img src="Notes/GradientOptimizer/Contrast21.gif" width="288" height="220"/> <img src="Notes/GradientOptimizer/Contrast22.gif" width="288" height="220"/><br/>
-- 优化马鞍面函数<br>
+- 各类梯度优化算法优化双曲抛物面(马鞍面)函数的表现<br>
 <img src="Notes/GradientOptimizer/Contrast31.gif" width="288" height="220"/> <img src="Notes/GradientOptimizer/Contrast32.gif" width="288" height="220"/><br/>
 
 ### 支持向量机
+
+- 支持向量机分类器使用线性核函数对均匀随机数据和双点状随机数据分类效果<br>
+<img src="Notes/SupportVectorMachine/SVC1.gif" width="288" height="220"/> <img src="Notes/SupportVectorMachine/SVC2.gif" width="288" height="220"/><br/>
+- 支持向量机分类器使用不同伽马值的高斯核函数对同心圆随机数据分类效果<br>
+<img src="Notes/SupportVectorMachine/SVC3.gif" width="288" height="220"/> <img src="Notes/SupportVectorMachine/SVC4.gif" width="288" height="220"/><br/>
+
+- 支持向量机回归器使用线性核函数对随机线性数据回归效果/使用多项式核函数对随机多项式数据回归效果<br>
+<img src="Notes/SupportVectorMachine/SVR1.gif" width="288" height="220"/> <img src="Notes/SupportVectorMachine/SVR2.gif" width="288" height="220"/><br/>
+- 支持向量机回归器使用高斯核函数对三角函数数据回归效果/对复杂三角函数数据回归效果<br>
+<img src="Notes/SupportVectorMachine/SVR3.gif" width="288" height="220"/> <img src="Notes/SupportVectorMachine/SVR4.gif" width="288" height="220"/><br/>
 
 ### 线性分类器
 
