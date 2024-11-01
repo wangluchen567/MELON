@@ -95,5 +95,4 @@ def plot_contrast_3D(cal_func, x_range, y_range, XY_dict, color_dict):
         ax.set_zlim(np.min(Z), np.max(Z))
         ax.view_init(elev=60, azim=120)
         plt.pause(0.1)
-        plt.savefig('D:/Plots1/GO/three2/' + str(i) + '.png', dpi=160)
     plt.show()
