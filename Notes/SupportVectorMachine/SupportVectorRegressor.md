@@ -1,4 +1,4 @@
-# Support Vector Regressor
+# 支持向量机回归器
 
 ## 目标函数定义
 
@@ -118,19 +118,6 @@ $$
 \sum_{i=1}^{n}y_i(\hat\alpha_i-\alpha_i)\\
 \text{s.t.} \quad \sum_{i=1}^{n}(\hat\alpha_i-\alpha_i)=0, \quad 0 \leq \alpha_i \leq C, \quad 0 \leq \hat\alpha_i \leq C
 $$
-这里注意一点，这里不用再考虑$\alpha_i\hat\alpha_i=0$这个约束的原因是，由于与变量直接相关的只有$(\hat\alpha_i-\alpha_i)$，所以目标函数已经将$\alpha_i$和$\hat\alpha_i$视为了一个整体，每一对元素都可以通过等量偏移满足约束，假设这里得到的最优解为$\alpha_i^*$和$\hat\alpha_i^*$，$\alpha_i^*\hat\alpha_i^*\neq0$，那么我们可以将这一对变量进行偏移有：
-$$
-\hat\alpha_i^*-\alpha_i^* = (\hat\alpha_i^*+m_i)-(\alpha_i^*+m_i) = \hat\alpha_i-\alpha_i\\
-\alpha_i^*\hat\alpha_i^*\neq0, \quad \alpha_i\alpha_i = 0
-$$
-那么对于最优函数值的影响是：
-$$
-\min_{\alpha,\hat\alpha}L = \min_{\alpha,\hat\alpha}L^*+\epsilon\sum_{i=1}^{n}m_i=\min_{\alpha,\hat\alpha}L^*+\epsilon M
-$$
-
-
-也就是说变量偏移只会对最优函数值造成影响，而对最终得到的结果$w$和$b$没有影响。
-
 ## 优化问题转化
 
 很显然，该问题的优化函数与分类问题的优化函数完全不一样，它拥有两个无法再简化的乘子，无法直接使用SMO（Sequential Minimal Optimization）算法求解，为了使该问题适合SMO算法求解，这里需要将函数进行一定的变换，可将两个乘子$\alpha$和$\hat\alpha$合并成一个单独的乘子$\beta$（注意，这里的$\beta$与之前的乘子无关，是一个新引入的乘子），表示为：
@@ -331,7 +318,7 @@ $$
 \end{cases}
 \end{align}
 $$
-前两种情况综合来看，当$\hat\alpha_i=0$且$\alpha_i>0$时，有$f(x_i) \geq y_i + \epsilon$，则满足约束，所以当违反前两种情况的约束时，有$f(x_i) < y_i + \epsilon$，而因为$p_j=\epsilon+y_j, z_j=+1, 1\leq j\leq n$，所以有$f(x_j) < z_jp_j$，两边同乘以$z_j$有：$z_jf(x_j) < p_j$.
+前两种情况综合来看，当$\hat\alpha_i=0$且$\alpha_i>0$时，有$f(x_i) \geq y_i + \epsilon$，则满足约束，所以当违反前两种情况的约束时，有$f(x_i) < y_i + \epsilon$，而因为$p_j=\epsilon+y_i, z_j=+1, 1\leq j\leq n$，所以有$f(x_j) < z_jp_j$，两边同乘以$z_j$有：$z_jf(x_j) < p_j$.
 
 第三种情况是$\alpha_i=0$且$0<\hat\alpha_i<C$：
 $$
@@ -351,7 +338,7 @@ $$
 \end{cases}
 \end{align}
 $$
-第三四种情况综合来看，当$\alpha_i=0$且$\hat\alpha_i>0$时，有$f(x_i) \leq y_i - \epsilon$，则满足约束，所以当违反前两种情况的约束时，有$f(x_i) > y_i - \epsilon$，而因为$p_j=\epsilon-y_j, z_j=-1, n < j\leq 2n$，所以有$f(x_j) > z_jp_j$，两边同乘以$z_j$有：$z_jf(x_j) < p_j$. ($z_j<0$所以变号)
+第三四种情况综合来看，当$\alpha_i=0$且$\hat\alpha_i>0$时，有$f(x_i) \leq y_i - \epsilon$，则满足约束，所以当违反前两种情况的约束时，有$f(x_i) > y_i - \epsilon$，而因为$p_j=\epsilon-y_i, z_j=-1, n < j\leq 2n$，所以有$f(x_j) > z_jp_j$，两边同乘以$z_j$有：$z_jf(x_j) < p_j$. ($z_j<0$所以变号)
 
 第五种情况是$\hat\alpha_i=0$且$\alpha_i=0$：
 $$
@@ -364,7 +351,7 @@ $$
 $$
 即满足该约束时$y_i-\epsilon \leq f(x_i) \leq y_i+\epsilon$，而对于$p_j$和$z_j$有：
 $$
-p_j=\begin{cases}\epsilon+y_j, \quad 1\leq j \leq n\\ \epsilon-y_j, \quad n < j \leq 2n\end{cases}\quad
+p_j=\begin{cases}\epsilon+y_i, \quad 1\leq j \leq n\\ \epsilon-y_i, \quad n < j \leq 2n\end{cases}\quad
 z_j=\begin{cases}+1, \quad 1\leq j \leq n\\ -1, \quad n < j \leq 2n\end{cases}
 $$
 所以该约束可以转化为$z_jf(x_j)\leq p_j$，所以当违反该约束时有：$z_jf(x_j) > p_j$.
@@ -372,7 +359,7 @@ $$
 综上，当$\alpha_i$和$\hat\alpha_i$其中一个大于0时，即$\beta_j > 0$时，$z_jf(x_j) < p_j$则违反约束；当$\alpha_i$和$\hat\alpha_i$都为0时，即$\beta_j < C$时，$z_jf(x_j) > p_j$则违反约束，即下面两种情况下违反约束：
 $$
 \begin{cases}
-\beta_i > 0, \quad z_jf(x_j) < p_j\\
+\beta_j > 0, \quad z_jf(x_j) < p_j\\
 \beta_j < C, \quad z_jf(x_j) > p_j \\
 \end{cases}
 $$
@@ -580,3 +567,157 @@ $$
 $$
 
 ### 更新$b$值
+
+在更新了$\beta$值之后，还需要重新计算并更新阈值$b$的值，因为阈值$b$关系到输出函数$f(x)$和误差项$E$的计算，当$0 \leq \beta_1^{new} \leq C$时，对应的数据点是支持向量上的点，此时满足：
+$$
+|f(x_1)-y_1|=\epsilon
+$$
+将$w=\sum_{i=1}^{n}(\hat\alpha_i-\alpha_i)x_i$代入有：
+$$
+|\sum_{i=1}^{n}(\hat\alpha_i-\alpha_i)x_i\cdot x_1-y_1|=\epsilon
+$$
+将核函数由线性核函数推广到一般形式后有：
+$$
+|\sum_{i=1}^{n}(\hat\alpha_i-\alpha_i)K_{i1}-y_1|=\epsilon
+$$
+利用$\alpha$和$\beta$的关系将$\alpha$和$\hat\alpha$替换为$\beta$有：
+$$
+-\sum_{i=1}^{2n}\beta_iz_iQ_{i1}+b=
+\begin{cases}
+y_1+\epsilon, \quad \beta_1 \in \alpha\\
+y_1-\epsilon, \quad \beta_1 \in \hat\alpha\\
+\end{cases}=
+\begin{cases}
+z_1(\epsilon+y_1), \quad \beta_1 \in \alpha\\
+z_1(\epsilon-y_1), \quad \beta_1 \in \hat\alpha\\
+\end{cases}
+=z_1p_1
+$$
+所以有：
+$$
+\begin{align}
+b_1^{new} & = z_1p_1 + \sum_{i=1}^{2n}\beta_iz_iQ_{i1}\\
+& = z_1p_1 + \sum_{i=3}^{2n}\beta_iz_iQ_{i1} + \beta_1^{new}z_1Q_{11} + \beta_2^{new}z_2Q_{12}
+\end{align}
+$$
+其中前两项为：
+$$
+\begin{align}
+z_1p_1 + \sum_{i=3}^{2n}\beta_iz_iQ_{i1} 
+& = z_1p_1 + \sum_{i=3}^{2n}\beta_iz_iQ_{i1}+f(x_1)-f(x_1)\\
+& = (z_1p_1 - f(x_1)) - \beta_1^{old}z_1Q_{11} - \beta_2^{old}z_2Q_{12} + b^{old}\\
+& = E - \beta_1^{old}z_1Q_{11} - \beta_2^{old}z_2Q_{12} + b^{old}
+\end{align}
+$$
+将其代入有：
+$$
+\begin{align}
+b_1^{new} & = z_1p_1 + \sum_{i=3}^{2n}\beta_iz_iQ_{i1} + \beta_1^{new}z_1Q_{11} + \beta_2^{new}z_2Q_{12}\\
+& = E_1 - \beta_1^{old}z_1Q_{11} - \beta_2^{old}z_2Q_{12}+b^{old} + \beta_1^{new}z_1Q_{11} + 
+\beta_2^{new}z_2Q_{12}\\
+& = b^{old} + E_1 + z_1(\beta_1^{new}-\beta_1^{old})Q_{11} + z_2(\beta_2^{new}-\beta_2^{old})Q_{12}
+\end{align}
+$$
+同理可得：
+$$
+b_2^{new} = b^{old} + E_2 + z_1(\beta_1^{new}-\beta_1^{old})Q_{12} + z_2(\beta_2^{new}-\beta_2^{old})Q_{22}
+$$
+从理论上说，当$b_1^{new}$和$b_2^{new}$都有效的时候，两个乘子$\beta_1^{new}$和$\beta_2^{new}$对应的点都在间隔超平面上，一定有：
+$$
+b^{new} = b_1^{new} = b_2^{new}
+$$
+当都不满足的时候，SMO算法选择$b_1^{new}$和$b_2^{new}$的平均值(中点)作为新的阈值$b^{new}$，所以最终阈值$b^{new}$的取值为：
+$$
+b^{new} = 
+\begin{cases}
+b_1^{new}, \quad 0<\beta_1^{new}<C\\
+b_2^{new}, \quad 0<\beta_2^{new}<C\\
+\frac{b_1^{new}+b_2^{new}}2{}, otherwise.
+\end{cases}
+$$
+
+### 优化步骤总结
+
+梳理SMO算法的具体步骤如下：
+
+1.找出违反约束的乘子$\beta_i$和$\beta_j$(违反下面的条件则违反约束)：
+$$
+\begin{cases}
+\beta_i > 0, \quad z_if(x_i) < p_i \quad \Leftrightarrow \quad z_i(f(x_i) - z_ip_i) < 0 \quad \Leftrightarrow \quad z_iE_i > 0\\
+\beta_i < C, \quad z_if(x_i) > p_i \quad \Leftrightarrow \quad z_i(f(x_i) - z_ip_i) > 0 \quad \Leftrightarrow \quad z_iE_i < 0\\
+\end{cases}
+$$
+
+$$
+\begin{cases}
+\beta_j > 0, \quad z_jf(x_j) < p_j \quad \Leftrightarrow \quad z_j(f(x_j) - z_jp_j) < 0 \quad \Leftrightarrow \quad z_jE_j > 0\\
+\beta_j < C, \quad z_jf(x_j) > p_j \quad \Leftrightarrow \quad z_j(f(x_j) - z_jp_j) > 0 \quad \Leftrightarrow \quad z_jE_j < 0\\
+\end{cases}
+$$
+
+（这里为避免重复计算，在具体实现时可以先计算误差，再检查是否违反约束）
+
+2.计算误差$E_i$和$E_j$：
+$$
+E_i = z_ip_i-f(x_i)=\sum_{j=1}^{2n}\beta_jz_jQ_{ij}-b+z_ip_i\\
+E_j = z_jp_j-f(x_j)=\sum_{i=1}^{2n}\beta_iz_iQ_{ij}-b+z_jp_j
+$$
+3.计算$\beta_j$的上下界$L$和$H$：
+$$
+\begin{cases}
+L=max(0, \beta_j^{old} - \beta_i^{old}), H=min(C, C+\beta_j^{old} - \beta_i^{old}), \quad z_i \neq z_j\\
+L=max(0, \beta_j^{old} + \beta_i^{old} - C), H=min(C, \beta_j^{old} + \beta_i^{old}), \quad z_i = z_j
+\end{cases}
+$$
+4.计算学习速率$\eta$：
+$$
+\eta = Q_{ii} + Q_{jj} - 2Q_{ij}
+$$
+5.更新$\beta_j$：
+$$
+\beta_j^{new} = \beta_j^{old} +\frac{z_j(E_i-E_j)}{\eta}
+$$
+6.根据上下界裁剪$\beta_j$：
+$$
+\beta_j^{new,clipped}=
+\begin{cases}
+H, \quad \quad\beta_j^{new} > H\\
+\beta_j^{new}, \quad L \leq \beta_j^{new} \leq H\\
+L, \quad \quad\beta_j^{new} < L
+\end{cases}
+$$
+7.更新$\beta_i$：
+$$
+\beta_i^{new} =\beta_i^{old} + z_iz_j (\beta_j^{old} -\beta_j^{new,clipped})
+$$
+8.更新$b_i$和$b_j$：
+$$
+b_i^{new} = b^{old} + E_i + z_i(\beta_i^{new}-\beta_i^{old})Q_{ii} + z_j(\beta_j^{new}-\beta_j^{old})Q_{ij}\\
+b_j^{new} = b^{old} + E_j + z_i(\beta_i^{new}-\beta_i^{old})Q_{ij} + z_j(\beta_j^{new}-\beta_j^{old})Q_{jj}
+$$
+9.更新$b$：
+$$
+b^{new} = 
+\begin{cases}
+b_i^{new}, \quad 0<\beta_i^{new}<C\\
+b_j^{new}, \quad 0<\beta_j^{new}<C\\
+\frac{b_i^{new}+b_j^{new}}2{}, otherwise.
+\end{cases}
+$$
+PS:
+
+这里注意一点，在推导过程中问题转换后其实不用再考虑$\alpha_i\hat\alpha_i=0$这个约束，具体原因是，由于与变量直接相关的只有$(\hat\alpha_i-\alpha_i)$，所以目标函数已经将$\alpha_i$和$\hat\alpha_i$视为了一个整体，每一对元素都可以通过等量偏移满足约束，假设这里得到的最优解为$\alpha_i^*$和$\hat\alpha_i^*$，$\alpha_i^*\hat\alpha_i^*\neq0$，那么我们可以将这一对变量进行偏移有：
+$$
+\hat\alpha_i^*-\alpha_i^* = (\hat\alpha_i^*+m_i)-(\alpha_i^*+m_i) = \hat\alpha_i-\alpha_i\\
+\alpha_i^*\hat\alpha_i^*\neq0, \quad \alpha_i\alpha_i = 0
+$$
+那么对于最优函数值的影响是：
+$$
+\min_{\alpha,\hat\alpha}L = \min_{\alpha,\hat\alpha}L^*+\epsilon\sum_{i=1}^{n}m_i=\min_{\alpha,\hat\alpha}L^*+\epsilon M
+$$
+
+对最终结果的$w$影响为：(以线性核为例)
+$$
+w^*=\sum_{i=1}^{n}(\hat\alpha_i^*-\alpha_i^*)x_i=\sum_{i=1}^{n}[(\hat\alpha_i^*+m_i)-(\alpha_i^*+m_i)]x_i=\sum_{i=1}^{n}(\hat\alpha_i-\alpha_i)x_i=w
+$$
+同理，对函数值$f(x)$与误差$E$也不会产生影响，也就是说变量偏移只会对最优函数值造成影响，而对最终得到的结果$w$和$b$没有影响。

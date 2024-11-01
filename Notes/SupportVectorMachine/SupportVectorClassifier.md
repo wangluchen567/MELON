@@ -489,7 +489,7 @@ $$
 $$
 5.更新$\alpha_j$：
 $$
-\alpha_j^{new} = \alpha_j^{old} +\frac{y_j[E_i-E_j]}{\eta}
+\alpha_j^{new} = \alpha_j^{old} +\frac{y_j(E_i-E_j)}{\eta}
 $$
 6.根据上下界裁剪$\alpha_j$：
 $$
