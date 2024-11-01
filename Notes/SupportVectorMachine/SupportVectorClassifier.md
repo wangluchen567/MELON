@@ -518,3 +518,23 @@ b_j^{new}, \quad 0<\alpha_j^{new}<C\\
 \frac{b_i^{new}+b_j^{new}}2{}, otherwise.
 \end{cases}
 $$
+
+## 参考资料
+
+\[1\] [John C. Platt. Sequential Minimal Optimization: A Fast Algorithm for Training Support Vector Machines](http://leap.ee.iisc.ac.in/sriram/teaching/MLSP_16/refs/SMO.pdf)
+
+\[2\] [Python3《机器学习实战》学习笔记（八）：支持向量机原理篇之手撕线性SVM - 知乎](https://zhuanlan.zhihu.com/p/29604517)
+
+\[3\] [Python3《机器学习实战》学习笔记（九）：支持向量机实战篇之再撕非线性SVM - 知乎](https://zhuanlan.zhihu.com/p/29872905)
+
+\[4\] [深入理解拉格朗日乘子法（Lagrange Multiplier) 和KKT条件_真正理解拉格朗日乘子法和 kkt 条件-CSDN博客](https://blog.csdn.net/xianlingmao/article/details/7919597)
+
+\[5\] [Python · SVM（二）· LinearSVM - 知乎](https://zhuanlan.zhihu.com/p/27293420)
+
+\[6\] [Python · SVM（四）· SMO 算法 - 知乎](https://zhuanlan.zhihu.com/p/27662928)
+
+\[7\] [Python3《机器学习实战》学习笔记（九）：支持向量机实战篇之再撕非线性SVM - 知乎](https://zhuanlan.zhihu.com/p/29872905)
+
+\[8\] [支持向量机（SVM）和支持向量机回归（SVR） - 知乎](https://zhuanlan.zhihu.com/p/76609851)
+
+\[9\] [SMO求解支持向量回归 - 邢存远的博客 | Welt Xing's Blog](https://welts.xyz/2021/09/16/svr/)
