@@ -165,7 +165,7 @@ class SupportVectorRegressor():
 
     def plot_2dim(self, X_test=None, Y_test=None, Truth=None, pause=False, n_iter=None):
         """为二维回归数据集和结果画图"""
-        if self.kernel_type == self.LINEAR and Truth is not None:
+        if self.kernel_type == self.LINEAR:
             plot_2dim_regression(self.X_train, self.Y_train, self.Weights, X_test, Y_test, Truth=Truth,
                                  support=(np.sum(self.alphas, axis=1) != 0.0), pause=pause, n_iter=n_iter)
         else:
