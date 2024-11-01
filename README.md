@@ -54,6 +54,13 @@ ChEn's Machine Learning model Organized using Numpy
 
 ### 线性分类器
 
+- Fisher线性判别分类器对均匀随机数据和双点状随机数据分类效果<br>
+<img src="Notes/LinearClassifier/FLD1.png" width="288" height="220"/> <img src="Notes/LinearClassifier/FLD2.png" width="288" height="220"/><br/>
+- 逻辑回归线性分类器对均匀随机数据和双点状随机数据分类效果<br>
+<img src="Notes/LinearClassifier/LogR1.gif" width="288" height="220"/> <img src="Notes/LinearClassifier/LogR2.gif" width="288" height="220"/><br/>
+- 感知机分类器对均匀随机数据和双点状随机数据分类效果<br>
+<img src="Notes/LinearClassifier/PP1.gif" width="288" height="220"/> <img src="Notes/LinearClassifier/PP2.gif" width="288" height="220"/><br/>
+
 ### 线性回归器
 
 
