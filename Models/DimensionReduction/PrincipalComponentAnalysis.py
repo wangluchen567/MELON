@@ -84,7 +84,7 @@ class PrincipalComponentAnalysis():
 
 
 def run_reduce_instance(model, X_size, X_feat):
-    # 随机生成回归数据进行PCA降维(方便查看效果)
+    # 随机生成降维数据进行PCA降维(方便查看效果)
     X, Y, _ = random_generate_regression(X_size, X_feat, X_lower=0, X_upper=20, loc=0, scale=0.3)
     X_data = np.concatenate((X, Y), axis=1)
     X_reduced = model.train(X_data)

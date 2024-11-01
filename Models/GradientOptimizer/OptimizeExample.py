@@ -1,37 +1,35 @@
-import numpy as np
-import matplotlib.pyplot as plt
 from PlatContrast import *
 from Function import Function
 from mpl_toolkits.mplot3d import Axes3D
 
 
-def example_2D():
+def example_2D(grad_type='Adam', epochs=100):
     def cal_func(x): return x ** 2
 
     def cal_grad(x): return 2 * x
 
-    func = Function(cal_func, cal_grad, init_value=5, grad_type='Adam', learning_rate=0.1)
-    func.optimize(epochs=20)
+    func = Function(cal_func, cal_grad, init_value=5, grad_type=grad_type, learning_rate=0.1)
+    func.optimize(epochs=epochs)
     func.plot_2D(x_range=[-5, 5])
 
 
-def example_contour():
+def example_contour(grad_type='Adam', epochs=100):
     def cal_func(x, y): return x ** 2 + y ** 2
 
     def cal_grad(x): return 2 * x
 
-    func = Function(cal_func, cal_grad, init_value=np.array([3, 4]), grad_type='Adam', learning_rate=0.1)
-    func.optimize(epochs=100)
+    func = Function(cal_func, cal_grad, init_value=np.array([3, 4]), grad_type=grad_type, learning_rate=0.1)
+    func.optimize(epochs=epochs)
     func.plot_contour(x_range=[-5, 5], y_range=[-5, 5])
 
 
-def example_3D():
+def example_3D(grad_type='Adam', epochs=100):
     def cal_func(x, y): return x ** 2 - y ** 2
 
     def cal_grad(x): return np.array([2 * x[0], -2 * x[1]])
 
-    func = Function(cal_func, cal_grad, init_value=np.array([4, 0.001]), grad_type='Adam', learning_rate=0.1)
-    func.optimize(epochs=50)
+    func = Function(cal_func, cal_grad, init_value=np.array([4, 0.001]), grad_type=grad_type, learning_rate=0.1)
+    func.optimize(epochs=epochs)
     func.plot_3D(x_range=[-5, 5], y_range=[-5, 5])
 
 
@@ -107,5 +105,11 @@ def contrast_3D():
 
 
 if __name__ == '__main__':
-    # example_3D()
+    # example_2D('Adam', epochs=100)
+    # example_contour('Adam', epochs=100)
+    # example_3D('Adam', epochs=100)
+
+    # contrast_2D()
+    # contrast_contour()
+    # contrast_contour2()
     contrast_3D()
