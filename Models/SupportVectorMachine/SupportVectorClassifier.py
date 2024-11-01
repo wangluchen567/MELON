@@ -168,7 +168,7 @@ class SupportVectorClassifier():
 
     def plot_2dim(self, X_data=None, Y_data=None, Truth=None, pause=False, n_iter=None):
         """为二维分类数据集和结果画图"""
-        if self.kernel_type == self.LINEAR and Truth is not None:
+        if self.kernel_type == self.LINEAR:
             plot_2dim_classification(self.X_train, self.Y_train, self.Weights, X_data, Y_data, Truth=Truth,
                                      support=(self.alphas.flatten() != 0.0), pause=pause, n_iter=n_iter)
         else:
