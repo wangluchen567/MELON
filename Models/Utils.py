@@ -200,6 +200,8 @@ def plot_2dim_classification(X_data, Y_data, Weights, X_test=None, Y_test=None, 
         X1_gap = (X1_max - X1_min) * ratio
         plt.xlim([X0_min - X0_gap, X0_max + X0_gap])
         plt.ylim([X1_min - X1_gap, X1_max + X1_gap])
+    plt.xlabel('x1')
+    plt.ylabel('x2')
     plt.grid()
     if pause:
         if n_iter:
@@ -266,6 +268,9 @@ def plot_2dim_regression(X_data, Y_data, Weights, X_test=None, Y_test=None, Trut
         Y_gap = (Y_max - Y_min) * ratio
         plt.xlim([X_min - X_gap, X_max + X_gap])
         plt.ylim([Y_min - Y_gap, Y_max + Y_gap])
+    plt.xlabel('x')
+    plt.ylabel('y')
+    plt.grid()
     if pause:
         if n_iter:
             plt.title("iter: " + str(n_iter))
@@ -549,8 +554,11 @@ def plot_2dim_classification_sample(model, X_data, Y_data, X_test=None, Y_test=N
                     marker='*', s=120, edgecolors='black', linewidths=0.5)
     if support is not None:
         plt.scatter(X_data[support, 0], X_data[support, 1], s=150, c='none', linewidth=1.5, edgecolor='tomato')
-
     plt.grid()
+    plt.xlabel('x1')
+    plt.ylabel('x2')
+    plt.xlim(x1_min, x1_max)
+    plt.ylim(x2_min, x2_max)
     if pause:
         if n_iter:
             plt.title("iter: " + str(n_iter))
@@ -649,12 +657,19 @@ def plot_2dim_regression_sample(model, X_data, Y_data, X_test=None, Y_test=None,
     if not pause: plt.figure()
     plt.clf()
     x_min, x_max = np.min(X_data, axis=0), np.max(X_data, axis=0)  # 得到数据范围
+    y_min, y_max = np.min(Y_data, axis=0), np.max(Y_data, axis=0)  # 得到数据范围
     # 注意：这里为了更好看一些，采样数据时会多采样一部分
     x_range = x_max - x_min
     x_min -= extra * x_range
     x_max += extra * x_range
+    y_range = y_max - y_min
+    y_min -= extra * y_range
+    y_max += extra * y_range
     x_sample = np.linspace(x_min, x_max, sample_steps)
     y_sample = model.predict(x_sample)  # 使用模型得到预测数据
+    # 若数据值比较大则使用科学计数法显示
+    if np.max(np.abs(Y_data)) >= 1.e+2:
+        plt.ticklabel_format(style='sci', axis='y', scilimits=(0, 0))
     # 绘制预测值
     plt.plot(x_sample, y_sample, c='red', linewidth=2)
     # 绘制数据集位置点
@@ -664,6 +679,10 @@ def plot_2dim_regression_sample(model, X_data, Y_data, X_test=None, Y_test=None,
     if support is not None:  # 用于绘制支持向量位置
         plt.scatter(X_data[support], Y_data[support], s=150, c='none', linewidth=1.5, edgecolor='tomato')
     plt.grid()
+    plt.xlabel('x')
+    plt.ylabel('y')
+    plt.xlim(x_min, x_max)
+    plt.ylim(y_min, y_max)
     if pause:
         if n_iter:
             plt.title("iter: " + str(n_iter))
@@ -732,6 +751,7 @@ def run_circular_regression(model, X_size=100, X_lower=0, X_upper=15, slope=3, b
     # 对结果进行画图
     model.plot_2dim(X_test, Y_test)
 
+
 def random_make_poly(num_samples=100, lower=0, upper=10, degree=3, gamma=3, constant=3, noise=0.1, shuffle=True):
     """
     随机创建多项式函数测试数据
@@ -756,8 +776,9 @@ def random_make_poly(num_samples=100, lower=0, upper=10, degree=3, gamma=3, cons
         Y = Y[random_index]
     return X, Y
 
-def run_poly_regression(model, X_size=100, X_lower=0, X_upper=5,
-                        degree=3, gamma=3, constant=3, noise=1, train_ratio=0.8):
+
+def run_poly_regression(model, X_size=100, X_lower=-5, X_upper=5,
+                        degree=3, gamma=3, constant=3, noise=10, train_ratio=0.8):
     """
     指定模型对多项式函数数据的回归测试
     :param model: 指定模型
