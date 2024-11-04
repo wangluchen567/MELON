@@ -9,7 +9,7 @@ from Models.Utils import plot_2dim_regression, run_uniform_regression, run_contr
 
 
 class LinearRegression():
-    def __init__(self, X_train=None, Y_train=None, Lambda=0, mode=0, epochs=30, lr=0.01, grad_type='Adam'):
+    def __init__(self, X_train=None, Y_train=None, Lambda=0, mode=0, epochs=30, lr=0.01, grad_type='Adam', show=True):
         self.X_train = None  # 训练数据
         self.Y_train = None  # 真实标签
         self.set_train_data(X_train, Y_train)
@@ -26,6 +26,8 @@ class LinearRegression():
         self.lr = lr
         # 梯度法类型
         self.grad_type = grad_type
+        # 是否展示迭代过程
+        self.show = show
 
     def set_train_data(self, X_train, Y_train):
         """给定训练数据集和标签数据"""
@@ -112,7 +114,8 @@ class LinearRegression():
             self.cal_grad()
             self.optimizer.step()
             self.history.append(self.Weights)
-            self.plot_2dim(pause=True, n_iter=i + 1)
+            if self.show:
+                self.plot_2dim(pause=True, n_iter=i + 1)
 
     def plot_2dim(self, X_test=None, Y_test=None, Truth=None, pause=False, n_iter=None):
         """为二维回归数据集和结果画图"""

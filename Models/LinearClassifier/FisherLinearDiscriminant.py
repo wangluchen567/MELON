@@ -4,7 +4,7 @@ Fisher Linear Discriminant
 """
 import warnings
 import numpy as np
-from Models.Utils import plot_2dim_classification, run_uniform_classification, run_double_classification
+from Models.Utils import sigmoid, plot_2dim_classification, run_uniform_classification, run_double_classification
 
 
 class FisherLinearDiscriminant():
@@ -57,6 +57,18 @@ class FisherLinearDiscriminant():
         Y_data = np.ones((len(X_data), 1))
         Y_data[X_B.dot(self.Weights) < 0] = -1
         return Y_data
+
+    def predict_prob(self, X_data):
+        """模型对测试集进行预测"""
+        if X_data.ndim == 2:
+            pass
+        elif X_data.ndim == 1:
+            X_data = X_data.reshape(1, -1)
+        else:
+            raise ValueError("Cannot handle data with a shape of 3 dimensions or more")
+        X_B = np.concatenate((X_data, np.ones((len(X_data), 1))), axis=1)
+        Y_data_prob = sigmoid(X_B.dot(self.Weights))
+        return Y_data_prob
 
     def plot_2dim(self, X_test=None, Y_test=None, Truth=None, pause=False):
         """为二维分类数据集和结果画图"""

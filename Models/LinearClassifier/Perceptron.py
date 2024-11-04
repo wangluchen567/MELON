@@ -5,11 +5,11 @@ Perceptron
 import warnings
 import numpy as np
 from Models.GradientOptimizer.Optimizer import GradientDescent, Momentum, AdaGrad, RMSProp, Adam
-from Models.Utils import plot_2dim_classification, run_uniform_classification, run_double_classification
+from Models.Utils import sigmoid, plot_2dim_classification, run_uniform_classification, run_double_classification
 
 
 class Perceptron():
-    def __init__(self, X_train=None, Y_train=None, epochs=50, lr=0.01, grad_type='Adam'):
+    def __init__(self, X_train=None, Y_train=None, epochs=50, lr=0.01, grad_type='Adam', show=True):
         self.X_train = None  # 训练数据
         self.Y_train = None  # 真实标签
         self.set_train_data(X_train, Y_train)
@@ -24,6 +24,8 @@ class Perceptron():
         self.lr = lr
         # 梯度法类型
         self.grad_type = grad_type
+        # 是否展示迭代过程
+        self.show = show
 
     def set_train_data(self, X_train, Y_train):
         """给定训练数据集和标签数据"""
@@ -77,6 +79,18 @@ class Perceptron():
         Y_data[X_B.dot(self.Weights) < 0] = -1
         return Y_data
 
+    def predict_prob(self, X_data):
+        """模型对测试集进行预测"""
+        if X_data.ndim == 2:
+            pass
+        elif X_data.ndim == 1:
+            X_data = X_data.reshape(1, -1)
+        else:
+            raise ValueError("Cannot handle data with a shape of 3 dimensions or more")
+        X_B = np.concatenate((X_data, np.ones((len(X_data), 1))), axis=1)
+        Y_data_prob = sigmoid(X_B.dot(self.Weights))
+        return Y_data_prob
+
     def train_grad(self):
         """使用梯度下降方法进行优化"""
         self.init_weights()
@@ -85,7 +99,8 @@ class Perceptron():
             self.cal_grad()
             self.optimizer.step()
             self.history.append(self.Weights)
-            self.plot_2dim(pause=True, n_iter=i + 1)
+            if self.show:
+                self.plot_2dim(pause=True, n_iter=i + 1)
 
     def cal_grad(self):
         """计算梯度值"""

@@ -5,11 +5,11 @@ Logistic Regression
 import warnings
 import numpy as np
 from Models.GradientOptimizer.Optimizer import GradientDescent, Momentum, AdaGrad, RMSProp, Adam
-from Models.Utils import plot_2dim_classification, run_uniform_classification, run_double_classification
+from Models.Utils import sigmoid, plot_2dim_classification, run_uniform_classification, run_double_classification
 
 
 class LogisticRegression():
-    def __init__(self, X_train=None, Y_train=None, epochs=50, lr=0.01, grad_type='Adam'):
+    def __init__(self, X_train=None, Y_train=None, epochs=50, lr=0.01, grad_type='Adam', show=True):
         self.X_train = None  # 训练数据
         self.Y_train = None  # 真实标签
         self.Y_train_ = None  # 逻辑回归特殊标签
@@ -25,6 +25,8 @@ class LogisticRegression():
         self.lr = lr
         # 梯度法类型
         self.grad_type = grad_type
+        # 是否展示迭代过程
+        self.show = show
 
     def set_train_data(self, X_train, Y_train):
         """给定训练数据集和标签数据"""
@@ -78,15 +80,27 @@ class LogisticRegression():
             raise ValueError("Cannot handle data with a shape of 3 dimensions or more")
         X_B = np.concatenate((X_data, np.ones((len(X_data), 1))), axis=1)
         Y_data = np.ones((len(X_data), 1))
-        Y_data[self.sigmoid(X_B.dot(self.Weights)) < 1 / 2] = -1
+        Y_data[sigmoid(X_B.dot(self.Weights)) < 1 / 2] = -1
         return Y_data
+
+    def predict_prob(self, X_data):
+        """模型对测试集进行预测"""
+        if X_data.ndim == 2:
+            pass
+        elif X_data.ndim == 1:
+            X_data = X_data.reshape(1, -1)
+        else:
+            raise ValueError("Cannot handle data with a shape of 3 dimensions or more")
+        X_B = np.concatenate((X_data, np.ones((len(X_data), 1))), axis=1)
+        Y_data_prob = sigmoid(X_B.dot(self.Weights))
+        return Y_data_prob
 
     def cal_grad(self):
         """计算梯度值"""
         # 在数据最后一列添加一列单位矩阵作为转置b
         X_B = np.concatenate((self.X_train, np.ones((len(self.X_train), 1))), axis=1)
         # 这里使用的是特殊标签矩阵Y_train_ (0/1)
-        self.Grad = X_B.T @ (self.sigmoid(X_B @ self.Weights) - self.Y_train_) / len(self.X_train)
+        self.Grad = X_B.T @ (sigmoid(X_B @ self.Weights) - self.Y_train_) / len(self.X_train)
 
     def train_grad(self):
         """使用梯度下降方法进行优化"""
@@ -96,19 +110,8 @@ class LogisticRegression():
             self.cal_grad()
             self.optimizer.step()
             self.history.append(self.Weights)
-            self.plot_2dim(pause=True, n_iter=i + 1)
-
-    @staticmethod
-    def sigmoid(x):
-        # 在求解指数过大的指数函数时防止溢出
-        indices_pos = np.nonzero(x >= 0)
-        indices_neg = np.nonzero(x < 0)
-        y = np.zeros_like(x)
-        # y = 1 / (1 + exp(-x)), x >= 0
-        # y = exp(x) / (1 + exp(x)), x < 0
-        y[indices_pos] = 1 / (1 + np.exp(-x[indices_pos]))
-        y[indices_neg] = np.exp(x[indices_neg]) / (1 + np.exp(x[indices_neg]))
-        return y
+            if self.show:
+                self.plot_2dim(pause=True, n_iter=i + 1)
 
     def plot_2dim(self, X_test=None, Y_test=None, Truth=None, pause=False, n_iter=None):
         """为二维分类数据集和结果画图"""
