@@ -4,6 +4,43 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
 
+def normalize(matrix, axis=None):
+    """
+    对数据矩阵进行归一化
+    :param matrix: 数据矩阵
+    :param axis: 沿着哪个轴
+    :return: 归一化数据
+    """
+    if axis is None:
+        if max(matrix) == min(matrix):
+            return matrix
+        else:
+            return (matrix - min(matrix)) / (max(matrix) - min(matrix))
+    elif axis == 0:
+        matrix_ = matrix.copy()
+        mask = np.max(matrix_, axis=axis) != np.min(matrix_, axis=axis)
+        matrix_[:, mask] = ((matrix_[:, mask] - np.min(matrix_, axis=axis)[mask])
+                            / (np.max(matrix_, axis=axis)[mask] - np.min(matrix_, axis=axis)[mask]))
+        return matrix_
+    elif axis == 1:
+        mask = np.max(matrix, axis=axis) != np.min(matrix, axis=axis)
+        return ((matrix[mask] - np.min(matrix[mask], axis=axis, keepdims=True))
+                / (np.max(matrix[mask], axis=axis, keepdims=True) - np.min(matrix[mask], axis=axis, keepdims=True)))
+    else:
+        raise ValueError("There is currently no axis larger than 1")
+
+def sigmoid(x):
+    """sigmoid函数"""
+    # 防止指数溢出
+    indices_pos = np.nonzero(x >= 0)
+    indices_neg = np.nonzero(x < 0)
+    y = np.zeros_like(x)
+    # y = 1 / (1 + exp(-x)), x >= 0
+    # y = exp(x) / (1 + exp(x)), x < 0
+    y[indices_pos] = 1 / (1 + np.exp(-x[indices_pos]))
+    y[indices_neg] = np.exp(x[indices_neg]) / (1 + np.exp(x[indices_neg]))
+    return y
+
 def calculate_accuracy(Truth, Predict):
     """
     计算分类结果的准确率
