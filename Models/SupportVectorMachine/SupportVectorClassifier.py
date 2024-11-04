@@ -6,7 +6,7 @@ import warnings
 import numpy as np
 from Models.SupportVectorMachine.SequentialMinimalOptimization import smo_greedy_step, smo_random
 from Models.Utils import (plot_2dim_classification, run_uniform_classification, run_double_classification,
-                          plot_2dim_classification_sample, run_circle_classification)
+                          plot_2dim_classification_sample, run_circle_classification, sigmoid)
 
 
 class SupportVectorClassifier():
@@ -17,10 +17,9 @@ class SupportVectorClassifier():
     SIGMOID = 3
 
     def __init__(self, X_train=None, Y_train=None, C=10, tol=1.e-4,
-                 kernel_type=LINEAR, gamma=None, degree=3, const=1, num_iter=100):
+                 kernel_type=LINEAR, gamma=None, degree=3, const=1, num_iter=100, show=True):
         self.X_train = None  # 训练数据
         self.Y_train = None  # 真实标签
-        self.Y_train_ = None  # 逻辑回归特殊标签
         self.set_train_data(X_train, Y_train)
         self.Weights = None  # 模型参数
         self.kernel_mat = None  # 核函数矩阵
@@ -32,6 +31,7 @@ class SupportVectorClassifier():
         self.degree = degree  # 核函数系数（指数项）
         self.const = const  # 核函数系数（常数项）
         self.num_iter = num_iter  # 迭代优化次数
+        self.show = show  # 是否展示迭代过程
 
     def set_train_data(self, X_train, Y_train):
         """给定训练数据集和标签数据"""
@@ -118,6 +118,8 @@ class SupportVectorClassifier():
         self.init_weights()
         # 使用smo算法计算乘子参数
         self.smo_algorithm()
+        # 根据得到的参数计算模型权重参数
+        self.cal_weights()
 
     def predict(self, X_data):
         """模型对测试集进行预测"""
@@ -142,6 +144,27 @@ class SupportVectorClassifier():
             Y_data[Y_data < 0] = -1
         return Y_data
 
+    def predict_prob(self, X_data):
+        """模型对测试集进行预测(预测得到是正例的概率)"""
+        if X_data.ndim == 2:
+            pass
+        elif X_data.ndim == 1:
+            X_data = X_data.reshape(1, -1)
+        else:
+            raise ValueError("Cannot handle data with a shape of 3 dimensions or more")
+        # 为简化运算，这里使用线性核函数时利用参数直接求结果
+        if self.kernel_type == self.LINEAR:
+            X_B = np.concatenate((X_data, np.ones((len(X_data), 1))), axis=1)
+            Y_data_prob = sigmoid(X_B.dot(self.Weights))
+        else:  # 否则通过核函数求结果
+            # 先得到非零的位置，以简化运算
+            non_zeros = np.nonzero(self.alphas.flatten())[0]
+            # 计算预测数据的核函数矩阵
+            kernel_predict = self.cal_kernel_mat(self.X_train[non_zeros], X_data)
+            Y_data = kernel_predict.T @ (self.alphas[non_zeros] * self.Y_train[non_zeros]) + self.b
+            Y_data_prob = sigmoid(Y_data)
+        return Y_data_prob
+
     def cal_weights(self):
         """计算参数 (权重)"""
         X_feat = self.X_train.shape[1]
@@ -158,13 +181,14 @@ class SupportVectorClassifier():
         for i in range(self.num_iter):
             self.alphas, self.b, optimize_end = smo_greedy_step(self.kernel_mat, self.X_train, self.Y_train,
                                                                 self.alphas, self.b, self.C, self.tol)
-            # 若优化结束则跳出循环(没有可优化的项了)
-            if optimize_end:
-                print("The optimization has ended early, "
-                      "and the number of iterations for this optimization is {}".format(i))
-                break
-            self.cal_weights()
-            self.plot_2dim(pause=True, n_iter=i + 1)
+            if self.show:
+                # 若优化结束则跳出循环(没有可优化的项了)
+                if optimize_end:
+                    print("The optimization has ended early, "
+                          "and the number of iterations for this optimization is {}".format(i))
+                    break
+                self.cal_weights()
+                self.plot_2dim(pause=True, n_iter=i + 1)
 
     def plot_2dim(self, X_data=None, Y_data=None, Truth=None, pause=False, n_iter=None):
         """为二维分类数据集和结果画图"""
