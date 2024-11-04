@@ -20,7 +20,6 @@ class SupportVectorRegressor():
                  kernel_type=LINEAR, gamma=None, degree=3, const=1, num_iter=100):
         self.X_train = None  # 训练数据
         self.Y_train = None  # 真实标签
-        self.Y_train_ = None  # 逻辑回归特殊标签
         self.set_train_data(X_train, Y_train)
         self.Weights = None  # 模型参数
         self.kernel_mat = None  # 核函数矩阵
