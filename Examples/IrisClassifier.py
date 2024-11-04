@@ -79,8 +79,8 @@ if __name__ == '__main__':
     # 构建模型
     models = [FisherLinearDiscriminant(),
               GaussianDiscriminant(),
-              LogisticRegression(epochs=100, lr=0.01, grad_type='Adam'),
-              Perceptron(epochs=100, lr=0.01, grad_type='Adam'),
+              LogisticRegression(epochs=1000, lr=0.01, grad_type='Adam'),
+              Perceptron(epochs=1000, lr=0.01, grad_type='Adam'),
               SupportVectorClassifier(kernel_type=SupportVectorClassifier.LINEAR),
               SupportVectorClassifier(kernel_type=SupportVectorClassifier.RBF)]
     # 使用 一对一 分类器分类
