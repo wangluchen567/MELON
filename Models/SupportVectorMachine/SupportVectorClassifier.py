@@ -132,16 +132,17 @@ class SupportVectorClassifier():
         # 为简化运算，这里使用线性核函数时利用参数直接求结果
         if self.kernel_type == self.LINEAR:
             X_B = np.concatenate((X_data, np.ones((len(X_data), 1))), axis=1)
-            Y_data = np.ones((len(X_data), 1))
+            Y_data = np.ones((len(X_data), 1), dtype=int)
             Y_data[X_B.dot(self.Weights) < 0] = -1
         else:  # 否则通过核函数求结果
             # 先得到非零的位置，以简化运算
             non_zeros = np.nonzero(self.alphas.flatten())[0]
             # 计算预测数据的核函数矩阵
             kernel_predict = self.cal_kernel_mat(self.X_train[non_zeros], X_data)
-            Y_data = kernel_predict.T @ (self.alphas[non_zeros] * self.Y_train[non_zeros]) + self.b
-            Y_data[Y_data >= 0] = 1
-            Y_data[Y_data < 0] = -1
+            Y_out = kernel_predict.T @ (self.alphas[non_zeros] * self.Y_train[non_zeros]) + self.b
+            Y_data = np.ones((len(X_data), 1), dtype=int)
+            Y_data[Y_out >= 0] = 1
+            Y_data[Y_out < 0] = -1
         return Y_data
 
     def predict_prob(self, X_data):
