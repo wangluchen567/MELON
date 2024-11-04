@@ -75,7 +75,7 @@ class Perceptron():
         else:
             raise ValueError("Cannot handle data with a shape of 3 dimensions or more")
         X_B = np.concatenate((X_data, np.ones((len(X_data), 1))), axis=1)
-        Y_data = np.ones((len(X_data), 1))
+        Y_data = np.ones((len(X_data), 1), dtype=int)
         Y_data[X_B.dot(self.Weights) < 0] = -1
         return Y_data
 
