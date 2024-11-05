@@ -48,6 +48,7 @@ def calculate_accuracy(Truth, Predict):
     :param Predict: 预测标签
     :return: 准确率
     """
+    Truth, Predict = np.array(Truth), np.array(Predict)
     if len(Truth.flatten()) != len(Predict.flatten()):
         raise ValueError("The number of real labels and predicted labels does not match")
     accuracy = np.array(Truth.flatten() == Predict.flatten(), dtype=int).sum() / len(Truth.flatten())
@@ -393,7 +394,8 @@ def run_uniform_classification(model, X_size=100, X_feat=2, X_lower=-1, X_upper=
     # 使用数据集对模型训练
     model.train(X_train, Y_train)
     print("Truth Weights: ", Truth_Weights.flatten())
-    print("Model Weights: ", model.Weights.flatten())
+    if hasattr(model, 'Weights'):
+        print("Model Weights: ", model.Weights.flatten())
     # 对训练集进行预测
     Y_train_pred = model.predict(X_train)
     # 计算训练准确率
@@ -431,7 +433,8 @@ def run_double_classification(model, X_size=100, X_feat=2, X_lower=-1, X_upper=1
     X_test, Y_test = X_data[train_size:], Y_data[train_size:]
     # 使用数据集对模型训练
     model.train(X_train, Y_train)
-    print("Model Weights:", model.Weights.flatten())
+    if hasattr(model, 'Weights'):
+        print("Model Weights: ", model.Weights.flatten())
     # 对训练集进行预测
     Y_train_pred = model.predict(X_train)
     # 计算训练准确率
@@ -470,7 +473,8 @@ def run_uniform_regression(model, X_size=100, X_feat=1, X_lower=0, X_upper=20, t
     # 使用数据集对模型训练
     model.train(X_train, Y_train)
     print("Truth Weights: ", Truth_Weights.flatten())
-    print("Model Weights: ", model.Weights.flatten())
+    if hasattr(model, 'Weights'):
+        print("Model Weights: ", model.Weights.flatten())
     # 对训练集进行预测
     Y_train_pred = model.predict(X_train)
     # 计算训练结果的mse值
@@ -657,7 +661,8 @@ def run_circle_classification(model, X_size=100, factor=0.5, noise=0.1, train_ra
     X_test, Y_test = X_data[train_size:], Y_data[train_size:]
     # 使用数据集对模型训练
     model.train(X_train, Y_train)
-    print("Model Weights: ", model.Weights.flatten())
+    if hasattr(model, 'Weights'):
+        print("Model Weights: ", model.Weights.flatten())
     # 对训练集进行预测
     Y_train_pred = model.predict(X_train)
     # 计算训练准确率

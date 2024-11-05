@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from Models.Utils import normalize
+from Models.Utils import normalize, calculate_accuracy
 from Models.LinearClassifier.Perceptron import Perceptron
 from Models.LinearClassifier.LogisticRegression import LogisticRegression
 from Models.MultiClassWrapper.OneVsOneClassifier import OneVsOneClassifier
@@ -13,12 +13,6 @@ from Models.SupportVectorMachine.SupportVectorClassifier import SupportVectorCla
 def load_iris_data():
     # 读取鸢尾花数据集
     data = pd.read_csv("../Dataset/Iris.csv")
-    # 将数据集中的每种花换成整数0, 1, 2
-    # data.iloc[np.where(data['Species'] == 'Iris-setosa')[0], -1] = 0
-    # data.iloc[np.where(data['Species'] == 'Iris-versicolor')[0], -1] = 1
-    # data.iloc[np.where(data['Species'] == 'Iris-virginica')[0], -1] = 2
-    # 将Species列的数据设置类型为int
-    # data['Species'] = data['Species'].astype(int)
     # 数据集特征
     features = data[['SepalLengthCm',
                      'SepalWidthCm',
@@ -63,14 +57,12 @@ def run_classifier(model, X_train, Y_train, X_test, Y_test):
     # 训练准确率计算
     Y_train_pred = model.predict(X_train)
     # 计算训练准确率
-    train_accuracy = np.array(Y_train_pred == Y_train, dtype=int).sum() / len(Y_train)
-    print("Train Accuracy:  {:.3f} %".format(train_accuracy * 100))
+    print("Train Accuracy:  {:.3f} %".format(calculate_accuracy(Y_train_pred, Y_train) * 100))
     # 对测试集进行预测
     Y_test_pred = model.predict(X_test)
     # print("Predict Labels: ", Y_test_pred.flatten())
     # 计算测试集准确率
-    test_accuracy = np.array(Y_test_pred == Y_test, dtype=int).sum() / len(Y_test)
-    print("Test Accuracy:  {:.3f} %\n".format(test_accuracy * 100))
+    print("Test Accuracy:  {:.3f} %\n".format(calculate_accuracy(Y_test_pred, Y_test) * 100))
 
 
 if __name__ == '__main__':
