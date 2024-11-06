@@ -5,7 +5,8 @@ import matplotlib.pyplot as plt
 import matplotlib.colors as mpl_colors
 
 
-def recursion_info(graph, node, parent_id=None, branch_name=None, class_names=None, colors=None, node_colors=None):
+def recursion_info(graph, node, parent_id=None, branch_name=None, class_names=None,
+                   colors=None, node_colors=None, max_indicator=1):
     # 初始化节点颜色信息
     if node_colors is None:
         node_colors = []
@@ -38,15 +39,17 @@ def recursion_info(graph, node, parent_id=None, branch_name=None, class_names=No
     if parent_id is not None:
         graph.add_edge(parent_id, node_id, label=branch_name)
     # 节点颜色配置
-    node_color = 'skyblue'  # 节点默认颜色
+    indicator = (node.indicator / max_indicator) if max_indicator > 1 else node.indicator
+    alpha = 0.9 - 0.8 * indicator  # 设置透明度
+    # node_color = 'skyblue'  # 节点默认颜色
+    node_color = mpl_colors.to_rgba('skyblue', alpha=alpha)
     if class_names is not None and colors is not None:
         # 得到节点的颜色信息
-        node_color = mpl_colors.to_rgba(colors[np.where(class_names==node.category)[0]],
-                                        alpha=0.9 - 0.8*node.indicator)
+        node_color = mpl_colors.to_rgba(colors[np.where(class_names==node.category)[0]], alpha=alpha)
     node_colors.append(node_color)
     # 递归地得到每个子节点的信息
     for i, (branch_name, child_node) in enumerate(node.branches.items()):
-        recursion_info(graph, child_node, node_id, branch_name, class_names, colors, node_colors)
+        recursion_info(graph, child_node, node_id, branch_name, class_names, colors, node_colors, max_indicator)
     return node_colors
 
 
@@ -63,9 +66,9 @@ def plot_tree(root, class_names=None, font_size=6.6, font_family='Microsoft Yahe
         # 获取一个colormap对象
         cmap = cm.get_cmap('rainbow')
         # 使用linspace生成一个从0到1的等间隔的数组，长度为num_class
-        colors = cmap(np.linspace(0, 1, len(class_names)))
+        colors = cmap(np.linspace(0.1, 0.9, len(class_names)))
     # 从根节点开始递归得到树中每个节点的信息
-    node_colors = recursion_info(graph, root, class_names=class_names, colors=colors)
+    node_colors = recursion_info(graph, root, class_names=class_names, colors=colors, max_indicator=root.max_indicator)
     # 根据树的深度和宽度设置画布大小
     plt.figure(figsize=(root.max_width*2, (root.max_depth + 1)*2))
     positions = nx.get_node_attributes(graph, 'pos')
@@ -79,4 +82,5 @@ def plot_tree(root, class_names=None, font_size=6.6, font_family='Microsoft Yahe
     nx.draw_networkx_edge_labels(graph, positions, edge_labels=edge_labels,
                                  font_size=font_size)
     plt.title('Decision Tree')
+    plt.tight_layout()
     plt.show()
