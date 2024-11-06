@@ -715,7 +715,7 @@ def plot_2dim_regression_sample(model, X_data, Y_data, X_test=None, Y_test=None,
     # 绘制预测值
     plt.plot(x_sample, y_sample, c='red', linewidth=2)
     # 绘制数据集位置点
-    plt.scatter(X_data, Y_data, c='blue')
+    plt.scatter(X_data, Y_data, c='blue', alpha=0.8)
     if X_test is not None and Y_test is not None:  # 用于画预测的点
         plt.scatter(X_test, Y_test, c='red', marker='*', s=120, edgecolors='black', linewidths=0.5)
     if support is not None:  # 用于绘制支持向量位置
@@ -730,6 +730,7 @@ def plot_2dim_regression_sample(model, X_data, Y_data, X_test=None, Y_test=None,
             plt.title("iter: " + str(n_iter))
         plt.pause(pause_time)
     else:
+        plt.savefig("DTR4.png", dpi=160)
         plt.show()
 
 
