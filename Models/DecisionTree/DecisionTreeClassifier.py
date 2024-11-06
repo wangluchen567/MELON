@@ -19,6 +19,7 @@ class Node():
         # 当前节点的类别(当前数据集中占比最多的类)
         self.category = self.get_most_freq(self.class_types)
         self.indicator = None  # 经过计算得到的指标值
+        self.ind_type = None  # 指标类型('entropy'或'gini')
         self.samples = len(data)  # 当前类别数据集大小
         # 当前节点数据中每种类别数量
         self.values = [np.sum(self.class_types == class_) for class_ in class_list]
@@ -113,6 +114,7 @@ class DecisionTreeClassifier():
         # 初始化决策树根节点
         self.decision_tree = Node(self.train_data, self.class_list)
         self.decision_tree.indicator = self.cal_indicator(self.train_data)
+        self.decision_tree.ind_type = self.criterion
         self.decision_tree.state = "root"
         # self.TreeGenerateRecursion(self.decision_tree, self.train_data, self.attributes.copy())
         self.TreeGenerateQueue(self.decision_tree, self.train_data, self.attributes.copy())
@@ -165,6 +167,7 @@ class DecisionTreeClassifier():
                 node.branches[t] = new_node
                 new_node.state = f"{attr}={t}"
                 # 计算指标值（信息熵或基尼指数）
+                new_node.ind_type = self.criterion
                 new_node.indicator = self.cal_indicator(data_t)
                 # 若样本子集为空，则将分支节点标记为叶节点，且其类别标记为数据集中样本数最多的类
                 if len(data_t) == 0:
@@ -186,6 +189,7 @@ class DecisionTreeClassifier():
             node.branches['True'] = new_node
             new_node.state = f"{attr}<={divide}"
             # 计算指标值（信息熵或基尼指数）
+            new_node.ind_type = self.criterion
             new_node.indicator = self.cal_indicator(data_t)
             # 若样本子集为空，则将分支节点标记为叶节点，且其类别标记为数据集中样本数最多的类
             if len(data_t) == 0:
@@ -202,6 +206,7 @@ class DecisionTreeClassifier():
             node.branches['False'] = new_node
             new_node.state = f"{attr}>{divide}"
             # 计算指标值（信息熵或基尼指数）
+            new_node.ind_type = self.criterion
             new_node.indicator = self.cal_indicator(data_t)
             # 若样本子集为空，则将分支节点标记为叶节点，且其类别标记为数据集中样本数最多的类
             if len(data_t) == 0:
@@ -247,6 +252,7 @@ class DecisionTreeClassifier():
                     node.branches[t] = new_node
                     new_node.state = f"{attr}={t}"
                     # 计算指标值（信息熵或基尼指数）
+                    new_node.ind_type = self.criterion
                     new_node.indicator = self.cal_indicator(data_t)
                     # 若样本子集为空，则将分支节点标记为叶节点，且其类别标记为数据集中样本数最多的类
                     if len(data_t) == 0:
@@ -268,6 +274,7 @@ class DecisionTreeClassifier():
                 node.branches['True'] = new_node
                 new_node.state = f"{attr}<={divide}"
                 # 计算指标值（信息熵或基尼指数）
+                new_node.ind_type = self.criterion
                 new_node.indicator = self.cal_indicator(data_t)
                 # 若样本子集为空，则将分支节点标记为叶节点，且其类别标记为数据集中样本数最多的类
                 if len(data_t) == 0:
@@ -284,6 +291,7 @@ class DecisionTreeClassifier():
                 node.branches['False'] = new_node
                 new_node.state = f"{attr}>{divide}"
                 # 计算指标值（信息熵或基尼指数）
+                new_node.ind_type = self.criterion
                 new_node.indicator = self.cal_indicator(data_t)
                 # 若样本子集为空，则将分支节点标记为叶节点，且其类别标记为数据集中样本数最多的类
                 if len(data_t) == 0:
@@ -304,6 +312,7 @@ class DecisionTreeClassifier():
         if self.splitter == 'random':  # 随机选择
             index = np.random.randint(len(attribute))
         elif self.splitter == 'best':  # 贪婪选择
+
             index = np.argmax(gains)
         else:
             raise ValueError("There is no standard for selecting attributes like this")
@@ -319,9 +328,9 @@ class DecisionTreeClassifier():
             return self.cal_gain_continuous(data, attr_key)
 
     def cal_gain_discrete(self, data, attr_key):
-        """计算信息增益(离散特征)"""
+        """计算信息增益/基尼指数(离散特征)"""
         # 首先计算当前样本集合的信息熵初始化为信息增益
-        gain = self.cal_indicator(data)
+        gain = self.cal_indicator(data) if self.criterion == 'entropy' else 1
         # 获得当前属性列
         attr_value = data[attr_key]
         # 得到当前属性列的情况
@@ -333,7 +342,7 @@ class DecisionTreeClassifier():
         return gain
 
     def cal_gain_continuous(self, data, attr_key):
-        """计算信息增益(连续特征)"""
+        """计算信息增益/基尼指数(连续特征)"""
         # 获得当前属性列
         attr_value = data[attr_key]
         # 对数组进行排序
@@ -341,7 +350,9 @@ class DecisionTreeClassifier():
         # 计算每两个数的中位点
         medians = (sorted_attr[:-1] + sorted_attr[1:]) / 2
         # 统计每个中位点划分的信息增益
-        gains = np.zeros_like(medians) + self.cal_indicator(data)
+        gains = np.ones_like(medians)
+        if self.criterion == 'entropy':
+            gains = gains * self.cal_indicator(data)
         # 遍历当前中位点属性情况从而计算信息增益
         for i in range(len(medians)):
             # 先计算不大于该中位点的信息增益
@@ -359,11 +370,11 @@ class DecisionTreeClassifier():
     def cal_indicator(self, data):
         cate = data.iloc[:, -1]
         _, counts = np.unique(cate, return_counts=True)
-        """计算指标值(信息熵值或Gini指数值)"""
+        # 计算指标值(信息熵值或Gini指数值)
         if self.criterion == 'entropy':
             return self.cal_entropy(counts)
         elif self.criterion == 'gini':
-            return self.cal_entropy(counts)
+            return self.cal_gini(counts)
         else:
             raise ValueError("There is no such indicator")
 
@@ -374,6 +385,13 @@ class DecisionTreeClassifier():
         # 为了保证是正的0这里加了0
         entropy = -np.sum(probabilities * np.log2(probabilities)) + 0.0
         return entropy
+
+    @staticmethod
+    def cal_gini(counts):
+        counts = np.array(counts)
+        probabilities = counts / counts.sum()
+        gini = 1 - np.sum(probabilities ** 2)
+        return gini
 
     @staticmethod
     def check_discrete(dtype_):
@@ -409,7 +427,7 @@ def run_watermelon_example():
 if __name__ == '__main__':
     # run_watermelon_example()
     np.random.seed(100)
-    model = DecisionTreeClassifier(max_depth=5)
+    model = DecisionTreeClassifier(max_depth=5, criterion='entropy')
     # run_uniform_classification(model, train_ratio=0.8)
     # run_double_classification(model, train_ratio=0.8)
     run_circle_classification(model, train_ratio=0.8)
