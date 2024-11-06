@@ -357,7 +357,7 @@ class DecisionTreeRegressor():
 
 if __name__ == '__main__':
     np.random.seed(100)
-    model = DecisionTreeRegressor(max_depth=5, criterion='mse')
+    model = DecisionTreeRegressor(max_depth=3, criterion='mse')
     # run_uniform_regression(model, train_ratio=0.8)
     # run_poly_regression(model, train_ratio=0.8)
     run_circular_regression(model, train_ratio=0.8)
