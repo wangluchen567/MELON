@@ -4,8 +4,10 @@ from Models.Utils import normalize
 from Models.LinearClassifier.Perceptron import Perceptron
 from Models.LinearClassifier.LogisticRegression import LogisticRegression
 from Models.LinearClassifier.GaussianDiscriminant import GaussianDiscriminant
+from Models.DecisionTree.DecisionTreeClassifier import DecisionTreeClassifier
 from Models.LinearClassifier.FisherLinearDiscriminant import FisherLinearDiscriminant
 from Models.SupportVectorMachine.SupportVectorClassifier import SupportVectorClassifier
+
 
 
 def load_iris_data():
@@ -71,7 +73,8 @@ def run_iris_classifier(model):
     # 使用数据集对模型训练
     model.train(X_train, Y_train)
     # 训练后的模型参数
-    print("Model Weights: ", model.Weights.flatten())
+    if hasattr(model, 'Weights'):
+        print("Model Weights: ", model.Weights.flatten())
     # 画图展示效果
     model.plot_2dim()
     # 训练准确率计算
@@ -94,6 +97,7 @@ if __name__ == '__main__':
               GaussianDiscriminant(),
               LogisticRegression(epochs=100, lr=0.01, grad_type='Adam'),
               Perceptron(epochs=100, lr=0.01, grad_type='Adam'),
+              DecisionTreeClassifier(),
               SupportVectorClassifier(kernel_type=SupportVectorClassifier.RBF)]
     model = models[4]
     run_iris_classifier(model)

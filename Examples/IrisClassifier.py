@@ -6,6 +6,7 @@ from Models.LinearClassifier.LogisticRegression import LogisticRegression
 from Models.MultiClassWrapper.OneVsOneClassifier import OneVsOneClassifier
 from Models.MultiClassWrapper.OneVsRestClassifier import OneVsRestClassifier
 from Models.LinearClassifier.GaussianDiscriminant import GaussianDiscriminant
+from Models.DecisionTree.DecisionTreeClassifier import DecisionTreeClassifier
 from Models.LinearClassifier.FisherLinearDiscriminant import FisherLinearDiscriminant
 from Models.SupportVectorMachine.SupportVectorClassifier import SupportVectorClassifier
 
@@ -50,7 +51,11 @@ def load_classifier_data(feat_pos=None, ratio=0.8):
 
 
 def run_classifier(model, X_train, Y_train, X_test, Y_test):
-    model_name = type(model.model).__name__
+    """给定分类器模型运行分类器"""
+    if hasattr(model, 'model'):
+        model_name = type(model.model).__name__
+    else:
+        model_name = type(model).__name__
     print("Model: ", model_name)
     # 使用数据集对模型训练
     model.train(X_train, Y_train)
@@ -87,3 +92,8 @@ if __name__ == '__main__':
         # 将模型用多分类器封装
         mc_model = OneVsRestClassifier(model)
         run_classifier(mc_model, X_train, Y_train, X_test, Y_test)
+
+    # 决策树模型可以直接用于多分类
+    dtc_model = DecisionTreeClassifier(max_depth=3, criterion='entropy')
+    run_classifier(dtc_model, X_train, Y_train, X_test, Y_test)
+    dtc_model.plot_tree()
