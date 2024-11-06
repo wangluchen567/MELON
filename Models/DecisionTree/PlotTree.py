@@ -11,11 +11,13 @@ def recursion_info(graph, node, parent_id=None, branch_name=None, class_names=No
         node_colors = []
     # 当前节点的名称
     if node.node_name is not None:
-        node_label = ("{}\nentropy={:.3f}\nsamples={}\nvalues={}\nclass={}".
-                      format(node.node_name, node.indicator, node.samples, node.values, node.category))
+        node_label = ("{}\n{}={:.3f}\nsamples={}\nvalues={}\nclass={}".
+                      format(node.node_name, node.ind_type, node.indicator,
+                             node.samples, node.values, node.category))
     else:
-        node_label = ("entropy={:.3f}\nsamples={}\nvalues={}\nclass={}".
-                      format(node.indicator, node.samples, node.values, node.category))
+        node_label = ("{}={:.3f}\nsamples={}\nvalues={}\nclass={}".
+                      format(node.ind_type, node.indicator, node.samples,
+                             node.values, node.category))
     # 设置当前节点下标为位置信息
     node_id = str(node.pos)
     # 将节点添加到图中
@@ -27,7 +29,8 @@ def recursion_info(graph, node, parent_id=None, branch_name=None, class_names=No
     node_color = 'skyblue'  # 节点默认颜色
     if class_names is not None and colors is not None:
         # 得到节点的颜色信息
-        node_color = mpl_colors.to_rgba(colors[np.where(class_names==node.category)[0]], alpha=0.9 - 0.8*node.indicator)
+        node_color = mpl_colors.to_rgba(colors[np.where(class_names==node.category)[0]],
+                                        alpha=0.9 - 0.8*node.indicator)
     node_colors.append(node_color)
     # 递归地得到每个子节点的信息
     for i, (branch_name, child_node) in enumerate(node.branches.items()):
