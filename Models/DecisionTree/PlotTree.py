@@ -10,14 +10,26 @@ def recursion_info(graph, node, parent_id=None, branch_name=None, class_names=No
     if node_colors is None:
         node_colors = []
     # 当前节点的名称
-    if node.node_name is not None:
-        node_label = ("{}\n{}={:.3f}\nsamples={}\nvalues={}\nclass={}".
-                      format(node.node_name, node.ind_type, node.indicator,
-                             node.samples, node.values, node.category))
+    # 需要判断是分类树还是回归树
+    if hasattr(node, 'values'):
+        node_label = ""  # 分类树
+        if node.node_name is not None:
+            node_label += f"{node.node_name}\n"
+        node_label += (f"{node.ind_type}={node.indicator:.3f}\nsamples={node.samples}\n"
+                       f"values={node.values}\nclass={node.category}")
     else:
-        node_label = ("{}={:.3f}\nsamples={}\nvalues={}\nclass={}".
-                      format(node.ind_type, node.indicator, node.samples,
-                             node.values, node.category))
+        node_label = "" # 回归树
+        if node.node_name is not None:
+            node_label += f"{node.node_name}\n"
+        if node.indicator > 1.e4:  # 若数字太大使用科学计数法表示
+            node_label += f"{node.ind_type}={node.indicator:.2e}\n"
+        else:
+            node_label += f"{node.ind_type}={node.indicator:.3f}\n"
+        node_label += f"samples={node.samples}\n"
+        if node.predict_value > 1.e4:  # 若数字太大使用科学计数法表示
+            node_label += f"predict={node.predict_value:.2e}\n"
+        else:
+            node_label += f"predict={node.predict_value:.3f}\n"
     # 设置当前节点下标为位置信息
     node_id = str(node.pos)
     # 将节点添加到图中
