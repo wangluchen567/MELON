@@ -25,7 +25,7 @@ ChEn's Machine Learning model Organized using Numpy
 ## 安装教程
 
 1.  最好使用 Anaconda 
-2. 必要包: `python>=3.6`、`numpy`、`matplotlib`
+2. 必要包: `python>=3.6`、`numpy`、`pandas`、`matplotlib`
 
 ## 使用说明
 
