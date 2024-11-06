@@ -40,10 +40,12 @@ class ClassifierNode():
         # 保存每一层次的索引
         index_list = [0]
         depth = 0
+        max_indicator = 0
         while queue:
             current_node, depth = queue.popleft()
             # 将x坐标设置为当前索引, 将y坐标设置为当前深度
             current_node.pos = (index_list[depth], depth)
+            max_indicator = max(max_indicator, current_node.indicator)
             index_list[depth] += 1
             for branch in current_node.branches.values():
                 queue.append((branch, depth + 1))  # 将子节点和其层级深度加入队列
@@ -51,8 +53,12 @@ class ClassifierNode():
         # 然后得到该树的最大深度和宽度
         self.max_depth = depth
         self.max_width = max(index_list)
+        # 记录最大指标值(用于绘图)
+        self.max_indicator = max_indicator
+
 
 class RegressorNode():
+    """回归器节点"""
     def __init__(self, data):
         self.node_name = None  # 节点名称
         self.data = data  # 节点保存的数据集(最后一列为目标变量)
@@ -75,10 +81,12 @@ class RegressorNode():
         # 保存每一层次的索引
         index_list = [0]
         depth = 0
+        max_indicator = 0
         while queue:
             current_node, depth = queue.popleft()
             # 将x坐标设置为当前索引, 将y坐标设置为当前深度
             current_node.pos = (index_list[depth], depth)
+            max_indicator = max(max_indicator, current_node.indicator)
             index_list[depth] += 1
             for branch in current_node.branches.values():
                 queue.append((branch, depth + 1))  # 将子节点和其层级深度加入队列
@@ -86,3 +94,5 @@ class RegressorNode():
         # 然后得到该树的最大深度和宽度
         self.max_depth = depth
         self.max_width = max(index_list)
+        # 记录最大指标值(用于绘图)
+        self.max_indicator = max_indicator
