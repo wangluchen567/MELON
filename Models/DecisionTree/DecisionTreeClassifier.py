@@ -5,57 +5,11 @@ Decision Tree Classifier
 import warnings
 import numpy as np
 import pandas as pd
-from PlotTree import plot_tree
 from collections import deque
+from Models.DecisionTree.PlotTree import plot_tree
+from Models.DecisionTree.Node import ClassifierNode
 from Models.Utils import (calculate_accuracy, run_uniform_classification,
                           run_double_classification, run_circle_classification, plot_2dim_classification_sample)
-
-
-class Node():
-    def __init__(self, data, class_list):
-        self.node_name = None  # 节点名称
-        self.data = data  # 节点保存的数据集(最后一列为分类类别)
-        self.class_types = data.iloc[:, -1]
-        # 当前节点的类别(当前数据集中占比最多的类)
-        self.category = self.get_most_freq(self.class_types)
-        self.indicator = None  # 经过计算得到的指标值
-        self.ind_type = None  # 指标类型('entropy'或'gini')
-        self.samples = len(data)  # 当前类别数据集大小
-        # 当前节点数据中每种类别数量
-        self.values = [np.sum(self.class_types == class_) for class_ in class_list]
-        self.state = None  # 节点分类状态
-        self.pos = None  # 节点所在位置
-        self.split_attr = None  # 节点要划分的属性
-        self.split_value = None  # 连续问题要划分的值
-        # 该节点的分支节点(若为空则为叶节点)
-        self.branches = dict()
-
-    def get_most_freq(self, array):
-        # 获取唯一值及其计数
-        unique, counts = np.unique(array, return_counts=True)
-        # 找到最大计数的索引
-        max_count_index = np.argmax(counts)
-        # 找到出现次数最多的值
-        most_freq_value = unique[max_count_index]
-        return most_freq_value
-
-    def assign_position(self):
-        # 计算当前节点以及所有子节点位置的辅助函数
-        queue = deque([(self, 0)])  # 队列初始化，包含根节点和其层级深度0
-        # 保存每一层次的索引
-        index_list = [0]
-        depth = 0
-        while queue:
-            current_node, depth = queue.popleft()
-            # 将x坐标设置为当前索引, 将y坐标设置为当前深度
-            current_node.pos = (index_list[depth], depth)
-            index_list[depth] += 1
-            for branch in current_node.branches.values():
-                queue.append((branch, depth + 1))  # 将子节点和其层级深度加入队列
-                index_list.append(0)
-        # 然后得到该树的最大深度和宽度
-        self.max_depth = depth
-        self.max_width = max(index_list)
 
 
 class DecisionTreeClassifier():
@@ -112,7 +66,7 @@ class DecisionTreeClassifier():
         self.set_train_data(X_train, Y_train)
         self.set_parameters(criterion, splitter, max_depth)
         # 初始化决策树根节点
-        self.decision_tree = Node(self.train_data, self.class_list)
+        self.decision_tree = ClassifierNode(self.train_data, self.class_list)
         self.decision_tree.indicator = self.cal_indicator(self.train_data)
         self.decision_tree.ind_type = self.criterion
         self.decision_tree.state = "root"
@@ -161,7 +115,7 @@ class DecisionTreeClassifier():
                 # 为当前节点生成一个分支，得到在数据集中属性类型为t的样本子集
                 data_t = data[data[attr] == t]
                 # 产生新节点
-                new_node = Node(data_t, self.class_list)
+                new_node = ClassifierNode(data_t, self.class_list)
                 node.split_attr = attr
                 node.node_name = f"{attr}=?"
                 node.branches[t] = new_node
@@ -182,10 +136,10 @@ class DecisionTreeClassifier():
             # 加入不大于的情况（左子节点）
             data_t = data[data[attr] <= divide]
             # 产生新节点
-            new_node = Node(data_t, self.class_list)
+            new_node = ClassifierNode(data_t, self.class_list)
             node.split_attr = attr
             node.split_value = divide
-            node.node_name = f"{attr}<={divide}?"
+            node.node_name = f"{attr}<={divide:.3f}?"
             node.branches['True'] = new_node
             new_node.state = f"{attr}<={divide}"
             # 计算指标值（信息熵或基尼指数）
@@ -199,10 +153,10 @@ class DecisionTreeClassifier():
             # 加入大于的情况（右子节点）
             data_t = data[data[attr] > divide]
             # 产生新节点
-            new_node = Node(data_t, self.class_list)
+            new_node = ClassifierNode(data_t, self.class_list)
             node.split_attr = attr
             node.split_value = divide
-            node.node_name = f"{attr}<={divide}?"
+            node.node_name = f"{attr}<={divide:.3f}?"
             node.branches['False'] = new_node
             new_node.state = f"{attr}>{divide}"
             # 计算指标值（信息熵或基尼指数）
@@ -246,7 +200,7 @@ class DecisionTreeClassifier():
                     # 为当前节点生成一个分支，得到在数据集中属性类型为t的样本子集
                     data_t = data[data[attr] == t]
                     # 产生新节点
-                    new_node = Node(data_t, self.class_list)
+                    new_node = ClassifierNode(data_t, self.class_list)
                     node.split_attr = attr
                     node.node_name = f"{attr}=?"
                     node.branches[t] = new_node
@@ -267,7 +221,7 @@ class DecisionTreeClassifier():
                 # 加入不大于的情况（左子节点）
                 data_t = data[data[attr] <= divide]
                 # 产生新节点
-                new_node = Node(data_t, self.class_list)
+                new_node = ClassifierNode(data_t, self.class_list)
                 node.split_attr = attr
                 node.split_value = divide
                 node.node_name = f"{attr}<={divide:.3f}?"
@@ -284,7 +238,7 @@ class DecisionTreeClassifier():
                 # 加入大于的情况（右子节点）
                 data_t = data[data[attr] > divide]
                 # 产生新节点
-                new_node = Node(data_t, self.class_list)
+                new_node = ClassifierNode(data_t, self.class_list)
                 node.split_attr = attr
                 node.split_value = divide
                 node.node_name = f"{attr}<={divide:.3f}?"
@@ -312,7 +266,6 @@ class DecisionTreeClassifier():
         if self.splitter == 'random':  # 随机选择
             index = np.random.randint(len(attribute))
         elif self.splitter == 'best':  # 贪婪选择
-
             index = np.argmax(gains)
         else:
             raise ValueError("There is no standard for selecting attributes like this")
@@ -330,7 +283,7 @@ class DecisionTreeClassifier():
     def cal_gain_discrete(self, data, attr_key):
         """计算信息增益/基尼指数(离散特征)"""
         # 首先计算当前样本集合的信息熵初始化为信息增益
-        gain = self.cal_indicator(data) if self.criterion == 'entropy' else 1
+        gain = self.cal_indicator(data) if self.criterion == 'entropy' else 0
         # 获得当前属性列
         attr_value = data[attr_key]
         # 得到当前属性列的情况
@@ -350,9 +303,9 @@ class DecisionTreeClassifier():
         # 计算每两个数的中位点
         medians = (sorted_attr[:-1] + sorted_attr[1:]) / 2
         # 统计每个中位点划分的信息增益
-        gains = np.ones_like(medians)
+        gains = np.zeros_like(medians)
         if self.criterion == 'entropy':
-            gains = gains * self.cal_indicator(data)
+            gains = gains + self.cal_indicator(data)
         # 遍历当前中位点属性情况从而计算信息增益
         for i in range(len(medians)):
             # 先计算不大于该中位点的信息增益
@@ -380,6 +333,7 @@ class DecisionTreeClassifier():
 
     @staticmethod
     def cal_entropy(counts):
+        """计算信息熵值"""
         counts = np.array(counts)
         probabilities = counts / counts.sum()
         # 为了保证是正的0这里加了0
@@ -388,6 +342,7 @@ class DecisionTreeClassifier():
 
     @staticmethod
     def cal_gini(counts):
+        """计算基尼值"""
         counts = np.array(counts)
         probabilities = counts / counts.sum()
         gini = 1 - np.sum(probabilities ** 2)
@@ -406,11 +361,11 @@ class DecisionTreeClassifier():
         self.decision_tree.assign_position()
         plot_tree(self.decision_tree, class_names=np.unique(self.train_data.iloc[:, -1]))
 
-    def plot_2dim(self, X_data=None, Y_data=None, Truth=None):
+    def plot_2dim(self, X_test=None, Y_test=None, Truth=None):
         """为二维分类数据集和结果画图（只能是连续数据）"""
         X_train = np.array(self.X_train)
         Y_train = np.array(self.Y_train)
-        plot_2dim_classification_sample(self, X_train, Y_train, X_data, Y_data, neg_label=-1)
+        plot_2dim_classification_sample(self, X_train, Y_train, X_test, Y_test, neg_label=-1)
 
 
 def run_watermelon_example():
@@ -427,7 +382,7 @@ def run_watermelon_example():
 if __name__ == '__main__':
     # run_watermelon_example()
     np.random.seed(100)
-    model = DecisionTreeClassifier(max_depth=5, criterion='entropy')
+    model = DecisionTreeClassifier(max_depth=5, criterion='gini')
     # run_uniform_classification(model, train_ratio=0.8)
     # run_double_classification(model, train_ratio=0.8)
     run_circle_classification(model, train_ratio=0.8)
