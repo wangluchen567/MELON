@@ -1,11 +1,14 @@
 import numpy as np
 
 
-class Optimizer():
+class Optimizer:
     def __init__(self, model, learning_rate):
         self.model = model  # 需要优化的模型
         # PS: 模型必须提供要优化的参数和求得的梯度
+        assert learning_rate >= 0
         self.learning_rate = learning_rate  # 学习率
+        # 统计优化步数
+        self.steps = 0
 
     def step(self):
         """更新一次权重参数"""
@@ -24,6 +27,7 @@ class GradientDescent(Optimizer):
 
     def step(self):
         """更新一次权重参数"""
+        self.steps += 1  # 更新步数
         # 先更新梯度更新速度v
         self.update_v()
         # 再更新权重
@@ -31,11 +35,11 @@ class GradientDescent(Optimizer):
 
     def update_v(self):
         """更新梯度更新速度"""
-        self.v = - self.learning_rate * self.model.Grad
+        self.v = self.learning_rate * self.model.Grad
 
     def update(self):
         """更新权重"""
-        self.model.Weights = self.model.Weights + self.v
+        self.model.Weights = self.model.Weights - self.v
 
 
 class Momentum(Optimizer):
@@ -47,6 +51,7 @@ class Momentum(Optimizer):
 
     def step(self):
         """每层网络更新一次权重"""
+        self.steps += 1  # 更新步数
         # 先更新梯度更新速度v
         self.update_v()
         # 再更新权重
@@ -54,11 +59,11 @@ class Momentum(Optimizer):
 
     def update_v(self):
         """更新梯度更新速度"""
-        self.v = self.momentum * self.v - self.learning_rate * self.model.Grad
+        self.v = self.momentum * self.v + self.learning_rate * self.model.Grad
 
     def update(self):
         """更新权重"""
-        self.model.Weights = self.model.Weights + self.v
+        self.model.Weights = self.model.Weights - self.v
 
 
 class AdaGrad(Optimizer):
@@ -69,6 +74,7 @@ class AdaGrad(Optimizer):
 
     def step(self):
         """每层网络更新一次权重"""
+        self.steps += 1  # 更新步数
         # 先更新梯度各分量的平方s
         self.update_s()
         # 再更新权重
@@ -80,11 +86,11 @@ class AdaGrad(Optimizer):
 
     def update(self):
         """更新权重"""
-        self.model.Weights = self.model.Weights - self.learning_rate * self.model.Grad / np.sqrt(self.s + 1e-9)
+        self.model.Weights = self.model.Weights - self.learning_rate * self.model.Grad / np.sqrt(self.s + 1e-8)
 
 
 class RMSProp(Optimizer):
-    def __init__(self, model, learning_rate=0.01, beta=0.9):
+    def __init__(self, model, learning_rate=0.01, beta=0.99):
         super(RMSProp, self).__init__(model, learning_rate)
         # 衰减系数
         assert 0.0 < beta < 1.0
@@ -94,6 +100,7 @@ class RMSProp(Optimizer):
 
     def step(self):
         """每层网络更新一次权重"""
+        self.steps += 1  # 更新步数
         # 先更新梯度各分量的平方s
         self.update_s()
         # 再更新权重
@@ -105,11 +112,11 @@ class RMSProp(Optimizer):
 
     def update(self):
         """更新权重"""
-        self.model.Weights = self.model.Weights - self.learning_rate * self.model.Grad / np.sqrt(self.s + 1e-9)
+        self.model.Weights = self.model.Weights - self.learning_rate * self.model.Grad / np.sqrt(self.s + 1e-8)
 
 
 class Adam(Optimizer):
-    def __init__(self, model, learning_rate=0.01, beta_1=0.9, beta_2=0.99):
+    def __init__(self, model, learning_rate=0.01, beta_1=0.9, beta_2=0.999):
         super(Adam, self).__init__(model, learning_rate)
         # 历史梯度衰减系数
         assert 0.0 < beta_1 < 1.0
@@ -124,6 +131,7 @@ class Adam(Optimizer):
 
     def step(self):
         """每层网络更新一次权重"""
+        self.steps += 1  # 更新步数
         # 先更新梯度更新速度v
         self.update_v()
         # 再更新梯度各分量的平方s
@@ -141,4 +149,7 @@ class Adam(Optimizer):
 
     def update(self):
         """更新权重"""
-        self.model.Weights = self.model.Weights - self.learning_rate * self.v / np.sqrt(self.s + 1e-9)
+        # 进行偏差校正
+        v_cor = self.v / (1 - self.beta_1 ** self.steps)
+        s_cor = self.s / (1 - self.beta_2 ** self.steps)
+        self.model.Weights = self.model.Weights - self.learning_rate * v_cor / np.sqrt(s_cor + 1e-8)
