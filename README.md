@@ -62,7 +62,7 @@ ChEn's Machine Learning model Organized using Numpy
 
 - 决策树回归器对随机线性数据和随机多项式数据的回归效果<br>
 <img src="Notes/DecisionTree/DTR1.png" width="288" height="220"/> <img src="Notes/DecisionTree/DTR2.png" width="288" height="220"/><br/>
-- 决策树回归器对三角函数数据和对复杂三角函数数据回归效果
+- 决策树回归器对三角函数数据和对复杂三角函数数据回归效果<br>
 <img src="Notes/DecisionTree/DTR3.png" width="288" height="220"/> <img src="Notes/DecisionTree/DTR4.png" width="288" height="220"/><br/>
 
 ### 线性分类器
