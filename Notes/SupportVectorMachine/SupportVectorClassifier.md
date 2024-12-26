@@ -17,25 +17,37 @@ w^Tx_i+b > 0,\quad y_i=+1\\
 w^Tx_i+b < 0,\quad y_i=-1
 \end{cases}
 $$
-我们暂时考虑其为硬间隔（hard margin）问题，则必须有：
+我们暂时考虑其为硬间隔（hard margin）问题，则应该有：
 $$
 \begin{cases}
-\frac{|w^Tx_i+b|}{\|w\|} \geq d,\quad y_i=+1\\
-\frac{|w^Tx_i+b|}{\|w\|} \leq d,\quad y_i=-1
+\frac{w^Tx_i+b}{\|w\|} \geq d,\quad y_i=+1\\
+\frac{-(w^Tx_i+b)}{\|w\|} \geq d,\quad y_i=-1
+\end{cases}
+\Rightarrow
+\begin{cases}
+\frac{w^Tx_i+b}{\|w\|} \geq d,\quad y_i=+1\\
+\frac{w^Tx_i+b}{\|w\|} \leq -d,\quad y_i=-1
 \end{cases}
 $$
-其等价于：
+公式两边同时乘以$\frac{1}{d}$有：
+$$
+\begin{cases}
+\frac{w^T}{\|w\|d}x_i+\frac{b}{\|w\|d} \geq 1,\quad y_i=+1\\
+\frac{w^T}{\|w\|d}x_i+\frac{b}{\|w\|d} \leq -1,\quad y_i=-1
+\end{cases}
+$$
+因为$\|w\|d$是一个标量，所以公式可以化简为：
 $$
 \begin{cases}
 w^Tx_i+b \geq 1,\quad y_i=+1\\
-w^Tx_i+b \leq 1,\quad y_i=-1
+w^Tx_i+b \leq -1,\quad y_i=-1
 \end{cases}
 $$
-可以用一个公式来表示两种情况：
+可以用下面这个公式来表示以上两种情况：
 $$
 y_i(w^Tx_i+b) \geq 1
 $$
-由于我们使用支持向量上的样本点对目标进行最大化，所以对任意支持向量的样本点有$|w^TX+b|=1$，然后我们将最大化问题转换为最小化问题为：
+由于我们使用支持向量上的样本点对目标进行最大化，所以对任意支持向量的样本点有$|w^TX+b|=1$，然后我们将最大化问题转换为最小化问题有：
 $$
 \max_{w, b} d = \min_{w, b}\|w\|=\min_{w, b}\frac{1}{2}\|w\|^2\\
 \text{s.t.} \quad y_i(w^Tx_i+b) \geq 1
@@ -134,7 +146,7 @@ $$
 \alpha_i = C
 \end{cases}
 $$
-另外，为了方便讨论各个情况，我们使用的是还未代入的各个约束，并且为了方便表示，这里定义特征到结果的输出函数为$f(x)=w^Tx+b$
+另外，为了方便讨论各个情况，我们使用的是还未代入的各个约束，并且为了方便表示，这里定义特征到结果的输出函数为$f(x)=w^Tx+b$，之前总结的约束可以表示为：
 $$
 \begin{align}
 & ①\quad \alpha_i \geq 0, \quad \beta_i \geq 0, & (乘子约束)\\
