@@ -203,7 +203,8 @@ class SupportVectorClassifier():
 
 if __name__ == '__main__':
     np.random.seed(100)
+    model = SupportVectorClassifier(C=10, kernel_type=SupportVectorClassifier.LINEAR, num_iter=100)
+    run_uniform_classification(model, train_ratio=0.8)
+    run_double_classification(model, train_ratio=0.8)
     model = SupportVectorClassifier(C=10, kernel_type=SupportVectorClassifier.RBF, num_iter=100)
-    # run_uniform_classification(model, train_ratio=0.8)
-    # run_double_classification(model, train_ratio=0.8)
     run_circle_classification(model, train_ratio=0.8)

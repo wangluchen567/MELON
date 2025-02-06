@@ -5,10 +5,12 @@ from Models.LinearClassifier.Perceptron import Perceptron
 from Models.LinearClassifier.LogisticRegression import LogisticRegression
 from Models.MultiClassWrapper.OneVsOneClassifier import OneVsOneClassifier
 from Models.MultiClassWrapper.OneVsRestClassifier import OneVsRestClassifier
+from Models.NeighborsBased.KNeighborsClassifier import KNeighborsClassifier
 from Models.LinearClassifier.GaussianDiscriminant import GaussianDiscriminant
 from Models.DecisionTree.DecisionTreeClassifier import DecisionTreeClassifier
 from Models.LinearClassifier.FisherLinearDiscriminant import FisherLinearDiscriminant
 from Models.SupportVectorMachine.SupportVectorClassifier import SupportVectorClassifier
+
 
 
 def load_iris_data():
@@ -81,19 +83,23 @@ if __name__ == '__main__':
               SupportVectorClassifier(kernel_type=SupportVectorClassifier.LINEAR),
               SupportVectorClassifier(kernel_type=SupportVectorClassifier.RBF)]
     # 使用 一对一 分类器分类
-    print("One-Vs-One Multi-Classifier")
+    print("# One-Vs-One Multi-Classifier #")
     for model in models:
         # 将模型用多分类器封装
         mc_model = OneVsOneClassifier(model)
         run_classifier(mc_model, X_train, Y_train, X_test, Y_test)
     # 使用 一对多 分类器分类
-    print("One-Vs-Rest Multi-Classifier")
+    print("# One-Vs-Rest Multi-Classifier #")
     for model in models:
         # 将模型用多分类器封装
         mc_model = OneVsRestClassifier(model)
         run_classifier(mc_model, X_train, Y_train, X_test, Y_test)
 
+    # KNN模型可以直接用于多分类
+    knn_model = KNeighborsClassifier(weights='distance')
+    run_classifier(knn_model, X_train, Y_train, X_test, Y_test)
     # 决策树模型可以直接用于多分类
     dtc_model = DecisionTreeClassifier(max_depth=3, criterion='entropy')
     run_classifier(dtc_model, X_train, Y_train, X_test, Y_test)
     dtc_model.plot_tree()
+

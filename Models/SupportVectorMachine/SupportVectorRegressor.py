@@ -174,7 +174,12 @@ class SupportVectorRegressor():
 
 if __name__ == '__main__':
     np.random.seed(100)
+    # 线性回归测试
+    model = SupportVectorRegressor(C=10, kernel_type=SupportVectorRegressor.LINEAR, num_iter=100)
+    run_uniform_regression(model, train_ratio=0.8)
+    # 多项式回归测试
+    model = SupportVectorRegressor(C=10, kernel_type=SupportVectorRegressor.POLY, num_iter=100)
+    run_poly_regression(model, train_ratio=0.8)
+    # 三角函数(圆函数)回归测试
     model = SupportVectorRegressor(C=10, kernel_type=SupportVectorRegressor.RBF, num_iter=100)
-    # run_uniform_regression(model, train_ratio=0.8)
-    # run_poly_regression(model, train_ratio=0.8)
     run_circular_regression(model, train_ratio=0.8)

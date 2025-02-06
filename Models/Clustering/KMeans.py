@@ -6,6 +6,7 @@ import warnings
 import numpy as np
 from Models.Utils import plot_cluster, random_generate_cluster
 
+
 class KMeans():
     def __init__(self, X=None, k=None, num_iter=None):
         self.X = None  # 需要聚类的数据
@@ -59,7 +60,7 @@ class KMeans():
             distances = np.linalg.norm(self.X[:, np.newaxis, :] - self.centers[np.newaxis, :, :], axis=2)
             # 找到每个数据点最近的聚类中心
             self.labels = np.argmin(distances, axis=1)
-            self.plot_cluster(pause=True, n_iter=i+1)
+            self.plot_cluster(pause=True, n_iter=i + 1)
         return self.labels, self.centers
 
     def plot_cluster(self, pause=False, n_iter=None, pause_time=0.15):

@@ -12,3 +12,6 @@ class Model():
 
     def predict(self):
         raise NotImplementedError
+
+    def plot_2dim(self):
+        raise NotImplementedError

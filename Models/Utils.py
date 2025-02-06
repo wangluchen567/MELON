@@ -85,7 +85,7 @@ def random_generate_classification(X_size=100, X_feat=2, X_lower=-1, X_upper=1, 
     Bias = - X_mids.reshape(1, -1) @ TruthWeights
     TruthWeights = np.concatenate((TruthWeights, Bias), axis=0)
     X_B = np.concatenate((X_data, np.ones((len(X_data), 1))), axis=1)
-    Y_data = np.ones((len(X_data), 1))
+    Y_data = np.ones((len(X_data), 1), dtype=int)
     Y_data[X_B.dot(TruthWeights) < 0] = -1
     return X_data, Y_data, TruthWeights
 
@@ -110,7 +110,7 @@ def random_generate_double(X_size=100, X_feat=2, X_lower=-1, X_upper=1):
     X1 = np.random.multivariate_normal(point1, conv, size=int(X_size / 2))
     X2 = np.random.multivariate_normal(point2, conv, size=int(X_size / 2))
     X_data = np.concatenate((X1, X2))
-    Y_data = np.ones((len(X_data), 1))
+    Y_data = np.ones((len(X_data), 1), dtype=int)
     Y_data[:len(X1), :] = -1
     rand_index = np.arange(0, len(X_data))
     np.random.shuffle(rand_index)
@@ -211,7 +211,6 @@ def plot_2dim_classification(X_data, Y_data, Weights, X_test=None, Y_test=None, 
     :param pause_time: 迭代过程中暂停的时间间隔
     :return: None
     """
-    Predict = Weights
     if not pause: plt.figure()
     plt.clf()
     plt.scatter(X_data[Y_data.flatten() == 1, 0], X_data[Y_data.flatten() == 1, 1], c='red')
@@ -227,9 +226,9 @@ def plot_2dim_classification(X_data, Y_data, Weights, X_test=None, Y_test=None, 
         # 绘制真实的参数
         PX, PU = get_PXU_classification(X_data, Truth)
         plt.plot(PX, PU, c='orange', linewidth=5)
-    if Predict is not None:
+    if Weights is not None:
         # 绘制预测的参数
-        PX, PU = get_PXU_classification(X_data, Predict)
+        PX, PU = get_PXU_classification(X_data, Weights)
         plt.plot(PX, PU, c='red', linewidth=2)
         # 为了方便展示，两边进行额外延伸
         X0_min, X0_max = np.min(X_data[:, 0]), np.max(X_data[:, 0])
@@ -283,7 +282,6 @@ def plot_2dim_regression(X_data, Y_data, Weights, X_test=None, Y_test=None, Trut
     :param pause_time: 迭代过程中暂停的时间间隔
     :return: None
     """
-    Predict = Weights
     if not pause: plt.figure()
     plt.clf()
     plt.scatter(X_data, Y_data, c='blue')
@@ -295,9 +293,9 @@ def plot_2dim_regression(X_data, Y_data, Weights, X_test=None, Y_test=None, Trut
         # 绘制真实的参数
         PX, PU = get_PXU_regression(X_data, Truth)
         plt.plot(PX, PU, c='orange', linewidth=5)
-    if Predict is not None:
+    if Weights is not None:
         # 绘制预测的参数
-        PX, PU = get_PXU_regression(X_data, Predict)
+        PX, PU = get_PXU_regression(X_data, Weights)
         plt.plot(PX, PU, c='red', linewidth=2)
         # 为了方便展示，两边进行额外延伸
         X_min, X_max = np.min(X_data), np.max(X_data)
@@ -730,7 +728,6 @@ def plot_2dim_regression_sample(model, X_data, Y_data, X_test=None, Y_test=None,
             plt.title("iter: " + str(n_iter))
         plt.pause(pause_time)
     else:
-        plt.savefig("DTR4.png", dpi=160)
         plt.show()
 
 

@@ -1,3 +1,7 @@
+"""
+梯度下降优化器
+Gradient Optimizer
+"""
 import numpy as np
 
 
