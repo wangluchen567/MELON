@@ -5,8 +5,8 @@ Support Vector Classifier
 import warnings
 import numpy as np
 from Models.SupportVectorMachine.SequentialMinimalOptimization import smo_greedy_step, smo_random
-from Models.Utils import (plot_2dim_classification, run_uniform_classification, run_double_classification,
-                          plot_2dim_classification_sample, run_circle_classification, sigmoid)
+from Models.Utils import (sigmoid, plot_2dim_classification, run_uniform_classification, run_double_classification,
+                          plot_2dim_classification_sample, run_circle_classification, run_moons_classification)
 
 
 class SupportVectorClassifier():
@@ -17,7 +17,7 @@ class SupportVectorClassifier():
     SIGMOID = 3
 
     def __init__(self, X_train=None, Y_train=None, C=10, tol=1.e-4,
-                 kernel=LINEAR, gamma=None, degree=3.0, const=1.0, num_iter=100, show=True):
+                 kernel=LINEAR, gamma=None, degree=3.0, const=1.0, num_iter=300, show=True):
         self.X_train = None  # 训练数据
         self.Y_train = None  # 真实标签
         self.set_train_data(X_train, Y_train)
@@ -177,18 +177,23 @@ class SupportVectorClassifier():
         """SMO算法"""
         # 初始化相关参数
         self.alphas, self.b, optimize_end = np.zeros((len(self.X_train), 1)), 0, False
+        # 记录历史参数以检查变化
+        alphas, b = self.alphas.copy(), self.b
         # # 下面这种是随机选择乘子的方法，效果较差
         # self.alphas, self.b = smo_random(self.X_train, self.Y_train, self.C, self.tol, self.num_iter)
         for i in range(self.num_iter):
             self.alphas, self.b, optimize_end = smo_greedy_step(self.kernel_mat, self.X_train, self.Y_train,
                                                                 self.alphas, self.b, self.C, self.tol)
+            # 检查参数变化是否过小
+            variation = np.sum(np.abs(alphas - self.alphas)) + np.abs(b - self.b) < self.tol
+            alphas, b = self.alphas.copy(), self.b  # 更新历史参数
+            # 若没有可优化的项或者参数变化过小则跳出循环
+            if optimize_end or variation:
+                print("The optimization has ended early, "
+                      "and the number of iterations for this optimization is {}".format(i))
+                break
             if self.show:
-                # 若优化结束则跳出循环(没有可优化的项了)
-                if optimize_end:
-                    print("The optimization has ended early, "
-                          "and the number of iterations for this optimization is {}".format(i))
-                    break
-                self.cal_weights()
+                self.cal_weights()  # 每步都计算一下权重
                 self.plot_2dim(pause=True, n_iter=i + 1)
 
     def plot_2dim(self, X_test=None, Y_test=None, Truth=None, pause=False, n_iter=None):
@@ -204,7 +209,8 @@ class SupportVectorClassifier():
 if __name__ == '__main__':
     np.random.seed(100)
     model = SupportVectorClassifier(C=10, kernel=SupportVectorClassifier.LINEAR, num_iter=100)
-    run_uniform_classification(model, train_ratio=0.8)
-    run_double_classification(model, train_ratio=0.8)
+    run_uniform_classification(model)
+    run_double_classification(model)
     model = SupportVectorClassifier(C=10, kernel=SupportVectorClassifier.RBF, num_iter=100)
-    run_circle_classification(model, train_ratio=0.8)
+    run_circle_classification(model)
+    run_moons_classification(model)

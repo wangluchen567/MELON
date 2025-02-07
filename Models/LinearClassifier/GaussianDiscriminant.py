@@ -82,5 +82,5 @@ class GaussianDiscriminant():
 if __name__ == '__main__':
     np.random.seed(100)
     model = GaussianDiscriminant()
-    run_uniform_classification(model, train_ratio=0.8)
-    run_double_classification(model, train_ratio=0.8)
+    run_uniform_classification(model)
+    run_double_classification(model)

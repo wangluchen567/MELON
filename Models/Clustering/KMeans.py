@@ -1,10 +1,10 @@
 """
 K-均值聚类
-K-Means Cluster
+K-Means Clustering
 """
 import warnings
 import numpy as np
-from Models.Utils import plot_cluster, run_points_cluster, run_circle_cluster
+from Models.Utils import plot_cluster, run_blobs_cluster, run_circle_cluster, run_moons_cluster
 
 
 class KMeans():
@@ -12,7 +12,7 @@ class KMeans():
                  num_train=10, num_iter=300, tol=1e-4, show=False):
         self.X = None  # 需要聚类的数据
         self.set_data(X)  # 设置数据
-        self.labels = None  # 聚类后解结果
+        self.labels = None  # 聚类后的结果
         self.centers = None  # 聚类中心点坐标
         self.inertia = None  # 聚类后的惯性指标
         self.n_clusters = n_clusters  # 聚类中心个数
@@ -123,7 +123,7 @@ class KMeans():
             raise ValueError(f"Unsupported init_func: {self.init_func}, there is no such init_func type")
         return centers
 
-    def plot_cluster(self, labels=None, centers=None, pause=False, n_iter=None, pause_time=0.15):
+    def plot_cluster(self, labels=None, centers=None, pause=False, n_iter=None, pause_time=0.1):
         if labels is None or centers is None:
             labels = self.labels
             centers = self.centers
@@ -133,6 +133,7 @@ class KMeans():
 if __name__ == '__main__':
     np.random.seed(100)
     model = KMeans(n_clusters=5, show=True)
-    run_points_cluster(model)
+    run_blobs_cluster(model)
     model = KMeans(n_clusters=2, show=True)
     run_circle_cluster(model)
+    run_moons_cluster(model)

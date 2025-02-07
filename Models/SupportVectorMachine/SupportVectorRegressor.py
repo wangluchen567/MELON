@@ -17,7 +17,7 @@ class SupportVectorRegressor():
     SIGMOID = 3
 
     def __init__(self, X_train=None, Y_train=None, C=10, tol=1.e-4, epsilon=0.6,
-                 kernel=LINEAR, gamma=None, degree=3.0, const=1.0, num_iter=100):
+                 kernel=LINEAR, gamma=None, degree=3.0, const=1.0, num_iter=300, show=True):
         self.X_train = None  # 训练数据
         self.Y_train = None  # 真实标签
         self.set_train_data(X_train, Y_train)
@@ -32,6 +32,7 @@ class SupportVectorRegressor():
         self.degree = degree  # 核函数系数（指数项）
         self.const = const  # 核函数系数（常数项）
         self.num_iter = num_iter  # 迭代优化次数
+        self.show = show  # 是否展示迭代过程
 
     def set_train_data(self, X_train, Y_train):
         """给定训练数据集和标签数据"""
@@ -118,6 +119,8 @@ class SupportVectorRegressor():
         self.init_weights()
         # 使用smo算法得到乘子参数和模型参数
         self.smo_algorithm()
+        # 根据得到的参数计算模型权重参数
+        self.cal_weights()
 
     def predict(self, X_data):
         """模型对测试集进行预测"""
@@ -150,17 +153,23 @@ class SupportVectorRegressor():
         """SMO算法"""
         # 初始化相关参数
         self.alphas, self.b, optimize_end = np.zeros((len(self.X_train), 2)), 0, False
+        # 记录历史参数以检查变化
+        alphas, b = self.alphas.copy(), self.b
         for i in range(self.num_iter):
             self.alphas, self.b, optimize_end \
                 = smo_greedy_step_regression(self.kernel_mat, self.X_train, self.Y_train,
                                              self.alphas, self.b, self.C, self.epsilon, self.tol)
-            # 若优化结束则跳出循环(没有可优化的项了)
-            if optimize_end:
+            # 检查参数变化是否过小
+            variation = np.sum(np.abs(alphas - self.alphas)) + np.abs(b - self.b) < self.tol
+            alphas, b = self.alphas.copy(), self.b  # 更新历史参数
+            # 若没有可优化的项或者参数变化过小则跳出循环
+            if optimize_end or variation:
                 print("The optimization has ended early, "
                       "and the number of iterations for this optimization is {}".format(i))
                 break
-            self.cal_weights()
-            self.plot_2dim(pause=True, n_iter=i + 1)
+            if self.show:
+                self.cal_weights()
+                self.plot_2dim(pause=True, n_iter=i + 1)
 
     def plot_2dim(self, X_test=None, Y_test=None, Truth=None, pause=False, n_iter=None):
         """为二维回归数据集和结果画图"""
@@ -176,10 +185,10 @@ if __name__ == '__main__':
     np.random.seed(100)
     # 线性回归测试
     model = SupportVectorRegressor(C=10, kernel=SupportVectorRegressor.LINEAR, num_iter=100)
-    run_uniform_regression(model, train_ratio=0.8)
+    run_uniform_regression(model)
     # 多项式回归测试
     model = SupportVectorRegressor(C=10, kernel=SupportVectorRegressor.POLY, num_iter=100)
-    run_poly_regression(model, train_ratio=0.8)
+    run_poly_regression(model)
     # 三角函数(圆函数)回归测试
     model = SupportVectorRegressor(C=10, kernel=SupportVectorRegressor.RBF, num_iter=100)
-    run_circular_regression(model, train_ratio=0.8)
+    run_circular_regression(model)

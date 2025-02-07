@@ -8,8 +8,8 @@ import pandas as pd
 from collections import deque
 from Models.DecisionTree.PlotTree import plot_tree
 from Models.DecisionTree.Node import ClassifierNode
-from Models.Utils import (calculate_accuracy, run_uniform_classification,
-                          run_double_classification, run_circle_classification, plot_2dim_classification_sample)
+from Models.Utils import (calculate_accuracy, run_uniform_classification, run_double_classification,
+                          run_circle_classification, run_moons_classification, plot_2dim_classification_sample)
 
 
 class DecisionTreeClassifier():
@@ -383,7 +383,8 @@ if __name__ == '__main__':
     # run_watermelon_example()
     np.random.seed(100)
     model = DecisionTreeClassifier(max_depth=5, criterion='gini')
-    run_uniform_classification(model, train_ratio=0.8)
-    run_double_classification(model, train_ratio=0.8)
-    run_circle_classification(model, train_ratio=0.8)
+    run_uniform_classification(model)
+    run_double_classification(model)
+    run_circle_classification(model)
+    run_moons_classification(model)
     model.plot_tree()

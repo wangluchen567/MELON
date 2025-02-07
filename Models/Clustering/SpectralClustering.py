@@ -1,7 +1,11 @@
+"""
+谱聚类
+Spectral Clustering
+"""
 import warnings
 import numpy as np
 from KMeans import KMeans
-from Models.Utils import plot_cluster, run_points_cluster, run_circle_cluster
+from Models.Utils import plot_cluster, run_blobs_cluster, run_circle_cluster, run_moons_cluster
 
 
 class SpectralClustering():
@@ -15,7 +19,7 @@ class SpectralClustering():
                  gamma=1.0, degree=3.0, const=1.0, num_train=10, num_iter=300, tol=1e-4, show=False):
         self.X = None  # 需要聚类的数据
         self.set_data(X)  # 设置数据
-        self.labels = None  # 聚类后解结果
+        self.labels = None  # 聚类后的结果
         self.n_clusters = n_clusters  # 聚类中心个数
         self.affinity = affinity  # 相似度矩阵的构建方式
         self.n_neighbors = n_neighbors  # 使用邻居策略时近邻数量
@@ -144,6 +148,7 @@ class SpectralClustering():
 if __name__ == '__main__':
     np.random.seed(100)
     model = SpectralClustering(n_clusters=5, affinity=SpectralClustering.NEIGHBORS)
-    run_points_cluster(model)
+    run_blobs_cluster(model)
     model = SpectralClustering(n_clusters=2, affinity=SpectralClustering.NEIGHBORS)
     run_circle_cluster(model)
+    run_moons_cluster(model)

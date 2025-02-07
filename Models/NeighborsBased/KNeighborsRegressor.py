@@ -83,6 +83,6 @@ class KNeighborsRegressor():
 if __name__ == '__main__':
     np.random.seed(100)
     model = KNeighborsRegressor()
-    run_uniform_regression(model, train_ratio=0.8)
-    run_poly_regression(model, train_ratio=0.8)
-    run_circular_regression(model, train_ratio=0.8)
+    run_uniform_regression(model)
+    run_poly_regression(model)
+    run_circular_regression(model)

@@ -29,6 +29,7 @@ def normalize(matrix, axis=None):
     else:
         raise ValueError("There is currently no axis larger than 1")
 
+
 def sigmoid(x):
     """sigmoid函数"""
     # 防止指数溢出
@@ -40,6 +41,7 @@ def sigmoid(x):
     y[indices_pos] = 1 / (1 + np.exp(-x[indices_pos]))
     y[indices_neg] = np.exp(x[indices_neg]) / (1 + np.exp(x[indices_neg]))
     return y
+
 
 def calculate_accuracy(Truth, Predict):
     """
@@ -345,17 +347,23 @@ def plot_cluster(X, labels, centers=None, pause=False, n_iter=None, pause_time=0
     if not pause: plt.figure()
     plt.clf()
     X_dim = X.shape[1]
-    k = len(np.unique(labels))
+    unique_labels = np.unique(labels)
     if X_dim == 2:
-        for i in range(k):
-            plt.scatter(X[labels == i, 0], X[labels == i, 1], marker="o")
+        for i in unique_labels:
+            if i == -1:  # 处理使用密度聚类时的噪声点
+                plt.scatter(X[labels == i, 0], X[labels == i, 1], marker="o", c='black', s=10)
+            else:
+                plt.scatter(X[labels == i, 0], X[labels == i, 1], marker="o")
         if centers is not None:
             plt.scatter(centers[:, 0], centers[:, 1], c='black', marker="x", s=120)
         plt.grid()
     elif X_dim == 3:
         ax = plt.subplot(111, projection='3d')
-        for i in range(k):
-            ax.scatter(X[labels == i, 0], X[labels == i, 1], X[labels == i, 2], marker="o")
+        for i in unique_labels:
+            if i == -1:  # 处理使用密度聚类时的噪声点
+                ax.scatter(X[labels == i, 0], X[labels == i, 1], X[labels == i, 2], marker="o", c='black', s=10)
+            else:
+                ax.scatter(X[labels == i, 0], X[labels == i, 1], X[labels == i, 2], marker="o")
         if centers is not None:
             ax.scatter(centers[:, 0], centers[:, 1], centers[:, 2], c='black', marker="x", s=120)
         # 设置三维图像角度(仰角方位角)
@@ -611,7 +619,7 @@ def random_make_circles(num_samples=100, factor=0.8, noise=0.01, shuffle=True):
     随机创建同心圆数据
     :param num_samples: 采样的数据大小
     :param factor: 内外圆之间的比例因子
-    :param noise: 是否加入噪音
+    :param noise: 加入噪音程度
     :param shuffle: 是否打乱数据集
     :return: 生成的数据集和真实值
     """
@@ -622,21 +630,56 @@ def random_make_circles(num_samples=100, factor=0.8, noise=0.01, shuffle=True):
     outer_circ_y = np.sin(line_space)
     inner_circ_x = outer_circ_x * factor
     inner_circ_y = outer_circ_y * factor
-
+    # 合并数据
     X = np.vstack((np.append(outer_circ_x, inner_circ_x),
                    np.append(outer_circ_y, inner_circ_y))).T
     y = np.hstack([np.zeros(num_samples // 2, dtype=np.intp),
                    np.ones(num_samples // 2, dtype=np.intp)])
     Y = y.reshape(-1, 1)
-    if shuffle:
+    if noise is not None:  # 添加噪声
+        X += np.random.normal(scale=noise, size=X.shape)
+    if shuffle:  # 打乱数据
         random_index = np.arange(num_samples)
         np.random.shuffle(random_index)
         X = X[random_index]
         Y = Y[random_index]
+    return X, Y
 
-    if noise is not None:
+
+def random_make_moons(num_samples=100, noise=0.1, shuffle=True):
+    """
+    随机创建月亮数据(双半圆数据)
+    :param num_samples: 采样的数据大小
+    :param noise: 加入噪音程度
+    :param shuffle: 是否打乱数据集
+    :return: 生成的数据集和真实值
+    """
+    # 生成两个半圆的数据个数
+    n_samples_out = num_samples // 2
+    n_samples_in = num_samples - n_samples_out
+    # 生成外半圆的数据点
+    outer_circ_x = np.cos(np.linspace(0, np.pi, n_samples_out))
+    outer_circ_y = np.sin(np.linspace(0, np.pi, n_samples_out))
+    # 将外半圆向右移动
+    outer_circ_x += 15 * np.pi / 24
+    # 生成内半圆的数据点
+    inner_circ_x = 1 - np.cos(np.linspace(0, np.pi, n_samples_in))
+    inner_circ_y = 1 - np.sin(np.linspace(0, np.pi, n_samples_in))
+    # 将内半圆向下移动
+    inner_circ_y -= 1 * np.pi / 4
+    # 合并数据点
+    X = np.vstack((np.column_stack((outer_circ_x, outer_circ_y)),
+                   np.column_stack((inner_circ_x, inner_circ_y))))
+    y = np.hstack([np.zeros(n_samples_out, dtype=int),
+                   np.ones(n_samples_in, dtype=int)])
+    Y = y.reshape(-1, 1)
+    if noise is not None:  # 添加噪声
         X += np.random.normal(scale=noise, size=X.shape)
-
+    if shuffle:  # 打乱数据
+        random_index = np.arange(num_samples)
+        np.random.shuffle(random_index)
+        X = X[random_index]
+        Y = Y[random_index]
     return X, Y
 
 
@@ -652,6 +695,42 @@ def run_circle_classification(model, X_size=100, factor=0.5, noise=0.1, train_ra
     """
     # 生成数据集
     X_data, Y_data = random_make_circles(X_size, factor, noise)
+    Y_data[Y_data == 0] = -1
+    # 划分训练集和测试集
+    train_size = int(train_ratio * len(X_data))
+    X_train, Y_train = X_data[:train_size], Y_data[:train_size]
+    X_test, Y_test = X_data[train_size:], Y_data[train_size:]
+    # 使用数据集对模型训练
+    model.train(X_train, Y_train)
+    if hasattr(model, 'Weights'):
+        print("Model Weights: ", model.Weights.flatten())
+    # 对训练集进行预测
+    Y_train_pred = model.predict(X_train)
+    # 计算训练准确率
+    train_accuracy = calculate_accuracy(Y_train, Y_train_pred)
+    print("Train Accuracy:  {:.3f} %".format(train_accuracy * 100))
+    # 对测试集进行预测
+    Y_test_pred = model.predict(X_test)
+    print("Truth Values: ", Y_test.flatten())
+    print("Predict Values: ", Y_test_pred.flatten())
+    # 计算测试集准确率
+    test_accuracy = calculate_accuracy(Y_test, Y_test_pred)
+    print("Test Accuracy:  {:.3f} %".format(test_accuracy * 100))
+    # 对结果进行画图
+    model.plot_2dim(X_test, Y_test)
+
+
+def run_moons_classification(model, X_size=100, noise=0.1, train_ratio=0.8):
+    """
+    指定模型对月亮数据(双半圆数据)的分类测试
+    :param model: 指定模型
+    :param X_size: 随机生成的数据集大小
+    :param noise: 噪声扰动程度
+    :param train_ratio: 训练集所占比例
+    :return: None
+    """
+    # 生成数据集
+    X_data, Y_data = random_make_moons(X_size, noise)
     Y_data[Y_data == 0] = -1
     # 划分训练集和测试集
     train_size = int(train_ratio * len(X_data))
@@ -856,7 +935,7 @@ def run_poly_regression(model, X_size=100, X_lower=-5, X_upper=5,
     model.plot_2dim(X_test, Y_test)
 
 
-def run_points_cluster(model, X_size=500, X_feat=2, n_clusters=5):
+def run_blobs_cluster(model, X_size=500, X_feat=2, n_clusters=5):
     """
     指定模型对多个点状分布数据的聚类测试
     :param model: 指定模型
@@ -869,13 +948,14 @@ def run_points_cluster(model, X_size=500, X_feat=2, n_clusters=5):
     model.train(X)
     model.plot_cluster()
 
+
 def run_circle_cluster(model, X_size=500, factor=0.5, noise=0.05):
     """
     指定模型对同心圆分布数据的聚类测试
     :param model: 指定模型
     :param X_size: 生成的数据集大小
     :param factor: 内外圆之间的比例因子
-    :param noise: 是否加入噪音
+    :param noise: 加入噪音的程度
     :return: None
     """
     X, Y = random_make_circles(X_size, factor, noise)
@@ -883,3 +963,14 @@ def run_circle_cluster(model, X_size=500, factor=0.5, noise=0.05):
     model.plot_cluster()
 
 
+def run_moons_cluster(model, X_size=500, noise=0.1):
+    """
+    指定模型对同心圆分布数据的聚类测试
+    :param model: 指定模型
+    :param X_size: 生成的数据集大小
+    :param noise: 加入噪音的程度
+    :return: None
+    """
+    X, Y = random_make_moons(X_size, noise)
+    model.train(X)
+    model.plot_cluster()
