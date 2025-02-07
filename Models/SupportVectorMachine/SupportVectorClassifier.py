@@ -17,7 +17,7 @@ class SupportVectorClassifier():
     SIGMOID = 3
 
     def __init__(self, X_train=None, Y_train=None, C=10, tol=1.e-4,
-                 kernel_type=LINEAR, gamma=None, degree=3, const=1, num_iter=100, show=True):
+                 kernel=LINEAR, gamma=None, degree=3.0, const=1.0, num_iter=100, show=True):
         self.X_train = None  # 训练数据
         self.Y_train = None  # 真实标签
         self.set_train_data(X_train, Y_train)
@@ -26,7 +26,7 @@ class SupportVectorClassifier():
         self.alphas, self.b = None, None  # 乘子参数
         self.C = C  # 惩罚系数
         self.tol = tol  # 残差收敛条件（容忍系数）
-        self.kernel_type = kernel_type  # 核函数类型
+        self.kernel = kernel  # 核函数类型
         self.gamma = gamma  # 核函数系数（乘数项）
         self.degree = degree  # 核函数系数（指数项）
         self.const = const  # 核函数系数（常数项）
@@ -44,11 +44,11 @@ class SupportVectorClassifier():
                 warnings.warn("Training data will be overwritten")
             self.Y_train = Y_train.copy()
 
-    def set_parameters(self, C=None, tol=None, kernel_type=None,
+    def set_parameters(self, C=None, tol=None, kernel=None,
                        gamma=None, degree=None, const=None, num_iter=None):
         """重新修改相关参数"""
-        parameters = ['C', 'tol', 'kernel_type', 'gamma', 'degree', 'const', 'num_iter']
-        values = [C, tol, kernel_type, gamma, degree, const, num_iter]
+        parameters = ['C', 'tol', 'kernel', 'gamma', 'degree', 'const', 'num_iter']
+        values = [C, tol, kernel, gamma, degree, const, num_iter]
         for param, value in zip(parameters, values):
             if value is not None and getattr(self, param) is not None:
                 warnings.warn(f"Parameter '{param}' will be overwritten")
@@ -56,13 +56,13 @@ class SupportVectorClassifier():
 
     def cal_kernel_mat(self, X, Y):
         """给定数据计算核函数矩阵"""
-        if self.kernel_type == self.LINEAR:
+        if self.kernel == self.LINEAR:
             return self.linear_kernel_mat(X, Y)
-        elif self.kernel_type == self.POLY:
+        elif self.kernel == self.POLY:
             return self.poly_kernel_mat(X, Y, self.gamma, self.degree, self.const)
-        elif self.kernel_type == self.RBF or self.kernel_type == self.GAUSSIAN:
+        elif self.kernel == self.RBF or self.kernel == self.GAUSSIAN:
             return self.rbf_kernel_mat(X, Y, self.gamma)
-        elif self.kernel_type == self.SIGMOID:
+        elif self.kernel == self.SIGMOID:
             return self.sigmoid_kernel_mat(X, Y, self.const)
         else:
             raise ValueError("There is no such kernel function type")
@@ -73,7 +73,7 @@ class SupportVectorClassifier():
         return kernel_mat
 
     @staticmethod
-    def poly_kernel_mat(X, Y, gamma=None, degree=3, const=1):
+    def poly_kernel_mat(X, Y, gamma=None, degree=3.0, const=1.0):
         """计算多项式核函数矩阵"""
         # 如果 gamma未指定，则设置为 1/特征数量
         if gamma is None:
@@ -93,7 +93,7 @@ class SupportVectorClassifier():
         return kernel_mat
 
     @staticmethod
-    def sigmoid_kernel_mat(X, Y, gamma=None, const=1):
+    def sigmoid_kernel_mat(X, Y, gamma=None, const=1.0):
         """计算sigmoid核函数矩阵"""
         # 如果 gamma 未指定，则设置为 1/特征数量
         if gamma is None:
@@ -108,10 +108,10 @@ class SupportVectorClassifier():
         self.Weights = np.random.uniform(-1, 1, size=(X_feat + 1, 1))
 
     def train(self, X_train=None, Y_train=None, C=None, tol=None,
-              kernel_type=None, gamma=None, degree=None, const=None, num_iter=None):
+              kernel=None, gamma=None, degree=None, const=None, num_iter=None):
         """使用数据集训练模型"""
         self.set_train_data(X_train, Y_train)
-        self.set_parameters(C, tol, kernel_type, gamma, degree, const, num_iter)
+        self.set_parameters(C, tol, kernel, gamma, degree, const, num_iter)
         # 计算核函数矩阵
         self.kernel_mat = self.cal_kernel_mat(self.X_train, self.X_train)
         # 初始化权重参数
@@ -130,7 +130,7 @@ class SupportVectorClassifier():
         else:
             raise ValueError("Cannot handle data with a shape of 3 dimensions or more")
         # 为简化运算，这里使用线性核函数时利用参数直接求结果
-        if self.kernel_type == self.LINEAR:
+        if self.kernel == self.LINEAR:
             X_B = np.concatenate((X_data, np.ones((len(X_data), 1))), axis=1)
             Y_data = np.ones((len(X_data), 1), dtype=int)
             Y_data[X_B.dot(self.Weights) < 0] = -1
@@ -154,7 +154,7 @@ class SupportVectorClassifier():
         else:
             raise ValueError("Cannot handle data with a shape of 3 dimensions or more")
         # 为简化运算，这里使用线性核函数时利用参数直接求结果
-        if self.kernel_type == self.LINEAR:
+        if self.kernel == self.LINEAR:
             X_B = np.concatenate((X_data, np.ones((len(X_data), 1))), axis=1)
             Y_data_prob = sigmoid(X_B.dot(self.Weights))
         else:  # 否则通过核函数求结果
@@ -193,7 +193,7 @@ class SupportVectorClassifier():
 
     def plot_2dim(self, X_test=None, Y_test=None, Truth=None, pause=False, n_iter=None):
         """为二维分类数据集和结果画图"""
-        if self.kernel_type == self.LINEAR:
+        if self.kernel == self.LINEAR:
             plot_2dim_classification(self.X_train, self.Y_train, self.Weights, X_test, Y_test, Truth=Truth,
                                      support=(self.alphas.flatten() != 0.0), pause=pause, n_iter=n_iter)
         else:
@@ -203,8 +203,8 @@ class SupportVectorClassifier():
 
 if __name__ == '__main__':
     np.random.seed(100)
-    model = SupportVectorClassifier(C=10, kernel_type=SupportVectorClassifier.LINEAR, num_iter=100)
+    model = SupportVectorClassifier(C=10, kernel=SupportVectorClassifier.LINEAR, num_iter=100)
     run_uniform_classification(model, train_ratio=0.8)
     run_double_classification(model, train_ratio=0.8)
-    model = SupportVectorClassifier(C=10, kernel_type=SupportVectorClassifier.RBF, num_iter=100)
+    model = SupportVectorClassifier(C=10, kernel=SupportVectorClassifier.RBF, num_iter=100)
     run_circle_classification(model, train_ratio=0.8)

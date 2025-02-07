@@ -854,3 +854,32 @@ def run_poly_regression(model, X_size=100, X_lower=-5, X_upper=5,
     print("Test MSE Metrics:  {:.3f}".format(test_mse))
     # 对结果进行画图
     model.plot_2dim(X_test, Y_test)
+
+
+def run_points_cluster(model, X_size=500, X_feat=2, n_clusters=5):
+    """
+    指定模型对多个点状分布数据的聚类测试
+    :param model: 指定模型
+    :param X_size: 生成的数据集大小
+    :param X_feat: 数据集特征数量
+    :param n_clusters: 生成的数据簇个数
+    :return: None
+    """
+    X, Y = random_generate_cluster(X_size, X_feat, n_clusters)
+    model.train(X)
+    model.plot_cluster()
+
+def run_circle_cluster(model, X_size=500, factor=0.5, noise=0.05):
+    """
+    指定模型对同心圆分布数据的聚类测试
+    :param model: 指定模型
+    :param X_size: 生成的数据集大小
+    :param factor: 内外圆之间的比例因子
+    :param noise: 是否加入噪音
+    :return: None
+    """
+    X, Y = random_make_circles(X_size, factor, noise)
+    model.train(X)
+    model.plot_cluster()
+
+

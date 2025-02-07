@@ -4,12 +4,12 @@ K-Means Cluster
 """
 import warnings
 import numpy as np
-from Models.Utils import plot_cluster, random_generate_cluster
+from Models.Utils import plot_cluster, run_points_cluster, run_circle_cluster
 
 
 class KMeans():
     def __init__(self, X=None, n_clusters=None, init_func='k-means++',
-                 num_train=10, num_iter=300, tol=1e-4, show=True):
+                 num_train=10, num_iter=300, tol=1e-4, show=False):
         self.X = None  # 需要聚类的数据
         self.set_data(X)  # 设置数据
         self.labels = None  # 聚类后解结果
@@ -38,10 +38,10 @@ class KMeans():
                 warnings.warn(f"Parameter '{param}' will be overwritten")
                 setattr(self, param, value)
 
-    def train(self, X=None, n_clusters=None, num_iter=None):
+    def train(self, X=None, n_clusters=None, init_func=None, num_train=None, num_iter=None, tol=None):
         """对数据进行聚类"""
         self.set_data(X)
-        self.set_parameters(n_clusters, num_iter)
+        self.set_parameters(n_clusters, init_func, num_train, num_iter, tol)
         self.inertia = np.inf
         # 训练num_train次以获取最佳结果
         for i in range(self.num_train):
@@ -51,6 +51,7 @@ class KMeans():
                 self.labels = labels
                 self.centers = centers
                 self.inertia = inertia
+        return self.labels
 
     def train_one(self):
         """训练一次得到结果"""
@@ -113,7 +114,7 @@ class KMeans():
                 r = np.random.rand()
                 # 找到该随机值应该插入到已排序数组（累积概率向量）中的位置
                 next_center_idx = np.searchsorted(cumulative_probabilities, r)
-                centers.append(X[next_center_idx])
+                centers.append(self.X[next_center_idx])
             centers = np.array(centers)
         elif self.init_func == 'random':
             # 随机初始化聚类中心
@@ -131,7 +132,7 @@ class KMeans():
 
 if __name__ == '__main__':
     np.random.seed(100)
-    X, Y = random_generate_cluster(X_size=500, X_feat=2, n_clusters=5)
-    model = KMeans(X, n_clusters=5, num_iter=20, show=True)
-    model.train()
-    model.plot_cluster()
+    model = KMeans(n_clusters=5, show=True)
+    run_points_cluster(model)
+    model = KMeans(n_clusters=2, show=True)
+    run_circle_cluster(model)
