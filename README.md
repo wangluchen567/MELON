@@ -1,8 +1,15 @@
 # MELON
 
-## 介绍
+## 项目名称
 基于NumPy构建的机器学习模型<br>
 ChEn's Machine Learning model Organized using Numpy
+
+## 项目简介
+本项目致力于为对机器学习感兴趣的伙伴们提供一个学习和实践的平台。
+本项目不旨在构建可以直接用于生产环境的模型，
+但力求通过实现一系列经典的机器学习模型与算法，深入探讨各种模型和算法的底层原理。
+本项目提供了详尽的实现步骤，以帮助学习者深入理解各类模型与算法的构建过程与内部工作的机制。
+希望本项目能够帮助感兴趣的伙伴们建立起对机器学习各类模型与算法的深刻理解，从而在机器学习与人工智能领域的进一步学习和研究打下坚实的基础。
 
 ## 模型说明
 
@@ -11,20 +18,19 @@ ChEn's Machine Learning model Organized using Numpy
 ### Examples: 模型使用示例
 
 ### Models: 机器学习模型
-- GradientOptimizer: 梯度优化器，为模型中需要使用梯度优化的提供支持
+- GradientOptimizer: 梯度优化器，包含SGD、等梯度优化算法，为模型中需要使用梯度优化的提供支持
 - SupportVectorMachine: 支持向量机，包含支持向量机分类器SVC和支持向量机回归器SVR，以及SMO算法的实现
 - DecisionTree: 决策树相关模型，包含决策树分类器和决策树回归器，并实现了树的绘制函数
-- Clustering: 聚类相关模型
-- DecisionTree: 决策树相关模型
-- DimensionReduction: 降维相关模型
-- LinearClassifier: 线性分类相关模型
-- LinearRegressor: 线性回归相关模型
+- Clustering: 聚类相关模型，包含K-means、谱聚类、DBSCAN等算法
+- DimensionReduction: 降维相关模型，包含PCA主成分分析等算法
+- LinearClassifier: 线性分类相关模型，包含Fisher线性判别、高斯判别、逻辑回归、感知机等模型
+- LinearRegressor: 线性回归相关模型，包含普通最小二乘线性回归、岭回归等模型
 
 ### Notes: 机器学习笔记和示例
 
 ## 安装教程
 
-1.  最好使用 Anaconda 
+1. 建议使用 Anaconda 
 2. 必要包: `python>=3.6`、`numpy`、`pandas`、`matplotlib`
 
 ## 使用说明
