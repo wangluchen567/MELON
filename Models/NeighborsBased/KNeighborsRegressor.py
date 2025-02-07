@@ -12,7 +12,7 @@ class KNeighborsRegressor():
         self.Y_train = None  # 真实标签
         self.set_train_data(X_train, Y_train)
         self.n_neighbors = n_neighbors  # 最近邻数量
-        self.weights = weights  # 所有邻居的权重类型(uniform/distance)
+        self.weights = weights  # 计算邻居时的权重类型(uniform/distance)
         self.metric = metric  # 计算最近邻时的距离度量
         self.p = p  # 计算minkowski距离的幂次，(p=1)为曼哈顿距离，(p=2)为欧式距离
 

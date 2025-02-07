@@ -144,19 +144,19 @@ def random_generate_regression(X_size=100, X_feat=1, X_lower=0, X_upper=20, lowe
     return X_data, Y_data, Truth_Weights
 
 
-def random_generate_cluster(X_size=100, X_feat=2, k=3, cluster_std=1.0, lower=-10, upper=10):
+def random_generate_cluster(X_size=100, X_feat=2, n_clusters=3, cluster_std=1.0, lower=-10, upper=10):
     """
     随机生成聚类数据集
     :param X_size: 数据集大小
     :param X_feat: 数据集特征数
-    :param k: 数据集分类个数
+    :param n_clusters: 数据集分类个数
     :param cluster_std: 随机生成正态分布数据的标准差(宽度)
     :param lower: 聚类中心范围下界
     :param upper: 聚类中心范围上界
     :return: 聚类数据集和标签
     """
     # 随机得到聚类中心位置
-    centers = np.random.uniform(lower, upper, size=(k, X_feat))
+    centers = np.random.uniform(lower, upper, size=(n_clusters, X_feat))
     # 初始化数据集和标签
     X_data = np.zeros((X_size, X_feat))
     Y_data = np.zeros(X_size, dtype=int)
