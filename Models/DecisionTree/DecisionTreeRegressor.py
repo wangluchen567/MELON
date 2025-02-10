@@ -14,13 +14,20 @@ from Models.Utils import (cal_mse_metrics, run_uniform_regression,
 
 class DecisionTreeRegressor():
     def __init__(self, X_train=None, Y_train=None, criterion='mse', splitter='best', max_depth=np.inf):
+        """
+        :param X_train: 训练数据
+        :param Y_train: 真实目标值
+        :param criterion: 特征划分标准(mse/mae)
+        :param splitter: 选择属性标准(best/random)
+        :param max_depth: 决策树最大深度
+        """
         self.X_train = None  # 训练数据
         self.Y_train = None  # 真实目标值
         self.train_data = None  # 训练数据集（训练数据和真实目标值的整合）
         self.X_columns = None  # 训练数据的列名称
         self.attributes = None  # 特征名称
-        self.criterion = criterion  # 特征划分标准('mse'或'mae')
-        self.splitter = splitter  # 选择属性标准('best'或'random')
+        self.criterion = criterion  # 特征划分标准(mse/mae)
+        self.splitter = splitter  # 选择属性标准(best/random)
         self.max_depth = max_depth  # 决策树最大深度
         self.tree_depth = None  # 决策树的真实深度
         self.decision_tree = None  # 最终得到的决策树

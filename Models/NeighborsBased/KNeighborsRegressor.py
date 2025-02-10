@@ -8,13 +8,21 @@ from Models.Utils import plot_2dim_regression, run_uniform_regression, run_poly_
 
 class KNeighborsRegressor():
     def __init__(self, X_train=None, Y_train=None, n_neighbors=5, weights='uniform', metric='minkowski', p=2):
+        """
+        :param X_train: 训练数据
+        :param Y_train: 真实标签
+        :param n_neighbors: 计算最近邻时数量
+        :param weights: 计算邻居时的权重类型(uniform/distance)
+        :param metric: 计算最近邻时的距离度量(minkowski:闵可夫斯基距离, manhattan:曼哈顿距离, euclidean:欧几里得距离)
+        :param p: 计算minkowski距离的幂次，(p=1:曼哈顿距离，p=2:欧式距离)
+        """
         self.X_train = None  # 训练数据
         self.Y_train = None  # 真实标签
         self.set_train_data(X_train, Y_train)
         self.n_neighbors = n_neighbors  # 最近邻数量
         self.weights = weights  # 计算邻居时的权重类型(uniform/distance)
         self.metric = metric  # 计算最近邻时的距离度量
-        self.p = p  # 计算minkowski距离的幂次，(p=1)为曼哈顿距离，(p=2)为欧式距离
+        self.p = p  # 计算minkowski距离的幂次，(p=1:曼哈顿距离，p=2:欧式距离)
 
     def set_train_data(self, X_train, Y_train):
         """给定训练数据集和标签数据"""

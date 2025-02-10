@@ -10,6 +10,11 @@ from Models.Utils import plot_data, random_generate_regression
 
 class PrincipalComponentAnalysis():
     def __init__(self, X=None, num_top=None, threshold=None):
+        """
+        :param X: 需要降维的数据
+        :param num_top: 选择特征值最大的特征数量
+        :param threshold: 贡献率累计超过的阈值
+        """
         self.X = None  # 需要降维的数据
         self.set_data(X)
         self.X_stand = None  # 标准化后的数据

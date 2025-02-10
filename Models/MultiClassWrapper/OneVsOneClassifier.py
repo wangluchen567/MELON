@@ -10,6 +10,11 @@ import numpy as np
 class OneVsOneClassifier():
     """一对一 分类包装器"""
     def __init__(self, model, X_train=None, Y_train=None):
+        """
+        :param model: 需要包装的模型
+        :param X_train: 训练数据
+        :param Y_train: 真实标签
+        """
         self.model = model
         self.X_train = None  # 训练数据
         self.Y_train = None  # 真实标签

@@ -17,7 +17,20 @@ class SupportVectorRegressor():
     SIGMOID = 3
 
     def __init__(self, X_train=None, Y_train=None, C=10, tol=1.e-4, epsilon=0.6,
-                 kernel=LINEAR, gamma=None, degree=3.0, const=1.0, num_iter=300, show=True):
+                 kernel=LINEAR, gamma=None, degree=3.0, const=1.0, max_iter=300, show=True):
+        """
+        :param X_train: 训练数据
+        :param Y_train: 真实标签
+        :param C: 惩罚系数
+        :param tol: 残差收敛条件（容忍系数）
+        :param epsilon: 误差系数
+        :param kernel: 核函数类型
+        :param gamma: 核函数系数（乘数项）
+        :param degree: 核函数系数（指数项）
+        :param const: 核函数系数（常数项）
+        :param max_iter: 最大迭代优化次数
+        :param show: 是否展示迭代过程
+        """
         self.X_train = None  # 训练数据
         self.Y_train = None  # 真实标签
         self.set_train_data(X_train, Y_train)
@@ -31,7 +44,7 @@ class SupportVectorRegressor():
         self.gamma = gamma  # 核函数系数（乘数项）
         self.degree = degree  # 核函数系数（指数项）
         self.const = const  # 核函数系数（常数项）
-        self.num_iter = num_iter  # 迭代优化次数
+        self.max_iter = max_iter  # 最大迭代优化次数
         self.show = show  # 是否展示迭代过程
 
     def set_train_data(self, X_train, Y_train):
@@ -42,14 +55,14 @@ class SupportVectorRegressor():
             self.X_train = X_train.copy()
         if Y_train is not None:
             if self.Y_train is not None:
-                warnings.warn("Training data will be overwritten")
+                warnings.warn("Training label will be overwritten")
             self.Y_train = Y_train.copy()
 
     def set_parameters(self, C=None, tol=None, epsilon=None, kernel=None,
-                       gamma=None, degree=None, const=None, num_iter=None):
+                       gamma=None, degree=None, const=None, max_iter=None):
         """重新修改相关参数"""
-        parameters = ['C', 'tol', 'epsilon', 'kernel', 'gamma', 'degree', 'const', 'num_iter']
-        values = [C, tol, epsilon, kernel, gamma, degree, const, num_iter]
+        parameters = ['C', 'tol', 'epsilon', 'kernel', 'gamma', 'degree', 'const', 'max_iter']
+        values = [C, tol, epsilon, kernel, gamma, degree, const, max_iter]
         for param, value in zip(parameters, values):
             if value is not None and getattr(self, param) is not None:
                 warnings.warn(f"Parameter '{param}' will be overwritten")
@@ -109,10 +122,10 @@ class SupportVectorRegressor():
         self.Weights = np.random.uniform(-1, 1, size=(X_feat + 1, 1))
 
     def train(self, X_train=None, Y_train=None, C=None, tol=None, epsilon=None,
-              kernel=None, gamma=None, degree=None, const=None, num_iter=None):
+              kernel=None, gamma=None, degree=None, const=None, max_iter=None):
         """使用数据集训练模型"""
         self.set_train_data(X_train, Y_train)
-        self.set_parameters(C, tol, epsilon, kernel, gamma, degree, const, num_iter)
+        self.set_parameters(C, tol, epsilon, kernel, gamma, degree, const, max_iter)
         # 计算核函数矩阵
         self.kernel_mat = self.cal_kernel_mat(self.X_train, self.X_train)
         # 初始化权重参数
@@ -155,7 +168,7 @@ class SupportVectorRegressor():
         self.alphas, self.b, optimize_end = np.zeros((len(self.X_train), 2)), 0, False
         # 记录历史参数以检查变化
         alphas, b = self.alphas.copy(), self.b
-        for i in range(self.num_iter):
+        for i in range(self.max_iter):
             self.alphas, self.b, optimize_end \
                 = smo_greedy_step_regression(self.kernel_mat, self.X_train, self.Y_train,
                                              self.alphas, self.b, self.C, self.epsilon, self.tol)
@@ -165,7 +178,7 @@ class SupportVectorRegressor():
             # 若没有可优化的项或者参数变化过小则跳出循环
             if optimize_end or variation:
                 print("The optimization has ended early, "
-                      "and the number of iterations for this optimization is {}".format(i))
+                      "the number of iterations for this optimization is {}".format(i))
                 break
             if self.show:
                 self.cal_weights()
@@ -184,11 +197,11 @@ class SupportVectorRegressor():
 if __name__ == '__main__':
     np.random.seed(100)
     # 线性回归测试
-    model = SupportVectorRegressor(C=10, kernel=SupportVectorRegressor.LINEAR, num_iter=100)
+    model = SupportVectorRegressor(C=10, kernel=SupportVectorRegressor.LINEAR, max_iter=100)
     run_uniform_regression(model)
     # 多项式回归测试
-    model = SupportVectorRegressor(C=10, kernel=SupportVectorRegressor.POLY, num_iter=100)
+    model = SupportVectorRegressor(C=10, kernel=SupportVectorRegressor.POLY, max_iter=100)
     run_poly_regression(model)
     # 三角函数(圆函数)回归测试
-    model = SupportVectorRegressor(C=10, kernel=SupportVectorRegressor.RBF, num_iter=100)
+    model = SupportVectorRegressor(C=10, kernel=SupportVectorRegressor.RBF, max_iter=100)
     run_circular_regression(model)

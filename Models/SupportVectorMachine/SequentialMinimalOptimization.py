@@ -187,14 +187,14 @@ def smo_greedy_step_regression(kernel_mat, x_train, y_train, alphas, b, C, epsil
     return alphas, b, False
 
 
-def smo_random(x_train, y_train, C, tol, num_iter=1000):
+def smo_random(x_train, y_train, C, tol, max_iter=1000):
     """序列最小优化算法(随机选择乘子)"""
     # 数据集大小
     num_data, num_dim = x_train.shape
     # 初始化参数（乘子alpha和b）
     alphas, b = np.zeros((num_data, 1)), 0
-    # 迭代优化num_iter次
-    for n in tqdm(range(num_iter)):
+    # 迭代优化max_iter次
+    for n in tqdm(range(max_iter)):
         # 遍历数据集
         for i in range(num_data):
             # 第一步：计算误差Ei

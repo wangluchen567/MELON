@@ -9,7 +9,16 @@ from Models.Utils import plot_cluster, run_blobs_cluster, run_circle_cluster, ru
 
 class KMeans():
     def __init__(self, X=None, n_clusters=None, init_func='k-means++',
-                 num_train=10, num_iter=300, tol=1e-4, show=False):
+                 num_train=10, max_iter=300, tol=1e-4, show=False):
+        """
+        :param X: 需要聚类的数据
+        :param n_clusters: 聚类中心个数
+        :param init_func: 中心初始化方法(k-means++/random)
+        :param num_train: 训练次数(提升稳定性)
+        :param max_iter: 最大迭代次数
+        :param tol: 收敛的容忍度，若两次变化小于tol则说明已收敛
+        :param show: 是否展示迭代过程
+        """
         self.X = None  # 需要聚类的数据
         self.set_data(X)  # 设置数据
         self.labels = None  # 聚类后的结果
@@ -18,7 +27,7 @@ class KMeans():
         self.n_clusters = n_clusters  # 聚类中心个数
         self.init_func = init_func  # 中心初始化方法
         self.num_train = num_train  # 训练次数(提升稳定性)
-        self.num_iter = num_iter  # 最大迭代次数
+        self.max_iter = max_iter  # 最大迭代次数
         self.tol = tol  # 收敛的容忍度，若两次变化小于tol则说明已收敛
         self.show = show  # 是否展示迭代过程
 
@@ -29,19 +38,19 @@ class KMeans():
                 warnings.warn("Training data will be overwritten")
             self.X = X.copy()
 
-    def set_parameters(self, n_clusters=None, init_func=None, num_train=None, num_iter=None, tol=None):
+    def set_parameters(self, n_clusters=None, init_func=None, num_train=None, max_iter=None, tol=None):
         """重新修改相关参数"""
-        parameters = ['n_clusters', 'init_func', 'num_train', 'num_iter', 'tol']
-        values = [n_clusters, init_func, num_train, num_iter, tol]
+        parameters = ['n_clusters', 'init_func', 'num_train', 'max_iter', 'tol']
+        values = [n_clusters, init_func, num_train, max_iter, tol]
         for param, value in zip(parameters, values):
             if value is not None and getattr(self, param) is not None:
                 warnings.warn(f"Parameter '{param}' will be overwritten")
                 setattr(self, param, value)
 
-    def train(self, X=None, n_clusters=None, init_func=None, num_train=None, num_iter=None, tol=None):
+    def train(self, X=None, n_clusters=None, init_func=None, num_train=None, max_iter=None, tol=None):
         """对数据进行聚类"""
         self.set_data(X)
-        self.set_parameters(n_clusters, init_func, num_train, num_iter, tol)
+        self.set_parameters(n_clusters, init_func, num_train, max_iter, tol)
         self.inertia = np.inf
         # 训练num_train次以获取最佳结果
         for i in range(self.num_train):
@@ -71,7 +80,7 @@ class KMeans():
         if self.show:
             self.plot_cluster(labels, centers, pause=True, n_iter=0)
         # 再根据当前聚类结果计算新的聚类中心
-        for i in range(self.num_iter):
+        for i in range(self.max_iter):
             # 计算每个簇的数据点数量
             num_points = mask.sum(axis=0)
             # 计算新的聚类中心 (取最大是防止某类中数据点数量为0)

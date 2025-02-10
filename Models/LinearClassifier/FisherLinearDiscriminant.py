@@ -9,6 +9,10 @@ from Models.Utils import sigmoid, plot_2dim_classification, run_uniform_classifi
 
 class FisherLinearDiscriminant():
     def __init__(self, X_train=None, Y_train=None):
+        """
+        :param X_train: 训练数据
+        :param Y_train: 真实标签
+        """
         self.X_train = None  # 训练数据
         self.Y_train = None  # 真实标签
         self.set_train_data(X_train, Y_train)

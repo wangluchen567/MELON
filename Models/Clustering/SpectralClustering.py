@@ -16,7 +16,21 @@ class SpectralClustering():
     SIGMOID = 3
 
     def __init__(self, X=None, n_clusters=None, affinity=RBF, n_neighbors=10, mode='connect',
-                 gamma=1.0, degree=3.0, const=1.0, num_train=10, num_iter=300, tol=1e-4, show=False):
+                 gamma=1.0, degree=3.0, const=1.0, num_train=10, max_iter=300, tol=1e-4, show=False):
+        """
+        :param X: 需要聚类的数据
+        :param n_clusters: 聚类中心个数
+        :param affinity: 相似度矩阵的构建方式(NEIGHBORS:基于邻接关系, POLY:多项式核函数, RBF/GAUSSIAN:高斯核函数, SIGMOID核函数)
+        :param n_neighbors: 使用邻居策略时近邻数量
+        :param mode: 使用邻居策略时构建相似度矩阵的模式
+        :param gamma: 核函数的系数（乘数项）
+        :param degree: 核函数的系数（指数项）
+        :param const: 核函数的系数（常数项）
+        :param num_train: 训练次数(提升稳定性)(kmeans)
+        :param max_iter: 最大迭代次数(kmeans)
+        :param tol: 收敛的容忍度，若两次变化小于tol则说明已收敛(kmeans)
+        :param show: 是否展示迭代过程
+        """
         self.X = None  # 需要聚类的数据
         self.set_data(X)  # 设置数据
         self.labels = None  # 聚类后的结果
@@ -28,7 +42,7 @@ class SpectralClustering():
         self.degree = degree  # 核函数的系数（指数项）
         self.const = const  # 核函数的系数（常数项）
         self.num_train = num_train  # 训练次数(提升稳定性)(kmeans)
-        self.num_iter = num_iter  # 最大迭代次数(kmeans)
+        self.max_iter = max_iter  # 最大迭代次数(kmeans)
         self.tol = tol  # 收敛的容忍度，若两次变化小于tol则说明已收敛(kmeans)
         self.show = show  # 是否展示迭代过程
 
@@ -40,21 +54,21 @@ class SpectralClustering():
             self.X = X.copy()
 
     def set_parameters(self, n_clusters=None, affinity=None, n_neighbors=None, mode=None,
-                       gamma=None, degree=None, const=None, num_train=None, num_iter=None, tol=None):
+                       gamma=None, degree=None, const=None, num_train=None, max_iter=None, tol=None):
         """重新修改相关参数"""
         parameters = ['n_clusters', 'affinity', 'n_neighbors', 'mode',
-                      'gamma', 'degree', 'const', 'num_train', 'num_iter', 'tol']
-        values = [n_clusters, affinity, n_neighbors, mode, gamma, degree, const, num_train, num_iter, tol]
+                      'gamma', 'degree', 'const', 'num_train', 'max_iter', 'tol']
+        values = [n_clusters, affinity, n_neighbors, mode, gamma, degree, const, num_train, max_iter, tol]
         for param, value in zip(parameters, values):
             if value is not None and getattr(self, param) is not None:
                 warnings.warn(f"Parameter '{param}' will be overwritten")
                 setattr(self, param, value)
 
     def train(self, X=None, n_clusters=None, affinity=None, n_neighbors=None, mode=None,
-              gamma=None, degree=None, const=None, num_train=None, num_iter=None, tol=None):
+              gamma=None, degree=None, const=None, num_train=None, max_iter=None, tol=None):
         """对数据进行聚类"""
         self.set_data(X)
-        self.set_parameters(n_clusters, affinity, n_neighbors, mode, gamma, degree, const, num_train, num_iter, tol)
+        self.set_parameters(n_clusters, affinity, n_neighbors, mode, gamma, degree, const, num_train, max_iter, tol)
         # 计算相似度矩阵
         simi_mat = self.cal_simi_mat()
         # 计算度矩阵
@@ -68,7 +82,7 @@ class SpectralClustering():
         selected_vectors = eigen_vectors[:, sorted_indices[:self.n_clusters]]
         # 然后使用K-means方法对其进行聚类
         kmeans = KMeans(selected_vectors, n_clusters=self.n_clusters, num_train=self.num_train,
-                        num_iter=self.num_iter, tol=self.tol, show=False)  # 无法展示过程
+                        max_iter=self.max_iter, tol=self.tol, show=False)  # 无法展示过程
         kmeans.train()  # 进行训练
         # 得到最终结果
         self.labels = kmeans.labels

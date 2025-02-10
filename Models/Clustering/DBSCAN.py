@@ -9,11 +9,19 @@ from Models.Utils import plot_cluster, run_blobs_cluster, run_circle_cluster, ru
 
 class DBSCAN():
     def __init__(self, X=None, eps=0.5, min_samples=5, metric='minkowski', p=2, show=False):
+        """
+        :param X: 需要聚类的数据
+        :param eps: 两个样本之间的最大距离，以确定一个样本是否在另一个样本的邻域内
+        :param min_samples: 一个点的邻域中必须存在的最小样本数(包含自身)
+        :param metric: 计算距离时的距离度量(minkowski:闵可夫斯基距离, manhattan:曼哈顿距离, euclidean:欧几里得距离)
+        :param p: 计算minkowski距离的幂次，(p=1:曼哈顿距离，p=2:欧式距离)
+        :param show: 是否展示迭代过程
+        """
         self.X = None  # 需要聚类的数据
         self.set_data(X)  # 设置数据
         self.labels = None  # 聚类后的结果
-        self.eps = eps  # 表示两个样本之间的最大距离，以确定一个样本是否在另一个样本的邻域内
-        self.min_samples = min_samples  # 表示一个点的邻域中必须存在的最小样本数(包含自身)
+        self.eps = eps  # 两个样本之间的最大距离，以确定一个样本是否在另一个样本的邻域内
+        self.min_samples = min_samples  # 一个点的邻域中必须存在的最小样本数(包含自身)
         self.metric = metric  # 计算距离时的距离度量
         self.p = p  # 计算minkowski距离的幂次，(p=1)为曼哈顿距离，(p=2)为欧式距离
         self.show = show  # 是否展示迭代过程
@@ -60,7 +68,12 @@ class DBSCAN():
 
     def get_neighbors(self, idx):
         """获取指定点的邻域内的所有点下标"""
-        distances = np.linalg.norm(self.X - self.X[idx], axis=1)
+        if (self.metric == 'manhattan') or (self.metric == 'minkowski' and self.p == 1):
+            distances = np.sum(np.abs(self.X - self.X[idx]), axis=1)
+        elif (self.metric == 'euclidean') or (self.metric == 'minkowski' and self.p == 2):
+            distances = np.sqrt(np.sum((self.X - self.X[idx]) ** 2, axis=1))
+        else:
+            raise ValueError(f"Unsupported metric: {self.metric}")
         neighbors = np.where(distances <= self.eps)[0]
         return neighbors
 
