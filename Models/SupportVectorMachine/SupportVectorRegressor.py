@@ -16,7 +16,7 @@ class SupportVectorRegressor():
     RBF = GAUSSIAN = 2
     SIGMOID = 3
 
-    def __init__(self, X_train=None, Y_train=None, C=10, tol=1.e-4, epsilon=0.6,
+    def __init__(self, X_train=None, Y_train=None, C=10.0, tol=1.e-3, epsilon=0.6,
                  kernel=LINEAR, gamma=None, degree=3.0, const=1.0, max_iter=300, show=True):
         """
         :param X_train: 训练数据
@@ -44,7 +44,10 @@ class SupportVectorRegressor():
         self.gamma = gamma  # 核函数系数（乘数项）
         self.degree = degree  # 核函数系数（指数项）
         self.const = const  # 核函数系数（常数项）
+        self.n_iter = 0  # 记录迭代次数
         self.max_iter = max_iter  # 最大迭代优化次数
+        if self.max_iter == -1:  # 若设置为-1则直到优化结束停止
+            self.max_iter = np.inf
         self.show = show  # 是否展示迭代过程
 
     def set_train_data(self, X_train, Y_train):
@@ -165,24 +168,22 @@ class SupportVectorRegressor():
     def smo_algorithm(self):
         """SMO算法"""
         # 初始化相关参数
-        self.alphas, self.b, optimize_end = np.zeros((len(self.X_train), 2)), 0, False
-        # 记录历史参数以检查变化
-        alphas, b = self.alphas.copy(), self.b
-        for i in range(self.max_iter):
+        self.n_iter, self.alphas, self.b, optimize_end = 0, np.zeros((len(self.X_train), 2)), 0, False
+        while True:
             self.alphas, self.b, optimize_end \
                 = smo_greedy_step_regression(self.kernel_mat, self.X_train, self.Y_train,
                                              self.alphas, self.b, self.C, self.epsilon, self.tol)
-            # 检查参数变化是否过小
-            variation = np.sum(np.abs(alphas - self.alphas)) + np.abs(b - self.b) < self.tol
-            alphas, b = self.alphas.copy(), self.b  # 更新历史参数
-            # 若没有可优化的项或者参数变化过小则跳出循环
-            if optimize_end or variation:
-                print("The optimization has ended early, "
-                      "the number of iterations for this optimization is {}".format(i))
+            self.n_iter += 1
+            if optimize_end:
+                # 若没有可优化的项则结束优化
+                break
+            if self.n_iter > self.max_iter:
+                # 受最大迭代次数限制优化提前结束
+                warnings.warn(f"Optimizer ended early (max_iter={self.max_iter})")
                 break
             if self.show:
                 self.cal_weights()
-                self.plot_2dim(pause=True, n_iter=i + 1)
+                self.plot_2dim(pause=True, n_iter=self.n_iter + 1)
 
     def plot_2dim(self, X_test=None, Y_test=None, Truth=None, pause=False, n_iter=None):
         """为二维回归数据集和结果画图"""
@@ -195,7 +196,7 @@ class SupportVectorRegressor():
 
 
 if __name__ == '__main__':
-    np.random.seed(100)
+    np.random.seed(3)
     # 线性回归测试
     model = SupportVectorRegressor(C=10, kernel=SupportVectorRegressor.LINEAR, max_iter=100)
     run_uniform_regression(model)

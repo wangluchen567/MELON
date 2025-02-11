@@ -6,7 +6,7 @@ import numpy as np
 from tqdm import tqdm
 
 
-def smo_greedy_step(kernel_mat, x_train, y_train, alphas, b, C, tol=1.e-4):
+def smo_greedy_step(kernel_mat, x_train, y_train, alphas, b, C, tol=1.e-3):
     """
     SMO算法（贪婪运行一步）
     :param kernel_mat: 核函数矩阵
@@ -22,73 +22,77 @@ def smo_greedy_step(kernel_mat, x_train, y_train, alphas, b, C, tol=1.e-4):
     num_data, num_dim = x_train.shape
     # 利用矩阵操作提前计算所有的误差E
     E_mat = kernel_mat @ (alphas * y_train) + b - y_train
-    # 选择违反KKT条件最严重的一个元素
-    condition1 = (y_train * E_mat < -tol) * (alphas < C)
-    condition2 = (y_train * E_mat > tol) * (alphas > 0)
+    # 获取元素违反约束的情况
+    # condition1 = (y_train * E_mat < -tol) * (alphas < C)
+    # condition2 = (y_train * E_mat > tol) * (alphas > 0)
     # 得到所有元素违反约束的程度
     violation = np.zeros_like(alphas)
-    violation[condition1] = C - alphas[condition1]
-    violation[condition2] = alphas[condition2] - 0
-    # 精度裁剪（以免在取最大值时出问题）
-    violation = np.round(violation, decimals=9).flatten()
+    violation += (C - alphas) * (y_train * E_mat < -tol)
+    violation += (alphas - 0) * (y_train * E_mat > tol)
     # 检查是否没有可优化的项了
-    if violation.sum() == 0:
+    if violation.max() <= tol:
         return alphas, b, True
-    # 随机从违反最严重的元素中选择一个(若有多个的话)
-    i = np.random.choice(np.arange(num_data)[violation == violation.max()])
-    # 这里利用矩阵广播机制计算所有的差值
-    diff_E = (float(E_mat[i]) - E_mat).flatten()
-    # 这里利用矩阵操作提前计算所有alpha的上下界
-    mask = np.array(y_train[i] != y_train).flatten()
-    lowers, highers = np.zeros(num_data), np.zeros(num_data)
-    lowers[mask] = np.max(np.hstack((np.zeros_like(y_train), alphas - alphas[i])), axis=1)[mask]
-    highers[mask] = np.min(np.hstack((C + np.zeros_like(y_train), C + alphas - alphas[i])), axis=1)[mask]
-    lowers[~mask] = np.max(np.hstack((np.zeros_like(y_train), alphas + alphas[i] - C)), axis=1)[~mask]
-    highers[~mask] = np.min(np.hstack((C + np.zeros_like(y_train), alphas + alphas[i])), axis=1)[~mask]
-    # 利用矩阵广播机制计算所有的eta值
-    etas = kernel_mat[i, i] + np.diag(kernel_mat) - 2 * kernel_mat[i, :]
-    # eta 类似于二阶导数值，只有当它大于0才能取最小值
-    etas[etas <= 0] = 1.e-6  # 保证不除0
-    # 利用矩阵计算所有更新后的alpha
-    new_alphas = alphas + y_train * (diff_E / etas)[:, np.newaxis]
-    # 第五步: 根据上下界对alpha裁剪
-    new_alphas = np.max(np.hstack((new_alphas, lowers[:, np.newaxis])), axis=1)[:, np.newaxis]
-    new_alphas = np.min(np.hstack((new_alphas, highers[:, np.newaxis])), axis=1)[:, np.newaxis]
-    # 选择最大的下标
-    """巨坑！这里涉及取第一个最大时存在的精度问题，这里设置为小数点后9位"""
-    diff_alphas = np.round(np.abs(new_alphas - alphas), decimals=9).flatten()
-    diff_alphas[i] = 0.0
-    # 若没有更新则结束
-    # 这里指定返回为True则是early stop
-    if np.sum(diff_alphas) <= tol:
+    # 获取所有违反最严重的元素位置
+    violate_indices = np.where(violation == violation.max())[0]
+    # 随机对违反最严重的元素进行优化，以提升鲁棒性
+    np.random.shuffle(violate_indices)
+    # 遍历所有违反最严重的元素，直到所有元素满足容忍度
+    for i in violate_indices:
+        # 这里利用矩阵广播机制计算所有的差值
+        diff_E = (float(E_mat[i]) - E_mat).flatten()
+        # 这里利用矩阵操作提前计算所有alpha的上下界
+        mask = np.array(y_train[i] != y_train).flatten()
+        lowers, highers = np.zeros(num_data), np.zeros(num_data)
+        lowers[mask] = np.max(np.hstack((np.zeros_like(y_train), alphas - alphas[i])), axis=1)[mask]
+        highers[mask] = np.min(np.hstack((C + np.zeros_like(y_train), C + alphas - alphas[i])), axis=1)[mask]
+        lowers[~mask] = np.max(np.hstack((np.zeros_like(y_train), alphas + alphas[i] - C)), axis=1)[~mask]
+        highers[~mask] = np.min(np.hstack((C + np.zeros_like(y_train), alphas + alphas[i])), axis=1)[~mask]
+        # 利用矩阵广播机制计算所有的eta值
+        etas = kernel_mat[i, i] + np.diag(kernel_mat) - 2 * kernel_mat[i, :]
+        # eta 类似于二阶导数值，只有当它大于0才能取最小值
+        etas[etas <= 0] = 1.e-6  # 保证不除0
+        # 利用矩阵计算所有更新后的alpha
+        new_alphas = alphas + y_train * (diff_E / etas)[:, np.newaxis]
+        # 第五步: 根据上下界对alpha裁剪
+        new_alphas = np.max(np.hstack((new_alphas, lowers[:, np.newaxis])), axis=1)[:, np.newaxis]
+        new_alphas = np.min(np.hstack((new_alphas, highers[:, np.newaxis])), axis=1)[:, np.newaxis]
+        # 选择最大的下标
+        # """巨坑！这里涉及取第一个最大时存在的精度问题，这里设置为小数点后9位"""
+        # diff_alphas = np.round(np.abs(new_alphas - alphas), decimals=9).flatten()
+        diff_alphas = np.abs(new_alphas - alphas).flatten()
+        diff_alphas[i] = 0.0
+        # 若没有更新则继续检查后续元素
+        if diff_alphas.max() <= 1e-6:
+            continue
+        # 若有多个最大值元素，则随机从所有的等于最大值元素中选择一个
+        j = np.random.choice(np.arange(num_data)[diff_alphas == diff_alphas.max()])
+        # 在更新alpha之前记录其旧值
+        alpha_i_old, alpha_j_old = alphas[i].copy(), alphas[j].copy()
+        # 第四步: 更新alpha_j
+        alphas[j] = new_alphas[j]
+        # 第六步：更新alpha_i
+        alphas[i] = alpha_i_old + y_train[i] * y_train[j] * (alpha_j_old - alphas[j])
+        # """巨坑！这里涉及精度问题，这里设置为小数点后9位"""
+        # alphas = np.round(alphas, decimals=9)
+        # 第七步：更新b_i和b_j
+        b_i = float(b - float(E_mat[i]) - y_train[i] * (alphas[i] - alpha_i_old) * kernel_mat[i, i]
+                    - y_train[j] * (alphas[j] - alpha_j_old) * kernel_mat[j, i])
+        b_j = float(b - float(E_mat[j]) - y_train[i] * (alphas[i] - alpha_i_old) * kernel_mat[i, j]
+                    - y_train[j] * (alphas[j] - alpha_j_old) * kernel_mat[j, j])
+        # 第八步：根据b_i和b_j更新b
+        if 0 < alphas[i] < C:
+            b = b_i
+        elif 0 < alphas[j] < C:
+            b = b_j
+        else:
+            b = (b_i + b_j) / 2
+        # 若能实现更新则继续优化
         return alphas, b, False
-    # 若有多个最大值元素，则随机从所有的等于最大值元素中选择一个
-    j = np.random.choice(np.arange(num_data)[diff_alphas == diff_alphas.max()])
-    # 在更新alpha之前记录其旧值
-    alpha_i_old, alpha_j_old = alphas[i].copy(), alphas[j].copy()
-    # 第四步: 更新alpha_j
-    alphas[j] = new_alphas[j]
-    # 第六步：更新alpha_i
-    alphas[i] = alpha_i_old + y_train[i] * y_train[j] * (alpha_j_old - alphas[j])
-    """巨坑！这里涉及精度问题，这里设置为小数点后9位"""
-    alphas = np.round(alphas, decimals=9)
-    # 第七步：更新b_i和b_j
-    b_i = float(b - float(E_mat[i]) - y_train[i] * (alphas[i] - alpha_i_old) * kernel_mat[i, i]
-                - y_train[j] * (alphas[j] - alpha_j_old) * kernel_mat[j, i])
-    b_j = float(b - float(E_mat[j]) - y_train[i] * (alphas[i] - alpha_i_old) * kernel_mat[i, j]
-                - y_train[j] * (alphas[j] - alpha_j_old) * kernel_mat[j, j])
-    # 第八步：根据b_i和b_j更新b
-    if 0 < alphas[i] < C:
-        b = b_i
-    elif 0 < alphas[j] < C:
-        b = b_j
-    else:
-        b = (b_i + b_j) / 2
-
-    return alphas, b, False
+    # 所有违反约束的元素均已检查无法优化则结束
+    return alphas, b, True
 
 
-def smo_greedy_step_regression(kernel_mat, x_train, y_train, alphas, b, C, epsilon, tol=1.e-4):
+def smo_greedy_step_regression(kernel_mat, x_train, y_train, alphas, b, C, epsilon, tol=1.e-3):
     """
     SMO算法（贪婪运行一步）
     :param kernel_mat: 核函数矩阵
@@ -115,76 +119,75 @@ def smo_greedy_step_regression(kernel_mat, x_train, y_train, alphas, b, C, epsil
     F_mat = - Q_mat @ (betas * Z_mat) + b
     # 然后得到所有误差值
     E_mat = Z_mat * P_mat - F_mat
-    # 选择违反KKT条件最严重的一个元素
-    condition1 = (betas < C) * (Z_mat * E_mat < -tol)
-    condition2 = (betas > 0) * (Z_mat * E_mat > tol)
+    # 获得元素违反约束的情况
+    # condition1 = (betas < C) * (Z_mat * E_mat < -tol)
+    # condition2 = (betas > 0) * (Z_mat * E_mat > tol)
     # 还有一个约束是另一半是否是0，因为alpha和alpha*其中一个必为零
     # 这里不用考虑该约束，因为alpha和alpha*后续计算时视为一了个整体
     # condition3 = np.hstack([alphas[:, 1] != 0, alphas[:, 0] != 0])
     # 得到所有元素违反约束的程度
     violation = np.zeros_like(betas)
-    violation[condition1] = C - betas[condition1]
-    violation[condition2] = betas[condition2] - 0
-    # violation[condition3] = 0.0
-    # 精度裁剪（以免在取最大值时出问题）
-    violation = np.round(violation, decimals=9).flatten()
-    # 检查是否没有可优化的项了
-    if violation.sum() == 0:
+    violation += (C - betas) * (Z_mat * E_mat < -tol)
+    violation += (betas - 0) * (Z_mat * E_mat > tol)
+    if violation.max() <= tol:
         return alphas, b, True
-    # 随机从违反最严重的元素中选择一个(若有多个的话)
-    i = np.random.choice(np.arange(num_data * 2)[violation == violation.max()])
-    # 需要利用矩阵广播机制计算beta情况下所有的差值
-    diff_E = (float(E_mat[i]) - E_mat).flatten()
-    # 这里利用矩阵操作提前计算所有beta的上下界
-    mask = np.array(Z_mat[i] != Z_mat).flatten()
-    lowers, highers = np.zeros(num_data * 2), np.zeros(num_data * 2)
-    lowers[mask] = np.max(np.hstack((np.zeros_like(Z_mat), betas - betas[i])), axis=1)[mask]
-    highers[mask] = np.min(np.hstack((C + np.zeros_like(Z_mat), C + betas - betas[i])), axis=1)[mask]
-    lowers[~mask] = np.max(np.hstack((np.zeros_like(Z_mat), betas + betas[i] - C)), axis=1)[~mask]
-    highers[~mask] = np.min(np.hstack((C + np.zeros_like(Z_mat), betas + betas[i])), axis=1)[~mask]
-    # 利用矩阵广播机制计算所有的eta值
-    etas = Q_mat[i, i] + np.diag(Q_mat) - 2 * Q_mat[i, :]
-    # eta 类似于二阶导数值，只有当它大于0才能取最小值
-    etas[etas <= 0] = 1.e-6  # 保证不除0
-    # 利用矩阵计算所有更新后的betas
-    new_betas = betas + Z_mat * (diff_E / etas)[:, np.newaxis]
-    # 第五步: 根据上下界对betas裁剪
-    new_betas = np.max(np.hstack((new_betas, lowers[:, np.newaxis])), axis=1)[:, np.newaxis]
-    new_betas = np.min(np.hstack((new_betas, highers[:, np.newaxis])), axis=1)[:, np.newaxis]
-    """巨坑！这里涉及取第一个最大时存在的精度问题，这里设置为小数点后9位"""
-    diff_betas = np.round(np.abs(new_betas - betas), decimals=9).flatten()
-    # diff_betas[condition3] = 0.0
-    diff_betas[i] = 0.0
-    # 若没有更新则结束
-    # 这里指定返回为True则是early stop
-    if np.sum(diff_betas) <= tol:
+    # 获取所有违反最严重的元素位置
+    violate_indices = np.where(violation == violation.max())[0]
+    # 随机对违反最严重的元素进行优化，以提升鲁棒性
+    np.random.shuffle(violate_indices)
+    # 遍历所有违反最严重的元素，直到所有元素满足容忍度
+    for i in violate_indices:
+        # 需要利用矩阵广播机制计算使用该元素的情况下所有的差值
+        diff_E = (float(E_mat[i]) - E_mat).flatten()
+        # 这里利用矩阵操作提前计算所有beta的上下界
+        mask = np.array(Z_mat[i] != Z_mat).flatten()
+        lowers, highers = np.zeros(num_data * 2), np.zeros(num_data * 2)
+        lowers[mask] = np.max(np.hstack((np.zeros_like(Z_mat), betas - betas[i])), axis=1)[mask]
+        highers[mask] = np.min(np.hstack((C + np.zeros_like(Z_mat), C + betas - betas[i])), axis=1)[mask]
+        lowers[~mask] = np.max(np.hstack((np.zeros_like(Z_mat), betas + betas[i] - C)), axis=1)[~mask]
+        highers[~mask] = np.min(np.hstack((C + np.zeros_like(Z_mat), betas + betas[i])), axis=1)[~mask]
+        # 利用矩阵广播机制计算所有的eta值
+        etas = Q_mat[i, i] + np.diag(Q_mat) - 2 * Q_mat[i, :]
+        # eta 类似于二阶导数值，只有当它大于0才能取最小值
+        etas[etas <= 0] = 1.0e-6  # 保证不除0
+        # 利用矩阵计算所有更新后的betas
+        new_betas = betas + Z_mat * (diff_E / etas)[:, np.newaxis]
+        # 第五步: 根据上下界对betas裁剪
+        new_betas = np.max(np.hstack((new_betas, lowers[:, np.newaxis])), axis=1)[:, np.newaxis]
+        new_betas = np.min(np.hstack((new_betas, highers[:, np.newaxis])), axis=1)[:, np.newaxis]
+        diff_betas = np.abs(new_betas - betas).flatten()
+        # diff_betas[condition3] = 0.0
+        diff_betas[i] = 0.0
+        # 若没有更新则继续检查后续元素
+        if diff_betas.max() <= 1.0e-6:
+            continue
+        # 若有多个最大值元素，则随机从所有的等于最大值元素中选择一个
+        j = np.random.choice(np.arange(num_data * 2)[diff_betas == diff_betas.max()])
+        # 在更新beta之前记录其旧值
+        beta_i_old, beta_j_old = betas[i].copy(), betas[j].copy()
+        # 第四步: 更新beta_j
+        betas[j] = new_betas[j]
+        # 第六步：更新alpha_i
+        betas[i] = beta_i_old + Z_mat[i] * Z_mat[j] * (beta_j_old - betas[j])
+        # 第七步：更新b_i和b_j
+        b_i = float(b + float(E_mat[i]) + Z_mat[i] * (betas[i] - beta_i_old) * Q_mat[i, i]
+                    + Z_mat[j] * (betas[j] - beta_j_old) * Q_mat[j, i])
+        b_j = float(b + float(E_mat[j]) + Z_mat[i] * (betas[i] - beta_i_old) * Q_mat[i, j]
+                    + Z_mat[j] * (betas[j] - beta_j_old) * Q_mat[j, j])
+        # 第八步：根据b_i和b_j更新b
+        if 0 < betas[i] < C:
+            b = b_i
+        elif 0 < betas[j] < C:
+            b = b_j
+        else:
+            b = (b_i + b_j) / 2
+        # 最后将betas转为alphas
+        alphas[:, 0] = betas[:num_data].flatten()
+        alphas[:, 1] = betas[num_data:].flatten()
+        # 若能实现更新则继续优化
         return alphas, b, False
-    # 若有多个最大值元素，则随机从所有的等于最大值元素中选择一个
-    j = np.random.choice(np.arange(num_data * 2)[diff_betas == diff_betas.max()])
-    # 在更新beta之前记录其旧值
-    beta_i_old, beta_j_old = betas[i].copy(), betas[j].copy()
-    # 第四步: 更新beta_j
-    betas[j] = new_betas[j]
-    # 第六步：更新alpha_i
-    betas[i] = beta_i_old + Z_mat[i] * Z_mat[j] * (beta_j_old - betas[j])
-    """巨坑！这里涉及精度问题，这里设置为小数点后9位"""
-    betas = np.round(betas, decimals=9)
-    # 第七步：更新b_i和b_j
-    b_i = float(b + float(E_mat[i]) + Z_mat[i] * (betas[i] - beta_i_old) * Q_mat[i, i]
-                + Z_mat[j] * (betas[j] - beta_j_old) * Q_mat[j, i])
-    b_j = float(b + float(E_mat[j]) + Z_mat[i] * (betas[i] - beta_i_old) * Q_mat[i, j]
-                + Z_mat[j] * (betas[j] - beta_j_old) * Q_mat[j, j])
-    # 第八步：根据b_i和b_j更新b
-    if 0 < betas[i] < C:
-        b = b_i
-    elif 0 < betas[j] < C:
-        b = b_j
-    else:
-        b = (b_i + b_j) / 2
-    # 最后将betas转为alphas
-    alphas[:, 0] = betas[:num_data].flatten()
-    alphas[:, 1] = betas[num_data:].flatten()
-    return alphas, b, False
+    # 所有违反约束的元素均已检查无法优化则结束
+    return alphas, b, True
 
 
 def smo_random(x_train, y_train, C, tol, max_iter=1000):
