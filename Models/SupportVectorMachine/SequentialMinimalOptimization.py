@@ -57,8 +57,6 @@ def smo_greedy_step(kernel_mat, x_train, y_train, alphas, b, C, tol=1.e-3):
         new_alphas = np.max(np.hstack((new_alphas, lowers[:, np.newaxis])), axis=1)[:, np.newaxis]
         new_alphas = np.min(np.hstack((new_alphas, highers[:, np.newaxis])), axis=1)[:, np.newaxis]
         # 选择最大的下标
-        # """巨坑！这里涉及取第一个最大时存在的精度问题，这里设置为小数点后9位"""
-        # diff_alphas = np.round(np.abs(new_alphas - alphas), decimals=9).flatten()
         diff_alphas = np.abs(new_alphas - alphas).flatten()
         diff_alphas[i] = 0.0
         # 若没有更新则继续检查后续元素
@@ -72,8 +70,6 @@ def smo_greedy_step(kernel_mat, x_train, y_train, alphas, b, C, tol=1.e-3):
         alphas[j] = new_alphas[j]
         # 第六步：更新alpha_i
         alphas[i] = alpha_i_old + y_train[i] * y_train[j] * (alpha_j_old - alphas[j])
-        # """巨坑！这里涉及精度问题，这里设置为小数点后9位"""
-        # alphas = np.round(alphas, decimals=9)
         # 第七步：更新b_i和b_j
         b_i = float(b - float(E_mat[i]) - y_train[i] * (alphas[i] - alpha_i_old) * kernel_mat[i, i]
                     - y_train[j] * (alphas[j] - alpha_j_old) * kernel_mat[j, i])
