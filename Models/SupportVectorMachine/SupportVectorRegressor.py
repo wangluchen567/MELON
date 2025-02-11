@@ -196,7 +196,7 @@ class SupportVectorRegressor():
 
 
 if __name__ == '__main__':
-    np.random.seed(3)
+    np.random.seed(100)
     # 线性回归测试
     model = SupportVectorRegressor(C=10, kernel=SupportVectorRegressor.LINEAR, max_iter=100)
     run_uniform_regression(model)
