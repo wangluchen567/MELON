@@ -3,10 +3,10 @@ import pandas as pd
 from Models.Utils import normalize
 from Models.LinearClassifier.Perceptron import Perceptron
 from Models.LinearClassifier.LogisticRegression import LogisticRegression
-from Models.LinearClassifier.GaussianDiscriminant import GaussianDiscriminant
 from Models.DecisionTree.DecisionTreeClassifier import DecisionTreeClassifier
-from Models.LinearClassifier.FisherLinearDiscriminant import FisherLinearDiscriminant
 from Models.SupportVectorMachine.SupportVectorClassifier import SupportVectorClassifier
+from Models.DiscriminantAnalysis.FisherDiscriminantAnalysis import FisherDiscriminantAnalysis
+from Models.DiscriminantAnalysis.GaussianDiscriminantAnalysis import GaussianDiscriminantAnalysis
 
 
 
@@ -93,11 +93,11 @@ def run_iris_classifier(model):
 
 
 if __name__ == '__main__':
-    models = [FisherLinearDiscriminant(),
-              GaussianDiscriminant(),
+    models = [FisherDiscriminantAnalysis(),
+              GaussianDiscriminantAnalysis(),
               LogisticRegression(epochs=100, lr=0.01, grad_type='Adam'),
               Perceptron(epochs=100, lr=0.01, grad_type='Adam'),
               DecisionTreeClassifier(),
-              SupportVectorClassifier(kernel_type=SupportVectorClassifier.RBF)]
+              SupportVectorClassifier(kernel=SupportVectorClassifier.RBF)]
     model = models[4]
     run_iris_classifier(model)

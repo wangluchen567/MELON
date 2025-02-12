@@ -6,10 +6,11 @@ from Models.LinearClassifier.LogisticRegression import LogisticRegression
 from Models.MultiClassWrapper.OneVsOneClassifier import OneVsOneClassifier
 from Models.MultiClassWrapper.OneVsRestClassifier import OneVsRestClassifier
 from Models.NeighborsBased.KNeighborsClassifier import KNeighborsClassifier
-from Models.LinearClassifier.GaussianDiscriminant import GaussianDiscriminant
 from Models.DecisionTree.DecisionTreeClassifier import DecisionTreeClassifier
-from Models.LinearClassifier.FisherLinearDiscriminant import FisherLinearDiscriminant
 from Models.SupportVectorMachine.SupportVectorClassifier import SupportVectorClassifier
+from Models.DiscriminantAnalysis.FisherDiscriminantAnalysis import FisherDiscriminantAnalysis
+from Models.DiscriminantAnalysis.GaussianDiscriminantAnalysis import GaussianDiscriminantAnalysis
+
 
 
 
@@ -76,12 +77,12 @@ if __name__ == '__main__':
     # 获取数据集
     X_train, Y_train, X_test, Y_test = load_classifier_data()
     # 构建模型
-    models = [FisherLinearDiscriminant(),
-              GaussianDiscriminant(),
+    models = [FisherDiscriminantAnalysis(),
+              GaussianDiscriminantAnalysis(),
               LogisticRegression(epochs=1000, lr=0.01, grad_type='Adam'),
               Perceptron(epochs=1000, lr=0.01, grad_type='Adam'),
-              SupportVectorClassifier(kernel_type=SupportVectorClassifier.LINEAR),
-              SupportVectorClassifier(kernel_type=SupportVectorClassifier.RBF)]
+              SupportVectorClassifier(kernel=SupportVectorClassifier.LINEAR),
+              SupportVectorClassifier(kernel=SupportVectorClassifier.RBF)]
     # 使用 一对一 分类器分类
     print("# One-Vs-One Multi-Classifier #")
     for model in models:

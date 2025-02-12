@@ -1,13 +1,13 @@
 """
-高斯判别分析
-Gaussian Discriminant
+Fisher(线性)判别分析(二分类)
+Fisher (Linear) Discriminant Analysis
 """
 import warnings
 import numpy as np
 from Models.Utils import sigmoid, plot_2dim_classification, run_uniform_classification, run_double_classification
 
 
-class GaussianDiscriminant():
+class FisherDiscriminantAnalysis():
     def __init__(self, X_train=None, Y_train=None):
         """
         :param X_train: 训练数据
@@ -33,25 +33,20 @@ class GaussianDiscriminant():
         """使用数据集训练模型"""
         self.set_train_data(X_train, Y_train)
         # 标签展开，方便取值
-        Y_F = self.Y_train.flatten()
-        # 求两类样本的个数
-        N1, N2 = sum(Y_F == 1), sum(Y_F == -1)
+        y_flatten = self.Y_train.flatten()
+        # 获取两类样本的个数
+        num_pos, num_neg = sum(y_flatten == 1), sum(y_flatten == -1)
         # 求两类样本的均值
-        M1 = np.mean(self.X_train[Y_F == 1], axis=0)
-        M2 = np.mean(self.X_train[Y_F == -1], axis=0)
+        mu_pos = np.mean(self.X_train[y_flatten == 1], axis=0)
+        mu_neg = np.mean(self.X_train[y_flatten == -1], axis=0)
         # 求两类样本的协方差
-        S1 = (self.X_train[Y_F == 1] - M1).T.dot((self.X_train[Y_F == 1] - M1))
-        S2 = (self.X_train[Y_F == -1] - M2).T.dot((self.X_train[Y_F == -1] - M2))
-        # 求参数Sigma及其逆
-        Sigma = (N1 * S1 + N2 * S2) / (N1 + N2)
-        Sigma_i = np.linalg.inv(Sigma)
-        # 求参数Phi
-        Phi = N1 / (N1 + N2)
-        # 求分界面参数
-        A = Sigma_i.dot(M1 - M2)
-        B = 0.5 * (M1.T.dot(Sigma_i).dot(M1) - M2.T.dot(Sigma_i).dot(M2)) + np.log(1 - Phi) - np.log(Phi)
-        Bias = -B  # 判别阈值在判别时移项后变号
-        self.Weights = np.concatenate((A, np.array([Bias]))).reshape(-1, 1)
+        cov_pos = (self.X_train[y_flatten == 1] - mu_pos).T.dot((self.X_train[y_flatten == 1] - mu_pos))
+        cov_neg = (self.X_train[y_flatten == -1] - mu_neg).T.dot((self.X_train[y_flatten == -1] - mu_neg))
+        # 求最优投影方向
+        vector = np.linalg.inv(cov_pos + cov_neg).dot(mu_pos - mu_neg)
+        # 求判别函数阈值(直接取中点)
+        Bias = -vector.dot((num_pos * mu_pos + num_neg * mu_neg)) / (num_pos + num_neg)
+        self.Weights = np.concatenate((vector, np.array([Bias]))).reshape(-1, 1)
 
     def predict(self, X_data):
         """模型对测试集进行预测"""
@@ -85,6 +80,6 @@ class GaussianDiscriminant():
 
 if __name__ == '__main__':
     np.random.seed(100)
-    model = GaussianDiscriminant()
+    model = FisherDiscriminantAnalysis()
     run_uniform_classification(model)
     run_double_classification(model)
