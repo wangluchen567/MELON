@@ -25,6 +25,7 @@ ChEn's Machine Learning model Organized using Numpy
 - DimensionReduction: 降维相关模型，包含PCA主成分分析等算法
 - LinearClassifier: 线性分类相关模型，包含Fisher线性判别、高斯判别、逻辑回归、感知机等模型
 - LinearRegressor: 线性回归相关模型，包含普通最小二乘线性回归、岭回归等模型
+- MultiClassWrapper: 多分类包装器，包含一对一(OvO)分类包装器和多对多(OvR)分类包装器
 
 ### Notes: 机器学习笔记和示例
 
