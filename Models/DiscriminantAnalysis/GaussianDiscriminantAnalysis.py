@@ -39,10 +39,10 @@ class GaussianDiscriminantAnalysis():
         # 求两类样本的均值
         mu_pos = np.mean(self.X_train[y_flatten == 1], axis=0)
         mu_neg = np.mean(self.X_train[y_flatten == -1], axis=0)
-        # 求两类样本的协方差
+        # 求两类样本的协方差的无偏估计倍数: sigma * (N-1)
         cov_pos = (self.X_train[y_flatten == 1] - mu_pos).T.dot((self.X_train[y_flatten == 1] - mu_pos))
         cov_neg = (self.X_train[y_flatten == -1] - mu_neg).T.dot((self.X_train[y_flatten == -1] - mu_neg))
-        # 计算两类的共享协方差矩阵
+        # 计算两类的共享协方差矩阵(无偏估计)
         sigma = (cov_pos + cov_neg) / (num_pos + num_neg - 2)
         # 求共享协方差矩阵的逆矩阵
         sigma_inv = np.linalg.inv(sigma)
@@ -84,7 +84,7 @@ class GaussianDiscriminantAnalysis():
 
 
 if __name__ == '__main__':
-    np.random.seed(6)
+    np.random.seed(100)
     model = GaussianDiscriminantAnalysis()
     run_uniform_classification(model)
     run_double_classification(model)

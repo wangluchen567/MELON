@@ -42,8 +42,12 @@ class FisherDiscriminantAnalysis():
         # 求两类样本的协方差
         cov_pos = (self.X_train[y_flatten == 1] - mu_pos).T.dot((self.X_train[y_flatten == 1] - mu_pos))
         cov_neg = (self.X_train[y_flatten == -1] - mu_neg).T.dot((self.X_train[y_flatten == -1] - mu_neg))
+        # 计算两类的共享协方差矩阵(无偏估计)
+        sigma = (cov_pos + cov_neg) / (num_pos + num_neg - 2)
+        # 求共享协方差矩阵的逆矩阵
+        sigma_inv = np.linalg.inv(sigma)
         # 求最优投影方向
-        vector = np.linalg.inv(cov_pos + cov_neg).dot(mu_pos - mu_neg)
+        vector = sigma_inv.dot(mu_pos - mu_neg)
         # 求判别函数阈值(直接取中点)
         Bias = -vector.dot((num_pos * mu_pos + num_neg * mu_neg)) / (num_pos + num_neg)
         self.Weights = np.concatenate((vector, np.array([Bias]))).reshape(-1, 1)

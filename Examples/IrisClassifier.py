@@ -74,6 +74,7 @@ def run_classifier(model, X_train, Y_train, X_test, Y_test):
 
 
 if __name__ == '__main__':
+    np.random.seed(0)
     # 获取数据集
     X_train, Y_train, X_test, Y_test = load_classifier_data()
     # 构建模型
@@ -95,7 +96,7 @@ if __name__ == '__main__':
         # 将模型用多分类器封装
         mc_model = OneVsRestClassifier(model)
         run_classifier(mc_model, X_train, Y_train, X_test, Y_test)
-
+    print("# Direct Multi-Classifier #")
     # KNN模型可以直接用于多分类
     knn_model = KNeighborsClassifier(weights='distance')
     run_classifier(knn_model, X_train, Y_train, X_test, Y_test)
