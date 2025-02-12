@@ -4,7 +4,7 @@ Support Vector Classifier
 """
 import warnings
 import numpy as np
-from Models.SupportVectorMachine.SequentialMinimalOptimization import smo_greedy_step, smo_random
+from Models.SupportVectorMachine.SequentialMinimalOptimization import smo_greedy_step
 from Models.Utils import (sigmoid, plot_2dim_classification, run_uniform_classification, run_double_classification,
                           plot_2dim_classification_sample, run_circle_classification, run_moons_classification)
 

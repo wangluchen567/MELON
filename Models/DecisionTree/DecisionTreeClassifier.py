@@ -48,7 +48,7 @@ class DecisionTreeClassifier():
                 self.X_columns = list(self.X_train.columns)
         if Y_train is not None:
             if self.Y_train is not None:
-                warnings.warn("Training data will be overwritten")
+                warnings.warn("Training label will be overwritten")
             self.Y_train = Y_train.copy()
             # 若给定数据不是Dataframe或Series，则必须封装为Dataframe或Series才可以训练
             if not (isinstance(self.Y_train, pd.DataFrame) or isinstance(self.Y_train, pd.Series)):

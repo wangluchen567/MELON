@@ -32,7 +32,7 @@ class OneVsRestClassifier():
             self.X_train = X_train.copy()
         if Y_train is not None:
             if self.Y_train is not None:
-                warnings.warn("Training data will be overwritten")
+                warnings.warn("Training label will be overwritten")
             self.Y_train = Y_train.copy()
 
     def train(self, X_train=None, Y_train=None):

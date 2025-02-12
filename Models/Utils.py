@@ -499,59 +499,6 @@ def run_uniform_regression(model, X_size=100, X_feat=1, X_lower=0, X_upper=20, t
     model.plot_2dim(X_test, Y_test, Truth=Truth_Weights)
 
 
-def run_contrast_regression(model, X_size=100, X_feat=1, X_lower=0, X_upper=20, train_ratio=0.8):
-    """
-    指定模型对随机生成的回归数据进行回归对比测试
-    :param model: 指定模型
-    :param X_size: 随机生成的数据集大小
-    :param X_feat: 数据集特征数
-    :param X_lower: 随机生成的数据集下界
-    :param X_upper: 随机生成的数据集上界
-    :param train_ratio: 训练集所占比例
-    :return: None
-    """
-    # 生成数据集
-    X_data, Y_data, Truth_Weights = random_generate_regression(X_size, X_feat, X_lower=X_lower, X_upper=X_upper)
-
-    # 划分训练集和测试集
-    train_size = int(train_ratio * len(X_data))
-    X_train, Y_train = X_data[:train_size], Y_data[:train_size]
-    X_test, Y_test = X_data[train_size:], Y_data[train_size:]
-
-    # 使用直接计算的方法求解
-    print("Direct Solve:")
-    # 使用数据集对模型训练
-    model.train(X_train, Y_train, mode=0)
-    print("Truth Weights: ", Truth_Weights.flatten())
-    print("Model Weights: ", model.Weights.flatten())
-    # 对训练集进行预测
-    Y_train_pred = model.predict(X_train)
-    # 计算训练结果的mse值
-    train_mse = cal_mse_metrics(Y_train, Y_train_pred)
-    print("Train MSE Metrics:  {:.3f}".format(train_mse))
-
-    # 使用梯度的方法求解
-    print("Gradient Solve:")
-    model.train(X_data, Y_data, mode=1, epochs=100, lr=0.05, grad_type='Adam')
-    print("Truth Weights: ", Truth_Weights.flatten())
-    print("Model Weights: ", model.Weights.flatten())
-    # 对训练集进行预测
-    Y_train_pred = model.predict(X_train)
-    # 计算训练结果的mse值
-    train_mse = cal_mse_metrics(Y_train, Y_train_pred)
-    print("Train MSE Metrics:  {:.3f}".format(train_mse))
-
-    # 对测试集进行预测
-    Y_test_pred = model.predict(X_test)
-    print("Truth Values: ", Y_test.flatten())
-    print("Predict Values: ", Y_test_pred.flatten())
-    # 计算测试结果的mse值
-    test_mse = cal_mse_metrics(Y_test, Y_test_pred)
-    print("Test MSE Metrics:  {:.3f}".format(test_mse))
-    # 对结果进行画图
-    model.plot_2dim(X_test, Y_test, Truth=Truth_Weights)
-
-
 def plot_2dim_classification_sample(model, X_data, Y_data, X_test=None, Y_test=None, neg_label=-1, support=None,
                                     sample_steps=200, extra=0.05, pause=False, n_iter=None, pause_time=0.15):
     """

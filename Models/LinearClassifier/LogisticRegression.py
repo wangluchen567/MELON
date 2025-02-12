@@ -36,7 +36,7 @@ class LogisticRegression():
             self.X_train = X_train.copy()
         if Y_train is not None:
             if self.Y_train is not None:
-                warnings.warn("Training data will be overwritten")
+                warnings.warn("Training label will be overwritten")
             self.Y_train = Y_train.copy()
             self.Y_train_ = Y_train.copy()
             # 使用逻辑回归时负类标签为0，在此使用特殊标签
