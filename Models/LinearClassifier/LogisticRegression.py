@@ -1,5 +1,5 @@
 """
-逻辑回归
+逻辑回归(分类器)
 Logistic Regression
 """
 import warnings

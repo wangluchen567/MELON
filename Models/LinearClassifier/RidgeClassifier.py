@@ -1,5 +1,5 @@
 """
-岭回归分类器
+岭回归(分类器)
 Ridge Classifier
 """
 import warnings
