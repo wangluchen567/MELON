@@ -2,12 +2,14 @@ import numpy as np
 import pandas as pd
 from Models.Utils import normalize
 from Models.LinearClassifier.Perceptron import Perceptron
+from Models.NaiveBayes.GaussianNaiveBayes import GaussianNaiveBayes
+from Models.LinearClassifier.RidgeClassifier import RidgeClassifier
 from Models.LinearClassifier.LogisticRegression import LogisticRegression
+from Models.NeighborsBased.KNeighborsClassifier import KNeighborsClassifier
 from Models.DecisionTree.DecisionTreeClassifier import DecisionTreeClassifier
 from Models.SupportVectorMachine.SupportVectorClassifier import SupportVectorClassifier
 from Models.DiscriminantAnalysis.FisherDiscriminantAnalysis import FisherDiscriminantAnalysis
 from Models.DiscriminantAnalysis.GaussianDiscriminantAnalysis import GaussianDiscriminantAnalysis
-
 
 
 def load_iris_data():
@@ -65,7 +67,7 @@ def load_classifier_data(feat_pos, chose_label=None, pos_label=1, neg_label=-1, 
     return X_train, Y_train, X_test, Y_test
 
 
-def run_iris_classifier(model):
+def run_iris_classifier(model, show=False):
     model_name = type(model).__name__
     print("Model: ", model_name)
     # 获取数据集
@@ -75,8 +77,9 @@ def run_iris_classifier(model):
     # 训练后的模型参数
     if hasattr(model, 'Weights'):
         print("Model Weights: ", model.Weights.flatten())
-    # 画图展示效果
-    model.plot_2dim()
+    if show:
+        # 画图展示效果
+        model.plot_2dim()
     # 训练准确率计算
     Y_train_pred = model.predict(X_train)
     # 计算训练准确率
@@ -88,16 +91,20 @@ def run_iris_classifier(model):
     # 计算测试集准确率
     test_accuracy = np.array(Y_test_pred == Y_test, dtype=int).sum() / len(Y_test)
     print("Test Accuracy:  {:.3f} %".format(test_accuracy * 100))
-    # 画图展示效果
-    model.plot_2dim(X_test, Y_test)
+    if show:
+        # 画图展示效果
+        model.plot_2dim(X_test, Y_test)
 
 
 if __name__ == '__main__':
     models = [FisherDiscriminantAnalysis(),
               GaussianDiscriminantAnalysis(),
-              LogisticRegression(epochs=100, lr=0.01, grad_type='Adam'),
-              Perceptron(epochs=100, lr=0.01, grad_type='Adam'),
+              RidgeClassifier(),
+              Perceptron(tol=1.e-4),
+              LogisticRegression(tol=1.e-4),
+              GaussianNaiveBayes(),
+              KNeighborsClassifier(),
               DecisionTreeClassifier(),
               SupportVectorClassifier(kernel=SupportVectorClassifier.RBF)]
-    model = models[4]
-    run_iris_classifier(model)
+    for model in models:
+        run_iris_classifier(model)

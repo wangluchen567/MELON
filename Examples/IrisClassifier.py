@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 from Models.Utils import normalize, calculate_accuracy
 from Models.LinearClassifier.Perceptron import Perceptron
+from Models.NaiveBayes.GaussianNaiveBayes import GaussianNaiveBayes
 from Models.LinearClassifier.RidgeClassifier import RidgeClassifier
 from Models.LinearClassifier.LogisticRegression import LogisticRegression
 from Models.MultiClassWrapper.OneVsOneClassifier import OneVsOneClassifier
@@ -10,9 +11,8 @@ from Models.NeighborsBased.KNeighborsClassifier import KNeighborsClassifier
 from Models.DecisionTree.DecisionTreeClassifier import DecisionTreeClassifier
 from Models.SupportVectorMachine.SupportVectorClassifier import SupportVectorClassifier
 from Models.DiscriminantAnalysis.FisherDiscriminantAnalysis import FisherDiscriminantAnalysis
+from Models.DiscriminantAnalysis.LinearDiscriminantAnalysis import LinearDiscriminantAnalysis
 from Models.DiscriminantAnalysis.GaussianDiscriminantAnalysis import GaussianDiscriminantAnalysis
-
-
 
 
 def load_iris_data():
@@ -99,6 +99,12 @@ if __name__ == '__main__':
         mc_model = OneVsRestClassifier(model)
         run_classifier(mc_model, X_train, Y_train, X_test, Y_test)
     print("# Direct Multi-Classifier #")
+    # 朴素贝叶斯模型可以直接用于多分类
+    bayes_model = GaussianNaiveBayes()
+    run_classifier(bayes_model, X_train, Y_train, X_test, Y_test)
+    # 线性判别分析可以直接用于多分类
+    lda_model = LinearDiscriminantAnalysis(n_components=2)
+    run_classifier(lda_model, X_train, Y_train, X_test, Y_test)
     # KNN模型可以直接用于多分类
     knn_model = KNeighborsClassifier(weights='distance')
     run_classifier(knn_model, X_train, Y_train, X_test, Y_test)
@@ -106,4 +112,3 @@ if __name__ == '__main__':
     dtc_model = DecisionTreeClassifier(max_depth=3, criterion='entropy')
     run_classifier(dtc_model, X_train, Y_train, X_test, Y_test)
     dtc_model.plot_tree()
-

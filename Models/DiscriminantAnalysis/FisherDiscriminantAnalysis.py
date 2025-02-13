@@ -66,7 +66,7 @@ class FisherDiscriminantAnalysis():
         return Y_data
 
     def predict_prob(self, X_data):
-        """模型对测试集进行预测"""
+        """模型对测试集进行预测(概率)"""
         if X_data.ndim == 2:
             pass
         elif X_data.ndim == 1:

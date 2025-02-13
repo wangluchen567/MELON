@@ -76,7 +76,6 @@ class GDRegressor():
         X_feat = self.X_train.shape[1]
         # 正态分布初始化
         self.Weights = np.random.randn(X_feat + 1, 1) * 0.01
-        # self.Weights = np.random.uniform(-1, 1, size=(X_feat + 1, 1))
 
     def train(self, X_train, Y_train, penalty=None, alpha=None, l1_ratio=None,
               max_iter=None, tol=None, lr=None, optim=None, num_no_change=None):
