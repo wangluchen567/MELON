@@ -26,8 +26,6 @@ class LinearDiscriminantAnalysis():
         self.class_means = None  # 每类的均值
         self.priors = None  # 每类的先验概率
 
-
-
     def set_train_data(self, X_train, Y_train):
         """给定训练数据集和标签数据"""
         if X_train is not None:
@@ -74,11 +72,21 @@ class LinearDiscriminantAnalysis():
         S_W_inv_S_B = np.linalg.inv(S_W) @ S_B
         # 特征值分解得到投影方向
         eigen_vals, eigen_vecs = np.linalg.eig(S_W_inv_S_B)
-        # 选择前n个特征作为投影方向
-        self.projection = eigen_vecs[:, :self.n_components]
-        # 计算投影后的类别均值和共享协方差矩阵
-        X_proj = self.X_train @ self.projection
-        self.shared_cov = np.cov(X_proj, rowvar=False)
+        # 提取前n个特征作为投影(判别)方向
+        if self.n_components == 1:
+            # 只有一个判别方向
+            self.projection = eigen_vecs[:, 0].reshape(-1, 1)
+            # 计算投影后的类别均值和共享协方差矩阵
+            X_proj = self.X_train @ self.projection
+            # 此时协方差矩阵是一个标量（方差），需要转换为1x1矩阵
+            self.shared_cov = np.array([[np.cov(X_proj, rowvar=False)]])
+        else:
+            # 提取前 K-1 个特征向量
+            self.projection = eigen_vecs[:, :self.n_components]
+            # 计算投影后的类别均值和共享协方差矩阵
+            X_proj = self.X_train @ self.projection
+            # 计算共享协方差矩阵
+            self.shared_cov = np.cov(X_proj, rowvar=False)
         # 计算每类的均值
         self.class_means = np.array([np.mean(X_proj[np.array(self.Y_train == k).flatten()], axis=0)
                                      for k in self.classes])
