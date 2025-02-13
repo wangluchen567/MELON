@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 from Models.Utils import normalize, calculate_accuracy
 from Models.LinearClassifier.Perceptron import Perceptron
+from Models.LinearClassifier.RidgeClassifier import RidgeClassifier
 from Models.LinearClassifier.LogisticRegression import LogisticRegression
 from Models.MultiClassWrapper.OneVsOneClassifier import OneVsOneClassifier
 from Models.MultiClassWrapper.OneVsRestClassifier import OneVsRestClassifier
@@ -80,8 +81,9 @@ if __name__ == '__main__':
     # 构建模型
     models = [FisherDiscriminantAnalysis(),
               GaussianDiscriminantAnalysis(),
-              LogisticRegression(epochs=1000, lr=0.01, grad_type='Adam'),
-              Perceptron(epochs=1000, lr=0.01, grad_type='Adam'),
+              RidgeClassifier(),
+              Perceptron(tol=1.e-4),
+              LogisticRegression(tol=1.e-4),
               SupportVectorClassifier(kernel=SupportVectorClassifier.LINEAR),
               SupportVectorClassifier(kernel=SupportVectorClassifier.RBF)]
     # 使用 一对一 分类器分类

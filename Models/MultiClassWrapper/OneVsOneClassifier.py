@@ -59,8 +59,6 @@ class OneVsOneClassifier():
                 Y_train_ovo[Y_train_binary == self.class_states[j]] = 1
                 # 创建对于该状态的模型
                 model_ovo = copy.deepcopy(self.model)
-                if hasattr(model_ovo, 'show'):
-                    model_ovo.show = False
                 model_ovo.train(X_train_binary, Y_train_ovo)
                 # 保存模型
                 self.classifiers.append(model_ovo)

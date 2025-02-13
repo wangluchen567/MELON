@@ -50,8 +50,6 @@ class OneVsRestClassifier():
             Y_train_ovr[Y_train != self.class_states[i]] = -1
             # 创建对于该状态的模型
             model_ovr = copy.deepcopy(self.model)
-            if hasattr(model_ovr, 'show'):
-                model_ovr.show = False
             model_ovr.train(self.X_train, Y_train_ovr)
             # 保存模型
             self.classifiers.append(model_ovr)

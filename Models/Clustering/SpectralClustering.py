@@ -16,7 +16,7 @@ class SpectralClustering():
     SIGMOID = 3
 
     def __init__(self, X=None, n_clusters=None, affinity=RBF, n_neighbors=10, mode='connect',
-                 gamma=1.0, degree=3.0, const=1.0, num_train=10, max_iter=300, tol=1e-4, show=False):
+                 gamma=1.0, degree=3.0, const=1.0, num_train=10, max_iter=1000, tol=1e-4, show=False):
         """
         :param X: 需要聚类的数据
         :param n_clusters: 聚类中心个数

@@ -16,8 +16,8 @@ class SupportVectorClassifier():
     RBF = GAUSSIAN = 2
     SIGMOID = 3
 
-    def __init__(self, X_train=None, Y_train=None, C=10.0, tol=1.e-3,
-                 kernel=LINEAR, gamma=None, degree=3.0, const=1.0, max_iter=300, show=True):
+    def __init__(self, X_train=None, Y_train=None, C=10.0, tol=1.e-3, kernel=LINEAR,
+                 gamma=None, degree=3.0, const=1.0, max_iter=1000, show=False):
         """
         :param X_train: 训练数据
         :param Y_train: 真实标签
@@ -198,7 +198,7 @@ class SupportVectorClassifier():
             # 若没有可优化的项则跳出循环
             if optimize_end:
                 break
-            if self.n_iter > self.max_iter:
+            if self.n_iter >= self.max_iter:
                 # 受最大迭代次数限制优化提前结束
                 warnings.warn(f"Optimizer ended early (max_iter={self.max_iter})")
                 break
@@ -218,9 +218,9 @@ class SupportVectorClassifier():
 
 if __name__ == '__main__':
     np.random.seed(100)
-    model = SupportVectorClassifier(C=10, kernel=SupportVectorClassifier.LINEAR, max_iter=100)
+    model = SupportVectorClassifier(C=10, kernel=SupportVectorClassifier.LINEAR, max_iter=100, show=True)
     run_uniform_classification(model)
     run_double_classification(model)
-    model = SupportVectorClassifier(C=10, kernel=SupportVectorClassifier.RBF, max_iter=100)
+    model = SupportVectorClassifier(C=10, kernel=SupportVectorClassifier.RBF, max_iter=100, show=True)
     run_circle_classification(model)
     run_moons_classification(model)

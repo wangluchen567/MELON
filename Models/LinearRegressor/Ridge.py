@@ -44,7 +44,7 @@ class Ridge():
         """使用数据集训练模型"""
         self.set_train_data(X_train, Y_train)
         self.set_parameters(alpha)
-        # 在数据最后一列添加一列单位矩阵作为转置b
+        # 在数据最后一列添加一列单位矩阵作为偏置b
         X_B = np.concatenate((self.X_train, np.ones((len(self.X_train), 1))), axis=1)
         # 使用公式计算参数
         # 公式: W = (XT @ X + alpha * I) ^ -1 @ XT @ Y

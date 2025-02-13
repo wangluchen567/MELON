@@ -9,12 +9,12 @@ from Models.Utils import plot_2dim_regression, run_uniform_regression
 
 
 class GDRegressor():
-    def __init__(self, X_train=None, Y_train=None, penalty='l2', alpha=1.e-4, l1_ratio=0.15,
-                 max_iter=300, tol=1.e-3, lr=0.01, optim='Adam', num_no_change=5, show=True):
+    def __init__(self, X_train=None, Y_train=None, penalty='l2', alpha=1.e-4, l1_ratio=0.16,
+                 max_iter=1000, tol=1.e-3, lr=0.06, optim='Adam', num_no_change=6, show=False):
         """
         :param X_train: 训练数据
         :param Y_train: 真实标签
-        :param penalty: 要使用的正则化项('l1'/'l2'/'elasticnet')
+        :param penalty: 要使用的正则化项(None/'l1'/'l2'/'elasticnet')
         :param alpha: 正则化系数(正则化强度)
         :param l1_ratio: 弹性网络正则化中L1和L2的混合比例, penalty='elasticnet'时使用
         :param max_iter: 最大迭代次数
@@ -74,7 +74,9 @@ class GDRegressor():
     def init_weights(self):
         """初始化参数(权重)"""
         X_feat = self.X_train.shape[1]
-        self.Weights = np.random.uniform(-1, 1, size=(X_feat + 1, 1))
+        # 正态分布初始化
+        self.Weights = np.random.randn(X_feat + 1, 1) * 0.01
+        # self.Weights = np.random.uniform(-1, 1, size=(X_feat + 1, 1))
 
     def train(self, X_train, Y_train, penalty=None, alpha=None, l1_ratio=None,
               max_iter=None, tol=None, lr=None, optim=None, num_no_change=None):
@@ -94,7 +96,7 @@ class GDRegressor():
             if self.no_change():
                 # 若优化连续改变量小则停止优化
                 break
-            if self.n_iter > self.max_iter:
+            if self.n_iter >= self.max_iter:
                 # 受最大迭代次数限制优化提前结束
                 warnings.warn(f"Optimizer ended early (max_iter={self.max_iter})")
                 break
@@ -117,7 +119,9 @@ class GDRegressor():
         """计算损失值"""
         self.Loss = np.sum((self.Y_predict - self.Y_train) ** 2) / (2 * len(self.X_train))
         # 加入正则化项
-        if self.penalty == 'l1':
+        if self.penalty is None:
+            pass
+        elif self.penalty == 'l1':
             self.Loss += self.alpha * np.sum(np.abs(self.Weights))
         elif self.penalty == 'l2':
             self.Loss += self.alpha * np.sum(self.Weights ** 2) / 2
@@ -130,12 +134,14 @@ class GDRegressor():
 
     def cal_grad(self):
         """计算梯度值"""
-        # 在数据最后一列添加一列单位矩阵作为转置b
+        # 在数据最后一列添加一列单位矩阵作为偏置b
         X_B = np.concatenate((self.X_train, np.ones((len(self.X_train), 1))), axis=1)
         # 计算梯度值
         self.Grad = X_B.T @ (self.Y_predict - self.Y_train) / len(self.X_train)
         # 加入正则化项
-        if self.penalty == 'l1':
+        if self.penalty is None:
+            pass
+        elif self.penalty == 'l1':
             self.Grad += self.alpha * self.Weights * (self.Weights > 0)
         elif self.penalty == 'l2':
             self.Grad += self.alpha * self.Weights
@@ -162,7 +168,7 @@ class GDRegressor():
 
 
 if __name__ == '__main__':
-    np.random.seed(100)
-    model = GDRegressor(lr=0.05)
+    np.random.seed(6)
+    model = GDRegressor(show=True)
     run_uniform_regression(model)
     print(model.n_iter)

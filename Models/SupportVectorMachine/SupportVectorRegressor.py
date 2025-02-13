@@ -17,7 +17,7 @@ class SupportVectorRegressor():
     SIGMOID = 3
 
     def __init__(self, X_train=None, Y_train=None, C=10.0, tol=1.e-3, epsilon=0.6,
-                 kernel=LINEAR, gamma=None, degree=3.0, const=1.0, max_iter=300, show=True):
+                 kernel=LINEAR, gamma=None, degree=3.0, const=1.0, max_iter=1000, show=False):
         """
         :param X_train: 训练数据
         :param Y_train: 真实标签
@@ -177,7 +177,7 @@ class SupportVectorRegressor():
             if optimize_end:
                 # 若没有可优化的项则结束优化
                 break
-            if self.n_iter > self.max_iter:
+            if self.n_iter >= self.max_iter:
                 # 受最大迭代次数限制优化提前结束
                 warnings.warn(f"Optimizer ended early (max_iter={self.max_iter})")
                 break
@@ -198,11 +198,11 @@ class SupportVectorRegressor():
 if __name__ == '__main__':
     np.random.seed(100)
     # 线性回归测试
-    model = SupportVectorRegressor(C=10, kernel=SupportVectorRegressor.LINEAR, max_iter=100)
+    model = SupportVectorRegressor(C=10, kernel=SupportVectorRegressor.LINEAR, max_iter=100, show=True)
     run_uniform_regression(model)
     # 多项式回归测试
-    model = SupportVectorRegressor(C=10, kernel=SupportVectorRegressor.POLY, max_iter=100)
+    model = SupportVectorRegressor(C=10, kernel=SupportVectorRegressor.POLY, max_iter=100, show=True)
     run_poly_regression(model)
     # 三角函数(圆函数)回归测试
-    model = SupportVectorRegressor(C=10, kernel=SupportVectorRegressor.RBF, max_iter=100)
+    model = SupportVectorRegressor(C=10, kernel=SupportVectorRegressor.RBF, max_iter=100, show=True)
     run_circular_regression(model)
