@@ -152,7 +152,7 @@ class Perceptron():
         """计算梯度值"""
         # 得到分类错误的掩码向量
         error_mask = (self.Y_train * self.X_dot_W < 0).astype(float)
-        # 得到分类错误的样本下标
+        # 求梯度向量
         self.Grad = - np.sum(self.Y_train * self.X_train_B * error_mask, axis=0).reshape(-1, 1) / len(self.X_train)
         # 加入正则化项
         if self.penalty is None:

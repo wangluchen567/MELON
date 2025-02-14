@@ -9,6 +9,7 @@ from Models.NeighborsBased.KNeighborsClassifier import KNeighborsClassifier
 from Models.DecisionTree.DecisionTreeClassifier import DecisionTreeClassifier
 from Models.SupportVectorMachine.SupportVectorClassifier import SupportVectorClassifier
 from Models.DiscriminantAnalysis.FisherDiscriminantAnalysis import FisherDiscriminantAnalysis
+from Models.DiscriminantAnalysis.LinearDiscriminantAnalysis import LinearDiscriminantAnalysis
 from Models.DiscriminantAnalysis.GaussianDiscriminantAnalysis import GaussianDiscriminantAnalysis
 
 
@@ -99,6 +100,7 @@ def run_iris_classifier(model, show=False):
 if __name__ == '__main__':
     models = [FisherDiscriminantAnalysis(),
               GaussianDiscriminantAnalysis(),
+              LinearDiscriminantAnalysis(n_components=2),
               RidgeClassifier(),
               Perceptron(tol=1.e-4),
               LogisticRegression(tol=1.e-4),
