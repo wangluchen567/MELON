@@ -10,7 +10,7 @@ from Models.Utils import sigmoid, plot_2dim_classification, run_uniform_classifi
 
 class LogisticRegression():
     def __init__(self, X_train=None, Y_train=None, penalty='l2', alpha=1.e-4, l1_ratio=0.15,
-                 max_iter=1000, tol=1.e-3, lr=0.06, optim='Adam', num_no_change=6, show=False):
+                 max_iter=1000, tol=1.e-3, lr=0.1, optim='Adam', num_no_change=6, show=False):
         """
         :param X_train: 训练数据
         :param Y_train: 真实标签
@@ -26,7 +26,7 @@ class LogisticRegression():
         """
         self.X_train = None  # 训练数据
         self.Y_train = None  # 真实标签
-        self.Y_train_ = None  # 逻辑回归特殊标签
+        self.Y_train_ = None  # 特殊标签(0/1)
         self.set_train_data(X_train, Y_train)
         self.penalty = penalty  # 要使用的正则化项('l1'/'l2'/'elasticnet')
         self.alpha = alpha  # 正则化系数(正则化强度)
@@ -57,9 +57,7 @@ class LogisticRegression():
             if self.Y_train is not None:
                 warnings.warn("Training label will be overwritten")
             self.Y_train = Y_train.copy()
-            self.Y_train_ = Y_train.copy()
-            # 使用逻辑回归时负类标签为0，在此使用特殊标签
-            self.Y_train_[self.Y_train_ == -1] = 0
+
 
     def set_parameters(self, penalty=None, alpha=None, l1_ratio=None, max_iter=None,
                        tol=None, lr=None, optim=None, num_no_change=None):
@@ -89,6 +87,9 @@ class LogisticRegression():
         self.init_weights()  # 初始化权重参数
         self.init_optimizer()  # 初始化优化器
         self.n_iter = 0  # 记录迭代次数
+        self.Y_train_ = self.Y_train.copy()
+        # 使用逻辑回归时负类标签为0，使用特殊标签
+        self.Y_train_[self.Y_train_ == -1] = 0
         # 在训练数据最后一列添加一列单位矩阵作为偏置b
         self.X_train_B = np.concatenate((self.X_train, np.ones((len(self.X_train), 1))), axis=1)
         while True:
@@ -116,9 +117,8 @@ class LogisticRegression():
             X_data = X_data.reshape(1, -1)
         else:
             raise ValueError("Cannot handle data with a shape of 3 dimensions or more")
-        X_B = np.concatenate((X_data, np.ones((len(X_data), 1))), axis=1)
         Y_data = np.ones((len(X_data), 1), dtype=int)
-        Y_data[sigmoid(X_B.dot(self.Weights)) < 1 / 2] = -1
+        Y_data[self.predict_prob(X_data) < 1 / 2] = -1
         return Y_data
 
     def predict_prob(self, X_data):

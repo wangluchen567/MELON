@@ -10,7 +10,7 @@ from Models.Utils import plot_2dim_regression, run_uniform_regression
 
 class GDRegressor():
     def __init__(self, X_train=None, Y_train=None, penalty='l2', alpha=1.e-4, l1_ratio=0.16,
-                 max_iter=1000, tol=1.e-3, lr=0.06, optim='Adam', num_no_change=6, show=False):
+                 max_iter=1000, tol=1.e-3, lr=0.1, optim='Adam', num_no_change=6, show=False):
         """
         :param X_train: 训练数据
         :param Y_train: 真实标签

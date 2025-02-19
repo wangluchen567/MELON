@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 from Models.Utils import normalize
 from Models.LinearClassifier.Perceptron import Perceptron
+from Models.LinearClassifier.GDClassifier import GDClassifier
 from Models.NaiveBayes.GaussianNaiveBayes import GaussianNaiveBayes
 from Models.LinearClassifier.RidgeClassifier import RidgeClassifier
 from Models.LinearClassifier.LogisticRegression import LogisticRegression
@@ -101,6 +102,7 @@ if __name__ == '__main__':
     models = [FisherDiscriminantAnalysis(),
               GaussianDiscriminantAnalysis(),
               LinearDiscriminantAnalysis(n_components=2),
+              GDClassifier(),
               RidgeClassifier(),
               Perceptron(tol=1.e-4),
               LogisticRegression(tol=1.e-4),
