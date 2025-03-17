@@ -109,6 +109,6 @@ pip install numpy pandas matplotlib tqdm networkx
 ## 参与贡献
 
 **Luchen Wang**<br>
-（如在使用过程中遇到任何问题，可随时联系邮箱：wangluchen567@qq.com）
+<small>（如在使用过程中遇到任何问题，可随时联系邮箱：wangluchen567@qq.com）</small>
 
 
