@@ -10,7 +10,7 @@ ChEn's Machine Learning model Organized using Numpy
 本项目提供了详尽的实现步骤，以帮助学习者深入理解各类模型与算法的构建过程与内部工作的机制。
 希望本项目能够帮助感兴趣的伙伴们建立起对机器学习模型与算法的深刻理解，为后续在机器学习与人工智能领域的进一步学习和研究打下坚实的基础。
 <br><br>
-**特别说明：`本代码仅供参考学习和科学研究等非商业用途，在复制核心代码时请注明出处`**
+**特别说明：`本代码仅供参考学习、竞赛和科学研究等非商业用途，在复制核心代码时请注明出处`**
 
 ## 安装教程
 **1. 建议使用 `Anaconda` 创建 `Python` 环境**<br>
@@ -103,7 +103,7 @@ pip install numpy pandas matplotlib tqdm networkx
 <img src="Notes/LinearClassifier/PP1.gif" width="288" height="220"/> <img src="Notes/LinearClassifier/PP2.gif" width="288" height="220"/><br/>
 
 ### 线性回归器
-
+- 待更新
 
 
 ## 参与贡献
