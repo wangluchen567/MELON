@@ -6,10 +6,26 @@ ChEn's Machine Learning model Organized using Numpy
 
 ## 项目简介
 本项目致力于为对机器学习感兴趣的伙伴们提供一个学习和实践的平台。
-本项目不旨在构建可以直接用于生产环境的模型，
-但力求通过实现一系列经典的机器学习模型与算法，深入探讨各种模型和算法的底层原理。
+项目并非用于构建生产环境的模型，而是通过实现一系列经典机器学习模型与算法，深入探讨其底层原理。
 本项目提供了详尽的实现步骤，以帮助学习者深入理解各类模型与算法的构建过程与内部工作的机制。
-希望本项目能够帮助感兴趣的伙伴们建立起对机器学习各类模型与算法的深刻理解，从而在机器学习与人工智能领域的进一步学习和研究打下坚实的基础。
+希望本项目能够帮助感兴趣的伙伴们建立起对机器学习模型与算法的深刻理解，为后续在机器学习与人工智能领域的进一步学习和研究打下坚实的基础。
+<br><br>
+**特别说明：`本代码仅供参考学习和科学研究等非商业用途，在复制核心代码时请注明出处`**
+
+## 安装教程
+**1. 建议使用 `Anaconda` 创建 `Python` 环境**<br>
+使用 Anaconda 创建环境可以方便地管理依赖包，避免版本冲突。建议从 [Anaconda 官网](https://www.anaconda.com/download/success) 下载并安装 Anaconda。如果需要特定版本，可以访问 [Anaconda所有版本下载地址](https://repo.anaconda.com/archive/)。<br>
+安装完成后，运行以下命令创建 Python 环境：
+```bash
+conda create --name my_env python=3.9
+conda activate my_env
+```
+**注意**：本项目支持 Python 3.7 及以上版本，建议使用 Python 3.9 以获得最佳兼容性。请确保已安装 Python 3.7 或更高版本。<br>
+**2. 安装必要包**<br>
+本项目依赖以下包: `numpy`、`pandas`、`matplotlib`、`tqdm`、`networkx`。请确保已安装 Python 3.7 或更高版本，运行以下命令一键安装必要包：<br>
+```bash
+pip install numpy pandas matplotlib tqdm networkx
+```
 
 ## 模型说明
 
@@ -23,21 +39,26 @@ ChEn's Machine Learning model Organized using Numpy
 - DecisionTree: 决策树相关模型，包含决策树分类器和决策树回归器，并实现了树的绘制函数
 - Clustering: 聚类相关模型，包含K-means、谱聚类、DBSCAN等算法
 - DimensionReduction: 降维相关模型，包含PCA主成分分析等算法
-- LinearClassifier: 线性分类相关模型，包含Fisher线性判别、高斯判别、逻辑回归、感知机等模型
+- DiscriminantAnalysis: 判别分析相关模型，包含线性判别分析、Fisher判别分析、高斯判别分析等模型
+- LinearClassifier: 线性分类相关模型，包含逻辑回归、感知机等模型
 - LinearRegressor: 线性回归相关模型，包含普通最小二乘线性回归、岭回归等模型
 - MultiClassWrapper: 多分类包装器，包含一对一(OvO)分类包装器和多对多(OvR)分类包装器
+- NaiveBayes: 朴素贝叶斯模型，包含高斯朴素贝叶斯等模型
+- NeighborsBased: 基于邻居判别和回归的模型，包含K近邻分类与K近邻回归等模型
 
 ### Notes: 机器学习笔记和示例
 
-## 安装教程
+## 更新计划
+- [x] 更新项目文档
+- [ ] 更新算法笔记
+- [x] 加入朴素贝叶斯分类器
+- [x] 加入K-近邻算法
+- [ ] 加入层次聚类算法
+- [ ] 加入牛顿共轭梯度法
+- [ ] 加入拟牛顿法
+- [ ] 加入集成学习相关算法
+- [ ] 尝试实现梯度提升树相关算法
 
-1. 建议使用 Anaconda 
-2. 必要包: `python>=3.6`、`numpy`、`pandas`、`matplotlib`
-
-## 使用说明
-
-- `本代码仅供参考学习和学术研究下载`
-- `Copy核心代码时请注明出处`
 
 ## 效果展示
 
