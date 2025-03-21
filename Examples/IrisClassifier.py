@@ -22,6 +22,7 @@ from Models.MultiClassWrapper.OneVsOneClassifier import OneVsOneClassifier
 from Models.MultiClassWrapper.OneVsRestClassifier import OneVsRestClassifier
 from Models.NeighborsBased.KNeighborsClassifier import KNeighborsClassifier
 from Models.DecisionTree.DecisionTreeClassifier import DecisionTreeClassifier
+from Models.EnsembleModels.RandomForestClassifier import RandomForestClassifier
 from Models.SupportVectorMachine.SupportVectorClassifier import SupportVectorClassifier
 from Models.DiscriminantAnalysis.FisherDiscriminantAnalysis import FisherDiscriminantAnalysis
 from Models.DiscriminantAnalysis.LinearDiscriminantAnalysis import LinearDiscriminantAnalysis
@@ -122,6 +123,9 @@ if __name__ == '__main__':
     # KNN模型可以直接用于多分类
     knn_model = KNeighborsClassifier(weights='distance')
     run_classifier(knn_model, X_train, Y_train, X_test, Y_test)
+    # 随机森林模型可以直接用于多分类
+    dtc_model = RandomForestClassifier(n_estimators=10)
+    run_classifier(dtc_model, X_train, Y_train, X_test, Y_test)
     # 决策树模型可以直接用于多分类
     dtc_model = DecisionTreeClassifier(max_depth=3, criterion='entropy')
     run_classifier(dtc_model, X_train, Y_train, X_test, Y_test)

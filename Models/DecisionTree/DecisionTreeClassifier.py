@@ -21,13 +21,15 @@ from Models.Utils import (calculate_accuracy, run_uniform_classification, run_do
 
 
 class DecisionTreeClassifier():
-    def __init__(self, X_train=None, Y_train=None, criterion='gini', splitter='best', max_depth=np.inf):
+    def __init__(self, X_train=None, Y_train=None, criterion='gini',
+                 splitter='best', max_features=None, max_depth=np.inf):
         """
         决策树分类器模型
         :param X_train: 训练数据
         :param Y_train: 真实标签
         :param criterion: 特征选择标准(entropy/gini)
         :param splitter: 选择属性标准(best/random)
+        :param max_features: 每次分裂时随机选择的最大特征数量(None/float/sqrt/log2)
         :param max_depth: 决策树最大深度
         """
         self.X_train = None  # 训练数据
@@ -37,6 +39,7 @@ class DecisionTreeClassifier():
         self.attributes = None  # 特征名称
         self.criterion = criterion  # 特征选择标准(entropy/gini)
         self.splitter = splitter  # 选择属性标准(best/random)
+        self.max_features = max_features  # 每次分裂时随机选择的最大特征数量
         self.max_depth = max_depth  # 决策树最大深度
         self.tree_depth = None  # 决策树的真实深度
         self.decision_tree = None  # 最终得到的决策树
@@ -86,12 +89,12 @@ class DecisionTreeClassifier():
         self.decision_tree.indicator = self.cal_indicator(self.train_data)
         self.decision_tree.ind_type = self.criterion
         self.decision_tree.state = "root"
-        # self.TreeGenerateRecursion(self.decision_tree, self.train_data, self.attributes.copy())
-        self.TreeGenerateQueue(self.decision_tree, self.train_data, self.attributes.copy())
+        # self.build_tree_recursive(self.decision_tree, self.train_data, self.attributes.copy())
+        self.build_tree_queue(self.decision_tree, self.train_data, self.attributes.copy())
 
     def predict(self, X_data_):
         X_data = X_data_.copy()
-        # 若给定数据不是Dataframe或Series，则必须封装为Dataframe或Series才可以训练
+        # 若给定数据不是Dataframe或Series，则必须封装为Dataframe或Series才可以预测
         if not (isinstance(X_data, pd.DataFrame) or isinstance(X_data, pd.Series)):
             X_data = pd.DataFrame(X_data, columns=self.X_columns)
         # 决策树只能遍历得到每个数据的分类类别
@@ -101,7 +104,14 @@ class DecisionTreeClassifier():
             while len(pointer.branches):
                 # 检查是否是离散特征
                 if self.check_discrete(self.train_data[pointer.split_attr].dtype):
-                    pointer = pointer.branches[X_data.iloc[i][pointer.split_attr]]
+                    # 获取当前数据的状态名称
+                    state_name = X_data.iloc[i][pointer.split_attr]
+                    # 若状态在所有分支中则继续检查其叶子
+                    if state_name in pointer.branches.keys():
+                        pointer = pointer.branches[state_name]
+                    else:
+                        # 否则选择默认分支(数据更多的一个分支)继续检查其叶子
+                        pointer = pointer.branches[self.get_default(pointer.branches)]
                 else:
                     if X_data.iloc[i][pointer.split_attr] <= pointer.split_value:
                         pointer = pointer.branches['True']
@@ -111,7 +121,11 @@ class DecisionTreeClassifier():
         Y_predict = np.array(Y_predict).reshape(-1, 1)
         return Y_predict
 
-    def TreeGenerateRecursion(self, node, data, attributes):
+    def get_default(self, branches):
+        """获取默认分支"""
+        return max(branches, key=lambda k: len(branches[k].data))
+
+    def build_tree_recursive(self, node, data, attributes):
         """递归式生成决策树(暂时无法控制深度)"""
         # 如果数据集均属于同一种类则将当前节点全都标记为该类叶节点
         if len(np.unique(data.iloc[:, -1])) == 1:
@@ -130,6 +144,9 @@ class DecisionTreeClassifier():
             for t in uniques:
                 # 为当前节点生成一个分支，得到在数据集中属性类型为t的样本子集
                 data_t = data[data[attr] == t]
+                # 若新节点数据为空则使用父类数据(其实说明是叶节点)
+                if len(data_t) == 0:
+                    data_t = data.copy()
                 # 产生新节点
                 new_node = ClassifierNode(data_t, self.class_list)
                 node.split_attr = attr
@@ -145,13 +162,16 @@ class DecisionTreeClassifier():
                 else:
                     new_attr = attributes.copy()
                     new_attr.remove(attr)
-                    self.TreeGenerateRecursion(new_node, data_t, new_attr)
+                    self.build_tree_recursive(new_node, data_t, new_attr)
         # 若为连续值则拆分为两个分支
         else:
             # 需要遍历两种可能（不大于和大于）
             # 加入不大于的情况（左子节点）
             data_t = data[data[attr] <= divide]
             # 产生新节点
+            # 若新节点数据为空则使用父类数据(其实说明是叶节点)
+            if len(data_t) == 0:
+                data_t = data.copy()
             new_node = ClassifierNode(data_t, self.class_list)
             node.split_attr = attr
             node.split_value = divide
@@ -165,10 +185,13 @@ class DecisionTreeClassifier():
             if len(data_t) == 0:
                 return
             else:
-                self.TreeGenerateRecursion(new_node, data_t, attributes.copy())
+                self.build_tree_recursive(new_node, data_t, attributes.copy())
             # 加入大于的情况（右子节点）
             data_t = data[data[attr] > divide]
             # 产生新节点
+            # 若新节点数据为空则使用父类数据(其实说明是叶节点)
+            if len(data_t) == 0:
+                data_t = data.copy()
             new_node = ClassifierNode(data_t, self.class_list)
             node.split_attr = attr
             node.split_value = divide
@@ -182,9 +205,9 @@ class DecisionTreeClassifier():
             if len(data_t) == 0:
                 return
             else:
-                self.TreeGenerateRecursion(new_node, data_t, attributes.copy())
+                self.build_tree_recursive(new_node, data_t, attributes.copy())
 
-    def TreeGenerateQueue(self, node, data, attributes):
+    def build_tree_queue(self, node, data, attributes):
         """队列式生成决策树"""
         # 初始化队列
         queue = deque([(node, data, attributes, 0)])
@@ -216,6 +239,9 @@ class DecisionTreeClassifier():
                     # 为当前节点生成一个分支，得到在数据集中属性类型为t的样本子集
                     data_t = data[data[attr] == t]
                     # 产生新节点
+                    # 若新节点数据为空则使用父类数据(其实说明是叶节点)
+                    if len(data_t) == 0:
+                        data_t = data.copy()
                     new_node = ClassifierNode(data_t, self.class_list)
                     node.split_attr = attr
                     node.node_name = f"{attr}=?"
@@ -237,6 +263,9 @@ class DecisionTreeClassifier():
                 # 加入不大于的情况（左子节点）
                 data_t = data[data[attr] <= divide]
                 # 产生新节点
+                # 若新节点数据为空则使用父类数据(其实说明是叶节点)
+                if len(data_t) == 0:
+                    data_t = data.copy()
                 new_node = ClassifierNode(data_t, self.class_list)
                 node.split_attr = attr
                 node.split_value = divide
@@ -254,6 +283,9 @@ class DecisionTreeClassifier():
                 # 加入大于的情况（右子节点）
                 data_t = data[data[attr] > divide]
                 # 产生新节点
+                # 若新节点数据为空则使用父类数据(其实说明是叶节点)
+                if len(data_t) == 0:
+                    data_t = data.copy()
                 new_node = ClassifierNode(data_t, self.class_list)
                 node.split_attr = attr
                 node.split_value = divide
@@ -269,8 +301,26 @@ class DecisionTreeClassifier():
                 else:
                     queue.append((new_node, data_t, attributes.copy(), depth + 1))
 
-    def choice_attr(self, data, attribute):
+
+    def choice_attr(self, data, attribute_):
         """从当前属性集合中选择一个属性"""
+        if self.max_features is not None:
+            num_feats = len(attribute_)
+            # 若指定了随机的最大数量则随机选择属性
+            if isinstance(self.max_features, float):
+                # 给定的最大数量是浮点比例
+                num_feats *= self.max_features
+            elif self.max_features == 'sqrt':
+                # 给定的最大数量是平方根比例
+                num_feats = np.sqrt(len(attribute_))
+            elif self.max_features == 'log2':
+                # 给定的最大数量是log2比例
+                num_feats = np.log2(len(attribute_))
+            # 从属性集合中随机选择一定比例的属性
+            attribute = np.random.choice(attribute_, size=int(num_feats), replace=False)
+        else:
+            # 若不指定随机选择则默认全部选择
+            attribute = attribute_
         # 遍历当前属性集合得到增益情况
         gains = np.zeros(len(attribute))
         # 记录划分点情况（只有连续属性特征有效）
@@ -314,8 +364,11 @@ class DecisionTreeClassifier():
         """计算信息增益/基尼指数(连续特征)"""
         # 获得当前属性列
         attr_value = data[attr_key]
-        # 对数组进行排序
-        sorted_attr = np.sort(attr_value)
+        # 对数组进行去重并排序
+        sorted_attr = np.unique(attr_value)
+        # 若去重后只有一种数据则直接返回
+        if len(sorted_attr) == 1:
+            return 0, len(data)
         # 计算每两个数的中位点
         medians = (sorted_attr[:-1] + sorted_attr[1:]) / 2
         # 统计每个中位点划分的信息增益

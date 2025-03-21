@@ -20,6 +20,7 @@ from Models.LinearClassifier.RidgeClassifier import RidgeClassifier
 from Models.LinearClassifier.LogisticRegression import LogisticRegression
 from Models.NeighborsBased.KNeighborsClassifier import KNeighborsClassifier
 from Models.DecisionTree.DecisionTreeClassifier import DecisionTreeClassifier
+from Models.EnsembleModels.RandomForestClassifier import RandomForestClassifier
 from Models.SupportVectorMachine.SupportVectorClassifier import SupportVectorClassifier
 from Models.DiscriminantAnalysis.FisherDiscriminantAnalysis import FisherDiscriminantAnalysis
 from Models.DiscriminantAnalysis.LinearDiscriminantAnalysis import LinearDiscriminantAnalysis
@@ -121,6 +122,7 @@ if __name__ == '__main__':
               GaussianNaiveBayes(),
               KNeighborsClassifier(),
               DecisionTreeClassifier(),
+              RandomForestClassifier(),
               SupportVectorClassifier(kernel=SupportVectorClassifier.RBF)]
     for model in models:
         run_iris_classifier(model)
