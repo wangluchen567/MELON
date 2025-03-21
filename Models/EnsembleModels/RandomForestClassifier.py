@@ -35,12 +35,8 @@ class RandomForestClassifier:
         self.Y_train = None  # 真实标签
         self.train_data = None  # 训练数据集（训练数据和真实标签的整合）
         self.X_columns = None  # 训练数据的列名称
-        self.attributes = None  # 特征名称
         self.criterion = criterion  # 特征选择标准(entropy/gini)
         self.max_depth = max_depth  # 决策树最大深度
-        self.tree_depth = None  # 决策树的真实深度
-        self.decision_tree = None  # 最终得到的决策树
-        self.class_list = None  # 需要分类的类别情况
         self.n_estimators = n_estimators  # 基学习器的数量
         self.max_features = max_features  # 每次分裂节点时考虑的最大特征数
         self.bootstrap = bootstrap  # 是否对样本进行有放回抽样
@@ -53,24 +49,10 @@ class RandomForestClassifier:
             if self.X_train is not None:
                 warnings.warn("Training data will be overwritten")
             self.X_train = X_train.copy()
-            # 若给定数据不是Dataframe或Series，则必须封装为Dataframe或Series才可以训练
-            if not (isinstance(self.X_train, pd.DataFrame) or isinstance(self.X_train, pd.Series)):
-                self.X_columns = ['dim_' + str(i + 1) for i in range(self.X_train.shape[1])]
-                self.X_train = pd.DataFrame(self.X_train, columns=self.X_columns)
-            else:
-                self.X_columns = list(self.X_train.columns)
         if Y_train is not None:
             if self.Y_train is not None:
                 warnings.warn("Training label will be overwritten")
             self.Y_train = Y_train.copy()
-            # 若给定数据不是Dataframe或Series，则必须封装为Dataframe或Series才可以训练
-            if not (isinstance(self.Y_train, pd.DataFrame) or isinstance(self.Y_train, pd.Series)):
-                self.Y_train = pd.DataFrame(self.Y_train, columns=['label'])
-        if X_train is not None and Y_train is not None:
-            # 将两者整合成一个以方便训练
-            self.train_data = pd.concat([self.X_train, self.Y_train], axis=1)
-            self.attributes = self.train_data.columns[:-1].tolist()
-            self.class_list = np.unique(self.train_data.iloc[:, -1])
 
     def set_parameters(self, **kwargs):
         """重新修改相关参数"""
@@ -124,10 +106,20 @@ class RandomForestClassifier:
             data_size = len(self.X_train)
             # 对样本进行有放回采样
             indices = np.random.choice(data_size, size=data_size, replace=True)
-            return self.X_train.iloc[indices, :], self.Y_train.iloc[indices]
+            return self.fetch(self.X_train, indices), self.fetch(self.Y_train, indices)
         else:
             # 使用原始样本
             return self.X_train, self.Y_train
+
+    @staticmethod
+    def fetch(data, indices):
+        """根据不同类型提取给定下标的数据"""
+        if isinstance(data, pd.DataFrame):
+            return data.iloc[indices, :].reset_index(drop=True)
+        elif isinstance(data, pd.Series):
+            return data[indices].reset_index(drop=True)
+        else:
+            return data[indices, :]
 
     def plot_forest(self):
         """绘制随机森林(慎用，数量太多会卡)"""
