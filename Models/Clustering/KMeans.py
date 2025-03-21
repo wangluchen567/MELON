@@ -1,6 +1,14 @@
 """
-K-均值聚类
-K-Means Clustering
+Copyright (c) 2023 LuChen Wang
+[Software Name] is licensed under Mulan PSL v2.
+You can use this software according to the terms and conditions of the Mulan
+PSL v2.
+You may obtain a copy of Mulan PSL v2 at:
+         http://license.coscl.org.cn/MulanPSL2
+THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY
+KIND, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO
+NON-INFRINGEMENT, MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+See the Mulan PSL v2 for more details.
 """
 import warnings
 import numpy as np
@@ -11,6 +19,7 @@ class KMeans():
     def __init__(self, X=None, n_clusters=None, init_func='k-means++',
                  num_train=10, max_iter=1000, tol=1e-4, show=False):
         """
+        K-均值聚类
         :param X: 需要聚类的数据
         :param n_clusters: 聚类中心个数
         :param init_func: 中心初始化方法(k-means++/random)
@@ -38,19 +47,19 @@ class KMeans():
                 warnings.warn("Training data will be overwritten")
             self.X = X.copy()
 
-    def set_parameters(self, n_clusters=None, init_func=None, num_train=None, max_iter=None, tol=None):
+    def set_parameters(self, **kwargs):
         """重新修改相关参数"""
-        parameters = ['n_clusters', 'init_func', 'num_train', 'max_iter', 'tol']
-        values = [n_clusters, init_func, num_train, max_iter, tol]
-        for param, value in zip(parameters, values):
-            if value is not None and getattr(self, param) is not None:
-                warnings.warn(f"Parameter '{param}' will be overwritten")
+        for param, value in kwargs.items():
+            if hasattr(self, param):  # 检查对象是否有该属性
+                if getattr(self, param) is not None:
+                    warnings.warn(f"Parameter '{param}' will be overwritten")
                 setattr(self, param, value)
+            else:
+                warnings.warn(f"Parameter '{param}' is not a valid parameter for this model")
 
-    def train(self, X=None, n_clusters=None, init_func=None, num_train=None, max_iter=None, tol=None):
+    def train(self, X=None):
         """对数据进行聚类"""
         self.set_data(X)
-        self.set_parameters(n_clusters, init_func, num_train, max_iter, tol)
         self.inertia = np.inf
         # 训练num_train次以获取最佳结果
         for i in range(self.num_train):

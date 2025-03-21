@@ -1,6 +1,14 @@
 """
-高斯朴素贝叶斯
-Gaussian Naive Bayes
+Copyright (c) 2023 LuChen Wang
+[Software Name] is licensed under Mulan PSL v2.
+You can use this software according to the terms and conditions of the Mulan
+PSL v2.
+You may obtain a copy of Mulan PSL v2 at:
+         http://license.coscl.org.cn/MulanPSL2
+THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY
+KIND, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO
+NON-INFRINGEMENT, MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+See the Mulan PSL v2 for more details.
 """
 import warnings
 import numpy as np
@@ -10,6 +18,7 @@ from Models.Utils import softmax, plot_2dim_classification, run_uniform_classifi
 class GaussianNaiveBayes():
     def __init__(self, X_train=None, Y_train=None, priors=None, var_smoothing=1.e-9):
         """
+        高斯朴素贝叶斯
         :param X_train: 训练数据
         :param Y_train: 真实标签
         :param priors: 每类数据的先验概率
@@ -36,20 +45,20 @@ class GaussianNaiveBayes():
                 warnings.warn("Training label will be overwritten")
             self.Y_train = Y_train.copy()
 
-    def set_parameters(self, priors=None, var_smoothing=None):
+    def set_parameters(self, **kwargs):
         """重新修改相关参数"""
-        parameters = ['priors', 'var_smoothing']
-        values = [priors, var_smoothing]
-        for param, value in zip(parameters, values):
-            if value is not None and getattr(self, param) is not None:
-                warnings.warn(f"Parameter '{param}' will be overwritten")
+        for param, value in kwargs.items():
+            if hasattr(self, param):  # 检查对象是否有该属性
+                if getattr(self, param) is not None:
+                    warnings.warn(f"Parameter '{param}' will be overwritten")
                 setattr(self, param, value)
+            else:
+                warnings.warn(f"Parameter '{param}' is not a valid parameter for this model")
 
-    def train(self, X_train=None, Y_train=None, priors=None, var_smoothing=None):
+    def train(self, X_train=None, Y_train=None):
         """使用数据集训练模型"""
         # 设置数据集和参数
         self.set_train_data(X_train, Y_train)
-        self.set_parameters(priors, var_smoothing)
         self.classes = np.unique(self.Y_train)  # 获取类别
         num_class = len(self.classes)  # 类别数量
         num_data, num_feat = self.X_train.shape  # 数据与特征数量

@@ -1,6 +1,14 @@
 """
-支持向量机分类模型
-Support Vector Classifier
+Copyright (c) 2023 LuChen Wang
+[Software Name] is licensed under Mulan PSL v2.
+You can use this software according to the terms and conditions of the Mulan
+PSL v2.
+You may obtain a copy of Mulan PSL v2 at:
+         http://license.coscl.org.cn/MulanPSL2
+THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY
+KIND, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO
+NON-INFRINGEMENT, MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+See the Mulan PSL v2 for more details.
 """
 import warnings
 import numpy as np
@@ -19,6 +27,7 @@ class SupportVectorClassifier():
     def __init__(self, X_train=None, Y_train=None, C=10.0, tol=1.e-3, kernel=LINEAR,
                  gamma=None, degree=3.0, const=1.0, max_iter=1000, show=False):
         """
+        支持向量机分类模型
         :param X_train: 训练数据
         :param Y_train: 真实标签
         :param C: 惩罚系数
@@ -43,6 +52,7 @@ class SupportVectorClassifier():
         self.degree = degree  # 核函数系数（指数项）
         self.const = const  # 核函数系数（常数项）
         self.max_iter = max_iter  # 最大迭代优化次数
+        self.n_iter = 0  # 初始化迭代次数
         if self.max_iter == -1:  # 若设置为-1则直到优化结束停止
             self.max_iter = np.inf
         self.show = show  # 是否展示迭代过程
@@ -58,15 +68,15 @@ class SupportVectorClassifier():
                 warnings.warn("Training label will be overwritten")
             self.Y_train = Y_train.copy()
 
-    def set_parameters(self, C=None, tol=None, kernel=None,
-                       gamma=None, degree=None, const=None, max_iter=None):
+    def set_parameters(self, **kwargs):
         """重新修改相关参数"""
-        parameters = ['C', 'tol', 'kernel', 'gamma', 'degree', 'const', 'max_iter']
-        values = [C, tol, kernel, gamma, degree, const, max_iter]
-        for param, value in zip(parameters, values):
-            if value is not None and getattr(self, param) is not None:
-                warnings.warn(f"Parameter '{param}' will be overwritten")
+        for param, value in kwargs.items():
+            if hasattr(self, param):  # 检查对象是否有该属性
+                if getattr(self, param) is not None:
+                    warnings.warn(f"Parameter '{param}' will be overwritten")
                 setattr(self, param, value)
+            else:
+                warnings.warn(f"Parameter '{param}' is not a valid parameter for this model")
 
     def cal_kernel_mat(self, X, Y):
         """给定数据计算核函数矩阵"""
@@ -121,11 +131,9 @@ class SupportVectorClassifier():
         X_feat = self.X_train.shape[1]
         self.Weights = np.random.uniform(-1, 1, size=(X_feat + 1, 1))
 
-    def train(self, X_train=None, Y_train=None, C=None, tol=None,
-              kernel=None, gamma=None, degree=None, const=None, max_iter=None):
+    def train(self, X_train=None, Y_train=None):
         """使用数据集训练模型"""
         self.set_train_data(X_train, Y_train)
-        self.set_parameters(C, tol, kernel, gamma, degree, const, max_iter)
         # 计算核函数矩阵
         self.kernel_mat = self.cal_kernel_mat(self.X_train, self.X_train)
         # 初始化权重参数

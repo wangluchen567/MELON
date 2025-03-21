@@ -1,6 +1,14 @@
 """
-决策树分类器模型
-Decision Tree Classifier
+Copyright (c) 2023 LuChen Wang
+[Software Name] is licensed under Mulan PSL v2.
+You can use this software according to the terms and conditions of the Mulan
+PSL v2.
+You may obtain a copy of Mulan PSL v2 at:
+         http://license.coscl.org.cn/MulanPSL2
+THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY
+KIND, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO
+NON-INFRINGEMENT, MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+See the Mulan PSL v2 for more details.
 """
 import warnings
 import numpy as np
@@ -13,8 +21,9 @@ from Models.Utils import (calculate_accuracy, run_uniform_classification, run_do
 
 
 class DecisionTreeClassifier():
-    def __init__(self, X_train=None, Y_train=None, criterion='entropy', splitter='best', max_depth=np.inf):
+    def __init__(self, X_train=None, Y_train=None, criterion='gini', splitter='best', max_depth=np.inf):
         """
+        决策树分类器模型
         :param X_train: 训练数据
         :param Y_train: 真实标签
         :param criterion: 特征选择标准(entropy/gini)
@@ -59,19 +68,19 @@ class DecisionTreeClassifier():
             self.attributes = self.train_data.columns[:-1].tolist()
             self.class_list = np.unique(self.train_data.iloc[:, -1])
 
-    def set_parameters(self, criterion=None, splitter=None, max_depth=None):
+    def set_parameters(self, **kwargs):
         """重新修改相关参数"""
-        parameters = ['criterion', 'splitter', 'max_depth']
-        values = [criterion, splitter, max_depth]
-        for param, value in zip(parameters, values):
-            if value is not None and getattr(self, param) is not None:
-                warnings.warn(f"Parameter '{param}' will be overwritten")
+        for param, value in kwargs.items():
+            if hasattr(self, param):  # 检查对象是否有该属性
+                if getattr(self, param) is not None:
+                    warnings.warn(f"Parameter '{param}' will be overwritten")
                 setattr(self, param, value)
+            else:
+                warnings.warn(f"Parameter '{param}' is not a valid parameter for this model")
 
-    def train(self, X_train=None, Y_train=None, criterion=None, splitter=None, max_depth=None):
+    def train(self, X_train=None, Y_train=None):
         """使用数据集训练模型"""
         self.set_train_data(X_train, Y_train)
-        self.set_parameters(criterion, splitter, max_depth)
         # 初始化决策树根节点
         self.decision_tree = ClassifierNode(self.train_data, self.class_list)
         self.decision_tree.indicator = self.cal_indicator(self.train_data)

@@ -1,6 +1,14 @@
 """
-主成分分析(提取)
-Principal Component Analysis
+Copyright (c) 2023 LuChen Wang
+[Software Name] is licensed under Mulan PSL v2.
+You can use this software according to the terms and conditions of the Mulan
+PSL v2.
+You may obtain a copy of Mulan PSL v2 at:
+         http://license.coscl.org.cn/MulanPSL2
+THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY
+KIND, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO
+NON-INFRINGEMENT, MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+See the Mulan PSL v2 for more details.
 """
 import warnings
 import numpy as np
@@ -11,6 +19,7 @@ from Models.Utils import plot_data, random_generate_regression
 class PrincipalComponentAnalysis():
     def __init__(self, X=None, num_top=None, threshold=None):
         """
+        主成分分析(提取)
         :param X: 需要降维的数据
         :param num_top: 选择特征值最大的特征数量
         :param threshold: 贡献率累计超过的阈值
@@ -34,19 +43,19 @@ class PrincipalComponentAnalysis():
                 warnings.warn("Training data will be overwritten")
             self.X = X.copy()
 
-    def set_parameters(self, num_top, threshold):
+    def set_parameters(self, **kwargs):
         """重新修改相关参数"""
-        if self.num_top is not None and num_top is not None:
-            warnings.warn("Parameter 'num_top' be overwritten")
-            self.num_top = num_top
-        if self.threshold is not None and threshold is not None:
-            warnings.warn("Parameters 'threshold' be overwritten")
-            self.threshold = threshold
+        for param, value in kwargs.items():
+            if hasattr(self, param):  # 检查对象是否有该属性
+                if getattr(self, param) is not None:
+                    warnings.warn(f"Parameter '{param}' will be overwritten")
+                setattr(self, param, value)
+            else:
+                warnings.warn(f"Parameter '{param}' is not a valid parameter for this model")
 
-    def train(self, X=None, num_top=None, threshold=0.9):
+    def train(self, X=None):
         """对数据进行降维"""
         self.set_data(X)
-        self.set_parameters(num_top, threshold)
         # 标准化数据
         self.X_stand = self.standardize_data(self.X)
         # 计算协方差矩阵

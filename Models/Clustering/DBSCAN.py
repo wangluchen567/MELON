@@ -1,6 +1,14 @@
 """
-基于密度的噪声应用空间聚类
-Density-Based Spatial Clustering of Applications with Noise (DBSCAN)
+Copyright (c) 2023 LuChen Wang
+[Software Name] is licensed under Mulan PSL v2.
+You can use this software according to the terms and conditions of the Mulan
+PSL v2.
+You may obtain a copy of Mulan PSL v2 at:
+         http://license.coscl.org.cn/MulanPSL2
+THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY
+KIND, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO
+NON-INFRINGEMENT, MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+See the Mulan PSL v2 for more details.
 """
 import warnings
 import numpy as np
@@ -10,6 +18,8 @@ from Models.Utils import plot_cluster, run_blobs_cluster, run_circle_cluster, ru
 class DBSCAN():
     def __init__(self, X=None, eps=0.5, min_samples=5, metric='minkowski', p=2, show=False):
         """
+        基于密度的噪声应用空间聚类
+        Density-Based Spatial Clustering of Applications with Noise (DBSCAN)
         :param X: 需要聚类的数据
         :param eps: 两个样本之间的最大距离，以确定一个样本是否在另一个样本的邻域内
         :param min_samples: 一个点的邻域中必须存在的最小样本数(包含自身)
@@ -33,19 +43,19 @@ class DBSCAN():
                 warnings.warn("Training data will be overwritten")
             self.X = X.copy()
 
-    def set_parameters(self, eps=None, min_samples=None, metric=None, p=None):
+    def set_parameters(self, **kwargs):
         """重新修改相关参数"""
-        parameters = ['eps', 'min_sample', 'metric', 'p']
-        values = [eps, min_samples, metric, p]
-        for param, value in zip(parameters, values):
-            if value is not None and getattr(self, param) is not None:
-                warnings.warn(f"Parameter '{param}' will be overwritten")
+        for param, value in kwargs.items():
+            if hasattr(self, param):  # 检查对象是否有该属性
+                if getattr(self, param) is not None:
+                    warnings.warn(f"Parameter '{param}' will be overwritten")
                 setattr(self, param, value)
+            else:
+                warnings.warn(f"Parameter '{param}' is not a valid parameter for this model")
 
-    def train(self, X=None, eps=None, min_samples=None, metric=None, p=None):
+    def train(self, X=None):
         """对数据进行聚类"""
         self.set_data(X)
-        self.set_parameters(eps, min_samples, metric, p)
         num_data = len(self.X)
         # 初始化所有点为噪声点（-1）
         self.labels = np.full(num_data, -1)

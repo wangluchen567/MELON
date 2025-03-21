@@ -1,3 +1,15 @@
+"""
+Copyright (c) 2023 LuChen Wang
+[Software Name] is licensed under Mulan PSL v2.
+You can use this software according to the terms and conditions of the Mulan
+PSL v2.
+You may obtain a copy of Mulan PSL v2 at:
+         http://license.coscl.org.cn/MulanPSL2
+THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY
+KIND, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO
+NON-INFRINGEMENT, MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+See the Mulan PSL v2 for more details.
+"""
 import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
@@ -5,8 +17,15 @@ from Optimizer import *
 
 
 class Function():
-    """可以使用梯度优化的函数类"""
     def __init__(self, cal_func, cal_grad, init_value, grad_type, learning_rate):
+        """
+        可以使用梯度优化的函数类
+        :param cal_func: 求函数值的函数
+        :param cal_grad: 求梯度值的函数
+        :param init_value: 要优化的初始值
+        :param grad_type: 使用的梯度下降方法
+        :param learning_rate: 学习率
+        """
         self.cal_func = cal_func  # 求函数值的函数
         self.cal_grad = cal_grad  # 求梯度值的函数
         self.Weights = init_value  # 要优化的初始值

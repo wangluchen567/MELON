@@ -1,5 +1,14 @@
 """
-决策树的节点类
+Copyright (c) 2023 LuChen Wang
+[Software Name] is licensed under Mulan PSL v2.
+You can use this software according to the terms and conditions of the Mulan
+PSL v2.
+You may obtain a copy of Mulan PSL v2 at:
+         http://license.coscl.org.cn/MulanPSL2
+THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY
+KIND, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO
+NON-INFRINGEMENT, MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+See the Mulan PSL v2 for more details.
 """
 import numpy as np
 from collections import deque
@@ -8,6 +17,11 @@ from collections import deque
 class ClassifierNode():
     """分类器节点"""
     def __init__(self, data, class_list):
+        """
+        决策树(分类器)的节点类
+        :param data: 数据集
+        :param class_list: 类别列表
+        """
         self.node_name = None  # 节点名称
         self.data = data  # 节点保存的数据集(最后一列为分类类别)
         self.class_types = data.iloc[:, -1]
@@ -60,6 +74,10 @@ class ClassifierNode():
 class RegressorNode():
     """回归器节点"""
     def __init__(self, data):
+        """
+        决策树(分类器)的节点类
+        :param data: 数据集
+        """
         self.node_name = None  # 节点名称
         self.data = data  # 节点保存的数据集(最后一列为目标变量)
         self.target = data.iloc[:, -1]

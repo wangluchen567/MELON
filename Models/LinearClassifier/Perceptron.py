@@ -1,6 +1,14 @@
 """
-感知机
-Perceptron
+Copyright (c) 2023 LuChen Wang
+[Software Name] is licensed under Mulan PSL v2.
+You can use this software according to the terms and conditions of the Mulan
+PSL v2.
+You may obtain a copy of Mulan PSL v2 at:
+         http://license.coscl.org.cn/MulanPSL2
+THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY
+KIND, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO
+NON-INFRINGEMENT, MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+See the Mulan PSL v2 for more details.
 """
 import warnings
 import numpy as np
@@ -12,6 +20,7 @@ class Perceptron():
     def __init__(self, X_train=None, Y_train=None, penalty='l2', alpha=1.e-4, l1_ratio=0.15,
                  max_iter=1000, tol=1.e-3, lr=0.1, optim='Adam', num_no_change=6, show=False):
         """
+        感知机模型
         :param X_train: 训练数据
         :param Y_train: 真实标签
         :param penalty: 要使用的正则化项(None/'l1'/'l2'/'elasticnet')
@@ -57,15 +66,15 @@ class Perceptron():
                 warnings.warn("Training label will be overwritten")
             self.Y_train = Y_train.copy()
 
-    def set_parameters(self, penalty=None, alpha=None, l1_ratio=None, max_iter=None,
-                       tol=None, lr=None, optim=None, num_no_change=None):
+    def set_parameters(self, **kwargs):
         """重新修改相关参数"""
-        parameters = ['penalty', 'alpha', 'l1_ratio', 'max_iter', 'tol', 'lr', 'optimizer', 'num_no_change']
-        values = [penalty, alpha, l1_ratio, max_iter, tol, lr, optim, num_no_change]
-        for param, value in zip(parameters, values):
-            if value is not None and getattr(self, param) is not None:
-                warnings.warn(f"Parameter '{param}' will be overwritten")
+        for param, value in kwargs.items():
+            if hasattr(self, param):  # 检查对象是否有该属性
+                if getattr(self, param) is not None:
+                    warnings.warn(f"Parameter '{param}' will be overwritten")
                 setattr(self, param, value)
+            else:
+                warnings.warn(f"Parameter '{param}' is not a valid parameter for this model")
 
     def init_optimizer(self):
         """初始化优化器"""
@@ -78,11 +87,9 @@ class Perceptron():
         # 正态分布初始化
         self.Weights = np.random.randn(X_feat + 1, 1) * 0.01
 
-    def train(self, X_train=None, Y_train=None, penalty=None, alpha=None, l1_ratio=None,
-              max_iter=None, tol=None, lr=None, optim=None, num_no_change=None):
+    def train(self, X_train=None, Y_train=None):
         """使用数据集训练模型"""
         self.set_train_data(X_train, Y_train)
-        self.set_parameters(penalty, alpha, l1_ratio, max_iter, tol, lr, optim, num_no_change)
         self.init_weights()  # 初始化权重参数
         self.init_optimizer()  # 初始化优化器
         self.n_iter = 0  # 记录迭代次数

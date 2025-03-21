@@ -1,6 +1,14 @@
 """
-岭回归
-Ridge Regression
+Copyright (c) 2023 LuChen Wang
+[Software Name] is licensed under Mulan PSL v2.
+You can use this software according to the terms and conditions of the Mulan
+PSL v2.
+You may obtain a copy of Mulan PSL v2 at:
+         http://license.coscl.org.cn/MulanPSL2
+THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY
+KIND, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO
+NON-INFRINGEMENT, MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+See the Mulan PSL v2 for more details.
 """
 import warnings
 import numpy as np
@@ -10,6 +18,7 @@ from Models.Utils import plot_2dim_regression, run_uniform_regression
 class Ridge():
     def __init__(self, X_train=None, Y_train=None, alpha=1.0):
         """
+        岭回归模型
         :param X_train: 训练数据
         :param Y_train: 真实标签
         :param alpha: 正则化系数
@@ -31,19 +40,19 @@ class Ridge():
                 warnings.warn("Training label will be overwritten")
             self.Y_train = Y_train.copy()
 
-    def set_parameters(self, alpha=None):
+    def set_parameters(self, **kwargs):
         """重新修改相关参数"""
-        parameters = ['alpha']
-        values = [alpha]
-        for param, value in zip(parameters, values):
-            if value is not None and getattr(self, param) is not None:
-                warnings.warn(f"Parameter '{param}' will be overwritten")
+        for param, value in kwargs.items():
+            if hasattr(self, param):  # 检查对象是否有该属性
+                if getattr(self, param) is not None:
+                    warnings.warn(f"Parameter '{param}' will be overwritten")
                 setattr(self, param, value)
+            else:
+                warnings.warn(f"Parameter '{param}' is not a valid parameter for this model")
 
-    def train(self, X_train=None, Y_train=None, alpha=None):
+    def train(self, X_train=None, Y_train=None):
         """使用数据集训练模型"""
         self.set_train_data(X_train, Y_train)
-        self.set_parameters(alpha)
         # 在数据最后一列添加一列单位矩阵作为偏置b
         X_B = np.concatenate((self.X_train, np.ones((len(self.X_train), 1))), axis=1)
         # 使用公式计算参数

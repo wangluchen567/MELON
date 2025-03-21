@@ -1,6 +1,14 @@
 """
-线性回归
-Linear Regression
+Copyright (c) 2023 LuChen Wang
+[Software Name] is licensed under Mulan PSL v2.
+You can use this software according to the terms and conditions of the Mulan
+PSL v2.
+You may obtain a copy of Mulan PSL v2 at:
+         http://license.coscl.org.cn/MulanPSL2
+THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY
+KIND, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO
+NON-INFRINGEMENT, MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+See the Mulan PSL v2 for more details.
 """
 import warnings
 import numpy as np
@@ -10,6 +18,7 @@ from Models.Utils import plot_2dim_regression, run_uniform_regression
 class LinearRegression():
     def __init__(self, X_train=None, Y_train=None):
         """
+        线性回归模型
         :param X_train: 训练数据
         :param Y_train: 真实标签
         """

@@ -1,6 +1,14 @@
 """
-谱聚类
-Spectral Clustering
+Copyright (c) 2023 LuChen Wang
+[Software Name] is licensed under Mulan PSL v2.
+You can use this software according to the terms and conditions of the Mulan
+PSL v2.
+You may obtain a copy of Mulan PSL v2 at:
+         http://license.coscl.org.cn/MulanPSL2
+THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY
+KIND, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO
+NON-INFRINGEMENT, MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+See the Mulan PSL v2 for more details.
 """
 import warnings
 import numpy as np
@@ -18,6 +26,7 @@ class SpectralClustering():
     def __init__(self, X=None, n_clusters=None, affinity=RBF, n_neighbors=10, mode='connect',
                  gamma=1.0, degree=3.0, const=1.0, num_train=10, max_iter=1000, tol=1e-4, show=False):
         """
+        谱聚类
         :param X: 需要聚类的数据
         :param n_clusters: 聚类中心个数
         :param affinity: 相似度矩阵的构建方式(NEIGHBORS:基于邻接关系, POLY:多项式核函数, RBF/GAUSSIAN:高斯核函数, SIGMOID核函数)
@@ -53,22 +62,19 @@ class SpectralClustering():
                 warnings.warn("Training data will be overwritten")
             self.X = X.copy()
 
-    def set_parameters(self, n_clusters=None, affinity=None, n_neighbors=None, mode=None,
-                       gamma=None, degree=None, const=None, num_train=None, max_iter=None, tol=None):
+    def set_parameters(self, **kwargs):
         """重新修改相关参数"""
-        parameters = ['n_clusters', 'affinity', 'n_neighbors', 'mode',
-                      'gamma', 'degree', 'const', 'num_train', 'max_iter', 'tol']
-        values = [n_clusters, affinity, n_neighbors, mode, gamma, degree, const, num_train, max_iter, tol]
-        for param, value in zip(parameters, values):
-            if value is not None and getattr(self, param) is not None:
-                warnings.warn(f"Parameter '{param}' will be overwritten")
+        for param, value in kwargs.items():
+            if hasattr(self, param):  # 检查对象是否有该属性
+                if getattr(self, param) is not None:
+                    warnings.warn(f"Parameter '{param}' will be overwritten")
                 setattr(self, param, value)
+            else:
+                warnings.warn(f"Parameter '{param}' is not a valid parameter for this model")
 
-    def train(self, X=None, n_clusters=None, affinity=None, n_neighbors=None, mode=None,
-              gamma=None, degree=None, const=None, num_train=None, max_iter=None, tol=None):
+    def train(self, X=None):
         """对数据进行聚类"""
         self.set_data(X)
-        self.set_parameters(n_clusters, affinity, n_neighbors, mode, gamma, degree, const, num_train, max_iter, tol)
         # 计算相似度矩阵
         simi_mat = self.cal_simi_mat()
         # 计算度矩阵
