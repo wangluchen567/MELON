@@ -93,6 +93,7 @@ class DecisionTreeClassifier():
         self.build_tree_queue(self.decision_tree, self.train_data, self.attributes.copy())
 
     def predict(self, X_data_):
+        """预测数据"""
         X_data = X_data_.copy()
         # 若给定数据不是Dataframe或Series，则必须封装为Dataframe或Series才可以预测
         if not (isinstance(X_data, pd.DataFrame) or isinstance(X_data, pd.Series)):
@@ -120,6 +121,36 @@ class DecisionTreeClassifier():
             Y_predict.append(pointer.category)
         Y_predict = np.array(Y_predict).reshape(-1, 1)
         return Y_predict
+
+    def predict_prob(self, X_data_):
+        """预测数据(预测概率)"""
+        X_data = X_data_.copy()
+        # 若给定数据不是Dataframe或Series，则必须封装为Dataframe或Series才可以预测
+        if not (isinstance(X_data, pd.DataFrame) or isinstance(X_data, pd.Series)):
+            X_data = pd.DataFrame(X_data, columns=self.X_columns)
+        # 初始化预测概率
+        Y_predict_prob = np.zeros((len(X_data), len(self.class_list)))
+        # 遍历所有数据得到每个数据的分类概率
+        for i in range(len(X_data)):
+            pointer = self.decision_tree
+            while len(pointer.branches):
+                # 检查是否是离散特征
+                if self.check_discrete(self.train_data[pointer.split_attr].dtype):
+                    # 获取当前数据的状态名称
+                    state_name = X_data.iloc[i][pointer.split_attr]
+                    # 若状态在所有分支中则继续检查其叶子
+                    if state_name in pointer.branches.keys():
+                        pointer = pointer.branches[state_name]
+                    else:
+                        # 否则选择默认分支(数据更多的一个分支)继续检查其叶子
+                        pointer = pointer.branches[self.get_default(pointer.branches)]
+                else:
+                    if X_data.iloc[i][pointer.split_attr] <= pointer.split_value:
+                        pointer = pointer.branches['True']
+                    else:
+                        pointer = pointer.branches['False']
+            Y_predict_prob[i] = np.array(pointer.values) / np.sum(pointer.values)
+        return Y_predict_prob
 
     def get_default(self, branches):
         """获取默认分支"""

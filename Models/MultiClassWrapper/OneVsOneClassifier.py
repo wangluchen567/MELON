@@ -75,18 +75,34 @@ class OneVsOneClassifier():
     def predict(self, X_data):
         """预测数据"""
         # 遍历所有的模型，得到每对类别的分类情况
-        votes = np.zeros((len(X_data), len(self.class_states)))  # 记录投票情况
+        votes = np.zeros((len(X_data), len(self.class_states)), dtype=int)  # 记录总体投票情况
         for i in range(len(self.classifiers)):
+            # 得到该分类模型得到的预测情况
             y_predict = self.classifiers[i].predict(X_data).flatten()
-            y_predict[y_predict == -1] = 0
-            predict = self.binary_states[i][y_predict]
-            # 使用 np.add.at 对选中的那类进行投票
-            row_indices = np.arange(predict.shape[0])
-            col_indices = np.array(predict)
-            # 要添加的值，这里是加1
-            values = np.ones(len(row_indices))
-            # 使用 np.add.at 更新投票情况
-            np.add.at(votes, (row_indices, col_indices), values)
+            y_predict[y_predict == -1] = 0  # 调整预测输出
+            # 记录当前模型的输出投票情况
+            model_vote = np.zeros((len(X_data), len(self.class_states)), dtype=int)
+            model_vote[:, self.binary_states[i]] += np.array([1 - y_predict, y_predict]).T
+            # 更新总体投票结果
+            votes += model_vote
         # 然后选择概率最大的元素作为预测结果
         Y_pred = self.class_states[np.argmax(votes, axis=1)].reshape(len(X_data), -1)
         return Y_pred
+
+    def predict_prob(self, X_data):
+        """预测数据(概率预测)"""
+        if not hasattr(self.model, 'predict_prob'):
+            raise AttributeError('This model does not have a method for predicting probabilities')
+        # 遍历所有的模型，得到每对类别的分类情况
+        probs = np.zeros((len(X_data), len(self.class_states)))  # 记录概率情况
+        for i in range(len(self.classifiers)):
+            # 得到该分类模型得到的预测情况
+            y_predict = self.classifiers[i].predict_prob(X_data).flatten()
+            # 记录当前模型的输出概率情况
+            model_prob = np.zeros((len(X_data), len(self.class_states)))
+            model_prob[:, self.binary_states[i]] += np.array([1 - y_predict, y_predict]).T
+            # 更新总体投票结果
+            probs += model_prob
+        # 归一化每行得到每个类的预测概率
+        Y_data_prob = probs / probs.sum(1).reshape(-1, 1)
+        return Y_data_prob
