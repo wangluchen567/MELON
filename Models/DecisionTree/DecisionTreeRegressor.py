@@ -43,6 +43,7 @@ class DecisionTreeRegressor():
         self.max_depth = max_depth  # 决策树最大深度
         self.tree_depth = None  # 决策树的真实深度
         self.decision_tree = None  # 最终得到的决策树
+        self.sample_weight = None  # 样本的权重
         self.set_train_data(X_train, Y_train)
 
     def set_train_data(self, X_train, Y_train):
@@ -79,9 +80,10 @@ class DecisionTreeRegressor():
             else:
                 warnings.warn(f"Parameter '{param}' is not a valid parameter for this model")
 
-    def train(self, X_train=None, Y_train=None):
+    def train(self, X_train=None, Y_train=None, sample_weight=None):
         """使用数据集训练模型"""
         self.set_train_data(X_train, Y_train)
+        self.sample_weight = sample_weight
         # 初始化决策树根节点
         self.decision_tree = RegressorNode(self.train_data)
         self.decision_tree.indicator = self.cal_indicator(self.train_data)
@@ -373,23 +375,38 @@ class DecisionTreeRegressor():
 
     def cal_indicator(self, data):
         target = data.iloc[:, -1]
+        if self.sample_weight is None:
+            # 若没有样本权重则为空
+            sample_weight_ = None
+        else:  # 若使用样本采样权重
+            sample_weight_ = self.sample_weight[np.array(data.index)]
         # 计算误差值
         if self.criterion == 'mse':
-            return self.cal_mse(target)
+            return self.cal_mse(target, sample_weight_)
         elif self.criterion == 'mae':
-            return self.cal_mae(target)
+            return self.cal_mae(target, sample_weight_)
         else:
             raise ValueError("There is no such indicator")
 
     @staticmethod
-    def cal_mse(target):
+    def cal_mse(target, sample_weight=None):
         """计算均方误差"""
-        return np.mean((target - np.mean(target)) ** 2)
+        if sample_weight is None:
+            return np.mean((target - np.mean(target)) ** 2)
+        else:
+            weighted_mean = np.average(target, weights=sample_weight)
+            weighted_mse = np.average((target - weighted_mean) ** 2, weights=sample_weight)
+            return weighted_mse
 
     @staticmethod
-    def cal_mae(target):
+    def cal_mae(target, sample_weight):
         """计算平均绝对误差"""
-        return np.mean(np.abs(target - np.mean(target)))
+        if sample_weight is None:
+            return np.mean(np.abs(target - np.mean(target)))
+        else:
+            weighted_mean = np.average(target, weights=sample_weight)
+            weighted_mae = np.average(np.abs(target - weighted_mean), weights=sample_weight)
+            return weighted_mae
 
     @staticmethod
     def check_discrete(dtype_):

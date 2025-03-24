@@ -44,6 +44,7 @@ class DecisionTreeClassifier():
         self.tree_depth = None  # 决策树的真实深度
         self.decision_tree = None  # 最终得到的决策树
         self.class_list = None  # 需要分类的类别情况
+        self.sample_weight = None  # 样本的权重
         self.set_train_data(X_train, Y_train)
 
     def set_train_data(self, X_train, Y_train):
@@ -81,9 +82,10 @@ class DecisionTreeClassifier():
             else:
                 warnings.warn(f"Parameter '{param}' is not a valid parameter for this model")
 
-    def train(self, X_train=None, Y_train=None):
+    def train(self, X_train=None, Y_train=None, sample_weight=None):
         """使用数据集训练模型"""
         self.set_train_data(X_train, Y_train)
+        self.sample_weight = sample_weight
         # 初始化决策树根节点
         self.decision_tree = ClassifierNode(self.train_data, self.class_list)
         self.decision_tree.indicator = self.cal_indicator(self.train_data)
@@ -422,7 +424,13 @@ class DecisionTreeClassifier():
 
     def cal_indicator(self, data):
         cate = data.iloc[:, -1]
-        _, counts = np.unique(cate, return_counts=True)
+        if self.sample_weight is None:
+            _, counts = np.unique(cate, return_counts=True)
+        else:  # 若使用样本采样权重
+            # 得到每个样本对应类别的索引
+            _, inverse_indices = np.unique(cate, return_inverse=True)
+            # 根据类别索引和样本权重计算每个类别的加权样本数量
+            counts = np.bincount(inverse_indices, weights=self.sample_weight[np.array(data.index)])
         # 计算指标值(信息熵值或Gini指数值)
         if self.criterion == 'entropy':
             return self.cal_entropy(counts)

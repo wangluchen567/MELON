@@ -41,6 +41,7 @@ class RandomForestClassifier:
         self.max_features = max_features  # 每次分裂节点时考虑的最大特征数
         self.bootstrap = bootstrap  # 是否对样本进行有放回抽样
         self.random_forest = None  # 生成的随机森林
+        self.class_list = None  # 要分类的类别列表
         self.set_train_data(X_train, Y_train)
 
     def set_train_data(self, X_train, Y_train):
@@ -67,37 +68,33 @@ class RandomForestClassifier:
     def train(self, X_train=None, Y_train=None):
         """使用数据集训练模型"""
         self.set_train_data(X_train, Y_train)
+        self.class_list = np.unique(self.Y_train)
         self.random_forest = []
         for i in range(self.n_estimators):
             # 有放回采样样本(或原始样本)
             X_sample, Y_sample = self.sampling()
             # 使用采样样本构建决策树
-            tree = DecisionTreeClassifier(X_train=X_sample,
-                                          Y_train=Y_sample,
-                                          criterion=self.criterion,
+            tree = DecisionTreeClassifier(criterion=self.criterion,
                                           max_features=self.max_features,
                                           max_depth=self.max_depth)
-            tree.train()  # 训练该决策树
+            tree.train(X_sample, Y_sample)  # 训练该决策树
             # 将该决策树加入随机森林
             self.random_forest.append(tree)
 
     def predict(self, X_data):
         """模型对测试集进行预测"""
-        Y_predicts = np.empty((len(X_data), 0))
+        Y_predicts = np.zeros((self.n_estimators, len(X_data)), dtype=self.class_list.dtype)
         for i in range(self.n_estimators):
-            Y_predict = self.random_forest[i].predict(X_data)
-            Y_predicts = np.append(Y_predicts, Y_predict, axis=1)
-        # 获取所有可能的类别
-        classes = np.unique(Y_predicts)
+            Y_predicts[i] = self.random_forest[i].predict(X_data).flatten()
         # 初始化一个数组来存储每个类别的票数
-        votes = np.zeros((Y_predicts.shape[0], len(classes)), dtype=int)
+        votes = np.zeros((len(X_data), len(self.class_list)), dtype=int)
         # 统计每个类别的票数
-        for i, cls in enumerate(classes):
-            votes[:, i] = np.sum(Y_predicts == cls, axis=1)
+        for i, cls in enumerate(self.class_list):
+            votes[:, i] = np.sum(Y_predicts == cls, axis=0)
         # 找到每行中票数最多的类别索引
         max_votes_indices = np.argmax(votes, axis=1)
         # 根据索引获取最终预测结果
-        final_predict = classes[max_votes_indices].reshape(-1, 1)
+        final_predict = self.class_list[max_votes_indices].reshape(-1, 1)
         return final_predict
 
     def sampling(self):

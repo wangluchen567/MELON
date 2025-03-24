@@ -82,11 +82,10 @@ class BaggingRegressor():
 
     def predict(self, X_data):
         """模型对测试集进行预测"""
-        Y_predicts = np.empty((len(X_data), 0))
+        Y_predicts = np.zeros((self.n_estimators, len(X_data)))
         for i in range(self.n_estimators):
-            Y_predict = self.estimator_models[i].predict(X_data)
-            Y_predicts = np.append(Y_predicts, Y_predict, axis=1)
-        return Y_predicts.mean(axis=1).reshape(-1, 1)
+            Y_predicts[i] = self.estimator_models[i].predict(X_data).flatten()
+        return Y_predicts.mean(axis=0).reshape(-1, 1)
 
     def sampling(self):
         """采样样本"""

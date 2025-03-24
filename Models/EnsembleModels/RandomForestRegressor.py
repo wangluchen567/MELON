@@ -72,22 +72,19 @@ class RandomForestRegressor():
             # 有放回采样样本(或原始样本)
             X_sample, Y_sample = self.sampling()
             # 使用采样样本构建决策树
-            tree = DecisionTreeRegressor(X_train=X_sample,
-                                         Y_train=Y_sample,
-                                         criterion=self.criterion,
+            tree = DecisionTreeRegressor(criterion=self.criterion,
                                          max_features=self.max_features,
                                          max_depth=self.max_depth)
-            tree.train()  # 训练该决策树
+            tree.train(X_sample, Y_sample)  # 训练该决策树
             # 将该决策树加入随机森林
             self.random_forest.append(tree)
 
     def predict(self, X_data):
         """模型对测试集进行预测"""
-        Y_predicts = np.empty((len(X_data), 0))
+        Y_predicts = np.zeros((self.n_estimators, len(X_data)))
         for i in range(self.n_estimators):
-            Y_predict = self.random_forest[i].predict(X_data)
-            Y_predicts = np.append(Y_predicts, Y_predict, axis=1)
-        return Y_predicts.mean(axis=1).reshape(-1, 1)
+            Y_predicts[i] = self.random_forest[i].predict(X_data).flatten()
+        return Y_predicts.mean(axis=0).reshape(-1, 1)
 
     def sampling(self):
         """采样样本"""
