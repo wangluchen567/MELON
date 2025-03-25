@@ -334,7 +334,6 @@ class DecisionTreeClassifier():
                 else:
                     queue.append((new_node, data_t, attributes.copy(), depth + 1))
 
-
     def choice_attr(self, data, attribute_):
         """从当前属性集合中选择一个属性"""
         if self.max_features is not None:
@@ -381,8 +380,8 @@ class DecisionTreeClassifier():
 
     def cal_gain_discrete(self, data, attr_key):
         """计算信息增益/基尼指数(离散特征)"""
-        # 首先计算当前样本集合的信息熵初始化为信息增益
-        gain = self.cal_indicator(data) if self.criterion == 'entropy' else 0
+        # 计算当前样本集合的不纯度作为初始值
+        gain = self.cal_indicator(data)
         # 获得当前属性列
         attr_value = data[attr_key]
         # 得到当前属性列的情况
@@ -390,7 +389,13 @@ class DecisionTreeClassifier():
         # 遍历当前属性情况从而计算信息增益
         for a in attr_unique:
             data_cal = data[attr_value == a]
-            gain -= self.cal_indicator(data_cal) * len(data_cal) / len(attr_value)
+            # 子集在整个数据集中的权重比例(若无样本权重则为个数比值)
+            if self.sample_weight is None:
+                prop = len(data_cal) / len(attr_value)
+            else:
+                prop = (self.sample_weight[np.array(data_cal.index)].sum()
+                        / self.sample_weight[np.array(attr_value.index)].sum())
+            gain -= self.cal_indicator(data_cal) * prop
         return gain
 
     def cal_gain_continuous(self, data, attr_key):
@@ -404,18 +409,24 @@ class DecisionTreeClassifier():
             return 0, len(data)
         # 计算每两个数的中位点
         medians = (sorted_attr[:-1] + sorted_attr[1:]) / 2
-        # 统计每个中位点划分的信息增益
-        gains = np.zeros_like(medians)
-        if self.criterion == 'entropy':
-            gains = gains + self.cal_indicator(data)
+        # 计算当前样本集合的不纯度作为初始值
+        gains = np.zeros_like(medians) + self.cal_indicator(data)
         # 遍历当前中位点属性情况从而计算信息增益
         for i in range(len(medians)):
             # 先计算不大于该中位点的信息增益
             data_cal = data[attr_value <= medians[i]]
-            gains[i] -= self.cal_indicator(data_cal) * len(data_cal) / len(attr_value)
+            # 子集在整个数据集中的权重比例(若无样本权重则为个数比值)
+            if self.sample_weight is None:
+                prop_left = len(data_cal) / len(attr_value)
+            else:
+                prop_left = (self.sample_weight[np.array(data_cal.index)].sum()
+                             / self.sample_weight[np.array(attr_value.index)].sum())
+            gains[i] -= self.cal_indicator(data_cal) * prop_left
             # 再计算大于该中位点的信息增益
             data_cal = data[attr_value > medians[i]]
-            gains[i] -= self.cal_indicator(data_cal) * len(data_cal) / len(attr_value)
+            # 子集在整个数据集中的权重比例(若无样本权重则为个数比值)
+            prop_right = 1 - prop_left  # 另一半的比例无需重复计算
+            gains[i] -= self.cal_indicator(data_cal) * prop_right
         # 选择增益最大的为划分点，并返回划分点
         max_index = np.argmax(gains)
         gain = gains[max_index]
@@ -488,7 +499,7 @@ def run_watermelon_example():
 
 
 if __name__ == '__main__':
-    # run_watermelon_example()
+    run_watermelon_example()
     np.random.seed(100)
     model = DecisionTreeClassifier(max_depth=5, criterion='gini')
     run_uniform_classification(model)
