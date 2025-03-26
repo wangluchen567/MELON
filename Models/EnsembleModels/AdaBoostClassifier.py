@@ -95,9 +95,9 @@ class AdaBoostClassifier:
             # 创建一个弱分类器
             model = copy.deepcopy(self.estimator)
             # 使用当前样本权重训练弱分类器
-            model.train(X_train, Y_train, sample_weight=sample_weights)
+            model.train(self.X_train, self.Y_train, sample_weight=sample_weights)
             # 得到该分类器的类别预测概率, 形状必须为(X_train.len, class_list.len)
-            Y_prob = model.predict_prob(X_train)
+            Y_prob = model.predict_prob(self.X_train)
             # 将概率包含零的部分进行裁剪（避免log(0)）
             Y_prob = np.clip(Y_prob, 1e-15, 1 - 1e-15)
             # 计算每个样本的真实类别对应的log概率
@@ -164,7 +164,8 @@ class AdaBoostClassifier:
         probs = np.zeros((len(X_data), len(self.class_list)))
         for alpha, model in zip(self.alphas, self.estimator_models):
             Y_predict = model.predict(X_data)
-            probs += alpha * np.array(Y_predict == self.class_list)
+            correct = np.array(Y_predict == self.class_list)
+            probs += alpha * (correct - (1 - correct)/(len(self.class_list) - 1))
         Y_data = self.class_list[np.argmax(probs, axis=1)].reshape(len(X_data), -1)
         return Y_data
 
@@ -187,7 +188,7 @@ def run_watermelon_example():
 
 
 if __name__ == '__main__':
-    run_watermelon_example()
+    # run_watermelon_example()
     np.random.seed(100)
     model = AdaBoostClassifier()
     run_uniform_classification(model)
