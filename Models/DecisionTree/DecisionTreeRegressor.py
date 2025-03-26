@@ -104,7 +104,14 @@ class DecisionTreeRegressor():
             while len(pointer.branches):
                 # 检查是否是离散特征
                 if self.check_discrete(self.train_data[pointer.split_attr].dtype):
-                    pointer = pointer.branches[X_data.iloc[i][pointer.split_attr]]
+                    # 获取当前数据的状态名称
+                    state_name = X_data.iloc[i][pointer.split_attr]
+                    # 若状态在所有分支中则继续检查其叶子
+                    if state_name in pointer.branches.keys():
+                        pointer = pointer.branches[state_name]
+                    else:
+                        # 否则选择默认分支(数据更多的一个分支)继续检查其叶子
+                        pointer = pointer.branches[self.get_default(pointer.branches)]
                 else:
                     if X_data.iloc[i][pointer.split_attr] <= pointer.split_value:
                         pointer = pointer.branches['True']
@@ -113,6 +120,10 @@ class DecisionTreeRegressor():
             Y_predict.append(pointer.predict_value)
         Y_predict = np.array(Y_predict).reshape(-1, 1)
         return Y_predict
+
+    def get_default(self, branches):
+        """获取默认分支"""
+        return max(branches, key=lambda k: len(branches[k].data))
 
     def build_tree_recursive(self, node, data, attributes):
         """递归式生成决策树(暂时无法控制深度)"""
@@ -344,7 +355,13 @@ class DecisionTreeRegressor():
         # 遍历当前属性情况从而计算误差值
         for a in attr_unique:
             data_cal = data[attr_value == a]
-            error_value += self.cal_indicator(data_cal) * len(data_cal) / len(attr_value)
+            # 子集在整个数据集中的权重比例(若无样本权重则为个数比值)
+            if self.sample_weight is None:
+                prop = len(data_cal) / len(attr_value)
+            else:
+                prop = (self.sample_weight[np.array(data_cal.index)].sum()
+                        / self.sample_weight[np.array(attr_value.index)].sum())
+            error_value += self.cal_indicator(data_cal) * prop
         return error_value
 
     def cal_error_continuous(self, data, attr_key):
@@ -363,10 +380,18 @@ class DecisionTreeRegressor():
         for i in range(len(medians)):
             # 先计算不大于该中位点的误差值
             data_cal = data[attr_value <= medians[i]]
-            errors[i] += self.cal_indicator(data_cal) * len(data_cal) / len(attr_value)
+            # 子集在整个数据集中的权重比例(若无样本权重则为个数比值)
+            if self.sample_weight is None:
+                prop_left = len(data_cal) / len(attr_value)
+            else:
+                prop_left = (self.sample_weight[np.array(data_cal.index)].sum()
+                             / self.sample_weight[np.array(attr_value.index)].sum())
+            errors[i] += self.cal_indicator(data_cal) * prop_left
             # 再计算大于该中位点的误差值
             data_cal = data[attr_value > medians[i]]
-            errors[i] += self.cal_indicator(data_cal) * len(data_cal) / len(attr_value)
+            # 子集在整个数据集中的权重比例(若无样本权重则为个数比值)
+            prop_right = 1 - prop_left  # 另一半的比例无需重复计算
+            errors[i] += self.cal_indicator(data_cal) * prop_right
         # 选择误差值最小的为划分点，并返回划分点
         max_index = np.argmin(errors)
         error_value = errors[max_index]
