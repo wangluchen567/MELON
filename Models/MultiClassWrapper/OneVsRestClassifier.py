@@ -1,6 +1,6 @@
 """
 Copyright (c) 2023 LuChen Wang
-[Software Name] is licensed under Mulan PSL v2.
+MELON is licensed under Mulan PSL v2.
 You can use this software according to the terms and conditions of the Mulan
 PSL v2.
 You may obtain a copy of Mulan PSL v2 at:
@@ -11,11 +11,11 @@ NON-INFRINGEMENT, MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 See the Mulan PSL v2 for more details.
 """
 import copy
-import warnings
 import numpy as np
+from Models import Model
 
 
-class OneVsRestClassifier():
+class OneVsRestClassifier(Model):
     """一对多 分类包装器"""
 
     def __init__(self, model, X_train=None, Y_train=None):
@@ -26,24 +26,11 @@ class OneVsRestClassifier():
         :param Y_train: 真实标签
         """
         self.model = model
-        self.X_train = None  # 训练数据
-        self.Y_train = None  # 真实标签
-        self.set_train_data(X_train, Y_train)
+        super().__init__(X_train, Y_train)
         self.class_states = None
         if not hasattr(self.model, 'predict_prob'):
             raise AttributeError('This model does not have a method for predicting probabilities, '
                                  'so OVR multi classification cannot be used')
-
-    def set_train_data(self, X_train, Y_train):
-        """给定训练数据集和标签数据"""
-        if X_train is not None:
-            if self.X_train is not None:
-                warnings.warn("Training data will be overwritten")
-            self.X_train = X_train.copy()
-        if Y_train is not None:
-            if self.Y_train is not None:
-                warnings.warn("Training label will be overwritten")
-            self.Y_train = Y_train.copy()
 
     def train(self, X_train=None, Y_train=None):
         """训练模型"""

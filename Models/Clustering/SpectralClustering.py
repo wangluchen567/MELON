@@ -1,6 +1,6 @@
 """
 Copyright (c) 2023 LuChen Wang
-[Software Name] is licensed under Mulan PSL v2.
+MELON is licensed under Mulan PSL v2.
 You can use this software according to the terms and conditions of the Mulan
 PSL v2.
 You may obtain a copy of Mulan PSL v2 at:
@@ -10,24 +10,24 @@ KIND, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO
 NON-INFRINGEMENT, MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 See the Mulan PSL v2 for more details.
 """
-import warnings
 import numpy as np
+from Models import Model
 from KMeans import KMeans
 from Models.Utils import plot_cluster, run_blobs_cluster, run_circle_cluster, run_moons_cluster
 
 
-class SpectralClustering():
+class SpectralClustering(Model):
     # 定义相似度矩阵构建方式类型
     NEIGHBORS = 0
     POLY = 1
     RBF = GAUSSIAN = 2
     SIGMOID = 3
 
-    def __init__(self, X=None, n_clusters=None, affinity=RBF, n_neighbors=10, mode='connect',
+    def __init__(self, X_train=None, n_clusters=None, affinity=RBF, n_neighbors=10, mode='connect',
                  gamma=1.0, degree=3.0, const=1.0, num_train=10, max_iter=1000, tol=1e-4, show=False):
         """
         谱聚类
-        :param X: 需要聚类的数据
+        :param X_train: 需要聚类的数据
         :param n_clusters: 聚类中心个数
         :param affinity: 相似度矩阵的构建方式(NEIGHBORS:基于邻接关系, POLY:多项式核函数, RBF/GAUSSIAN:高斯核函数, SIGMOID核函数)
         :param n_neighbors: 使用邻居策略时近邻数量
@@ -40,8 +40,7 @@ class SpectralClustering():
         :param tol: 收敛的容忍度，若两次变化小于tol则说明已收敛(kmeans)
         :param show: 是否展示迭代过程
         """
-        self.X = None  # 需要聚类的数据
-        self.set_data(X)  # 设置数据
+        super().__init__(X_train, None)
         self.labels = None  # 聚类后的结果
         self.n_clusters = n_clusters  # 聚类中心个数
         self.affinity = affinity  # 相似度矩阵的构建方式
@@ -55,26 +54,10 @@ class SpectralClustering():
         self.tol = tol  # 收敛的容忍度，若两次变化小于tol则说明已收敛(kmeans)
         self.show = show  # 是否展示迭代过程
 
-    def set_data(self, X):
-        """给定训练数据"""
-        if X is not None:
-            if self.X is not None:
-                warnings.warn("Training data will be overwritten")
-            self.X = X.copy()
 
-    def set_parameters(self, **kwargs):
-        """重新修改相关参数"""
-        for param, value in kwargs.items():
-            if hasattr(self, param):  # 检查对象是否有该属性
-                if getattr(self, param) is not None:
-                    warnings.warn(f"Parameter '{param}' will be overwritten")
-                setattr(self, param, value)
-            else:
-                warnings.warn(f"Parameter '{param}' is not a valid parameter for this model")
-
-    def train(self, X=None):
+    def train(self, X_train=None):
         """对数据进行聚类"""
-        self.set_data(X)
+        self.set_train_data(X_train, None)
         # 计算相似度矩阵
         simi_mat = self.cal_simi_mat()
         # 计算度矩阵
@@ -97,13 +80,13 @@ class SpectralClustering():
     def cal_simi_mat(self):
         """计算数据集的相似度矩阵"""
         if self.affinity == self.NEIGHBORS:
-            return self.k_neighbors_mat(self.X, self.n_neighbors, self.mode)
+            return self.k_neighbors_mat(self.X_train, self.n_neighbors, self.mode)
         elif self.affinity == self.POLY:
-            return self.poly_kernel_mat(self.X, self.X, self.gamma, self.degree, self.const)
+            return self.poly_kernel_mat(self.X_train, self.X_train, self.gamma, self.degree, self.const)
         elif self.affinity == self.RBF or self.affinity == self.GAUSSIAN:
-            return self.rbf_kernel_mat(self.X, self.X, self.gamma)
+            return self.rbf_kernel_mat(self.X_train, self.X_train, self.gamma)
         elif self.affinity == self.SIGMOID:
-            return self.sigmoid_kernel_mat(self.X, self.X, self.const)
+            return self.sigmoid_kernel_mat(self.X_train, self.X_train, self.const)
         else:
             raise ValueError(f"Unsupported affinity: {self.affinity}")
 
@@ -162,7 +145,7 @@ class SpectralClustering():
         return kernel_mat
 
     def plot_cluster(self, pause=False, n_iter=None, pause_time=0.15):
-        plot_cluster(self.X, self.labels, None, pause, n_iter, pause_time)
+        plot_cluster(self.X_train, self.labels, None, pause, n_iter, pause_time)
 
 
 if __name__ == '__main__':

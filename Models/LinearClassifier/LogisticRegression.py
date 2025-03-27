@@ -1,6 +1,6 @@
 """
 Copyright (c) 2023 LuChen Wang
-[Software Name] is licensed under Mulan PSL v2.
+MELON is licensed under Mulan PSL v2.
 You can use this software according to the terms and conditions of the Mulan
 PSL v2.
 You may obtain a copy of Mulan PSL v2 at:
@@ -12,11 +12,12 @@ See the Mulan PSL v2 for more details.
 """
 import warnings
 import numpy as np
+from Models import Model
 from Models.GradientOptimizer import GradientDescent, Momentum, AdaGrad, RMSProp, Adam
 from Models.Utils import sigmoid, plot_2dim_classification, run_uniform_classification, run_double_classification
 
 
-class LogisticRegression():
+class LogisticRegression(Model):
     def __init__(self, X_train=None, Y_train=None, penalty='l2', alpha=1.e-4, l1_ratio=0.15,
                  max_iter=1000, tol=1.e-3, lr=0.1, optim='Adam', num_no_change=6, show=False):
         """
@@ -33,10 +34,8 @@ class LogisticRegression():
         :param num_no_change: 停止的迭代次数的阈值
         :param show: 是否展示迭代过程
         """
-        self.X_train = None  # 训练数据
-        self.Y_train = None  # 真实标签
+        super().__init__(X_train, Y_train)
         self.Y_train_ = None  # 特殊标签(0/1)
-        self.set_train_data(X_train, Y_train)
         self.penalty = penalty  # 要使用的正则化项('l1'/'l2'/'elasticnet')
         self.alpha = alpha  # 正则化系数(正则化强度)
         self.l1_ratio = l1_ratio  # 弹性网络正则化中L1和L2的混合比例, penalty='elasticnet'时使用
@@ -55,27 +54,6 @@ class LogisticRegression():
         self.X_train_B = None  # 训练数据加偏置(避免重复计算)
         self.Y_train_prob = None  # 模型对训练集的预测概率
         self.show = show  # 是否展示迭代过程
-
-    def set_train_data(self, X_train, Y_train):
-        """给定训练数据集和标签数据"""
-        if X_train is not None:
-            if self.X_train is not None:
-                warnings.warn("Training data will be overwritten")
-            self.X_train = X_train.copy()
-        if Y_train is not None:
-            if self.Y_train is not None:
-                warnings.warn("Training label will be overwritten")
-            self.Y_train = Y_train.copy()
-
-    def set_parameters(self, **kwargs):
-        """重新修改相关参数"""
-        for param, value in kwargs.items():
-            if hasattr(self, param):  # 检查对象是否有该属性
-                if getattr(self, param) is not None:
-                    warnings.warn(f"Parameter '{param}' will be overwritten")
-                setattr(self, param, value)
-            else:
-                warnings.warn(f"Parameter '{param}' is not a valid parameter for this model")
 
     def init_optimizer(self):
         """初始化优化器"""

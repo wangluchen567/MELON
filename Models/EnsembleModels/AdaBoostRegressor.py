@@ -1,6 +1,6 @@
 """
 Copyright (c) 2023 LuChen Wang
-[Software Name] is licensed under Mulan PSL v2.
+MELON is licensed under Mulan PSL v2.
 You can use this software according to the terms and conditions of the Mulan
 PSL v2.
 You may obtain a copy of Mulan PSL v2 at:
@@ -13,12 +13,13 @@ See the Mulan PSL v2 for more details.
 import copy
 import warnings
 import numpy as np
+from Models import Model
 from Models.DecisionTree.DecisionTreeRegressor import DecisionTreeRegressor
 from Models.Utils import (run_uniform_regression, plot_2dim_regression_sample,
                           run_circular_regression, run_poly_regression)
 
 
-class AdaBoostRegressor:
+class AdaBoostRegressor(Model):
     def __init__(self, estimator=None, X_train=None, Y_train=None, n_estimators=10,
                  learning_rate=1.0, max_depth=3, sampling=True):
         """
@@ -31,8 +32,7 @@ class AdaBoostRegressor:
         :param max_depth: 当基础学习器为决策树时决策树最大深度
         :param sampling: 是否使用自助采样实现样本不同权重
         """
-        self.X_train = None  # 训练数据
-        self.Y_train = None  # 真实标签
+        super().__init__(X_train, Y_train)
         self.estimator = estimator  # 基础学习器(弱学习器)
         self.n_estimators = n_estimators  # 基础学习器数量
         self.learning_rate = learning_rate  # 学习率
@@ -44,18 +44,6 @@ class AdaBoostRegressor:
         if self.estimator is None:
             # 默认使用决策树树桩
             self.estimator = DecisionTreeRegressor(max_depth=self.max_depth)
-        self.set_train_data(X_train, Y_train)
-
-    def set_train_data(self, X_train, Y_train):
-        """给定训练数据集和标签数据"""
-        if X_train is not None:
-            if self.X_train is not None:
-                warnings.warn("Training data will be overwritten")
-            self.X_train = X_train.copy()
-        if Y_train is not None:
-            if self.Y_train is not None:
-                warnings.warn("Training label will be overwritten")
-            self.Y_train = Y_train.copy()
 
     def train(self, X_train=None, Y_train=None):
         """训练模型拟合数据"""

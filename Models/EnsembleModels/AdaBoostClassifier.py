@@ -1,6 +1,6 @@
 """
 Copyright (c) 2023 LuChen Wang
-[Software Name] is licensed under Mulan PSL v2.
+MELON is licensed under Mulan PSL v2.
 You can use this software according to the terms and conditions of the Mulan
 PSL v2.
 You may obtain a copy of Mulan PSL v2 at:
@@ -14,12 +14,13 @@ import copy
 import warnings
 import numpy as np
 import pandas as pd
+from Models import Model
 from Models.DecisionTree.DecisionTreeClassifier import DecisionTreeClassifier
 from Models.Utils import (calculate_accuracy, run_uniform_classification, run_double_classification,
                           run_circle_classification, run_moons_classification, plot_2dim_classification_sample)
 
 
-class AdaBoostClassifier:
+class AdaBoostClassifier(Model):
     def __init__(self, estimator=None, X_train=None, Y_train=None, n_estimators=10,
                  learning_rate=1.0, algorithm='SAMME.R'):
         """
@@ -31,8 +32,7 @@ class AdaBoostClassifier:
         :param learning_rate: 学习率，用于缩放弱学习器的权重
         :param algorithm: 训练算法的类型('SAMME'/'SAMME.R')
         """
-        self.X_train = None  # 训练数据
-        self.Y_train = None  # 真实标签
+        super().__init__(X_train, Y_train)
         self.estimator = estimator  # 基础学习器(弱学习器)
         self.n_estimators = n_estimators  # 基础学习器数量
         self.learning_rate = learning_rate  # 学习率
@@ -45,25 +45,14 @@ class AdaBoostClassifier:
         if self.estimator is None:
             # 默认使用决策树树桩
             self.estimator = DecisionTreeClassifier(max_depth=1)
-        self.set_train_data(X_train, Y_train)
-
-    def set_train_data(self, X_train, Y_train):
-        """给定训练数据集和标签数据"""
-        if X_train is not None:
-            if self.X_train is not None:
-                warnings.warn("Training data will be overwritten")
-            self.X_train = X_train.copy()
-        if Y_train is not None:
-            if self.Y_train is not None:
-                warnings.warn("Training label will be overwritten")
-            self.Y_train = Y_train.copy()
 
     def train(self, X_train=None, Y_train=None):
         """训练模型拟合数据"""
+        self.set_train_data(X_train, Y_train)
         if self.algorithm == 'SAMME.R':
-            return self.train_SAMMER(X_train, Y_train)
+            return self.train_SAMMER()
         elif self.algorithm == 'SAMME':
-            return self.train_SAMME(X_train, Y_train)
+            return self.train_SAMME()
         else:
             raise ValueError(f"The algorithm {self.algorithm} is not supported")
 
@@ -76,11 +65,10 @@ class AdaBoostClassifier:
         else:
             raise ValueError(f"The algorithm {self.algorithm} is not supported")
 
-    def train_SAMMER(self, X_train=None, Y_train=None):
+    def train_SAMMER(self):
         """训练模型拟合数据(SAMME.R)"""
-        self.set_train_data(X_train, Y_train)
         # 得到类别标签列表
-        self.class_list = np.unique(Y_train)
+        self.class_list = np.unique(self.Y_train)
         # 要分类的类别个数
         K = len(self.class_list)
         # 初始化相关参数和模型集合
@@ -124,10 +112,9 @@ class AdaBoostClassifier:
         Y_data = self.class_list[np.argmax(class_scores, axis=1)].reshape(-1, 1)
         return Y_data
 
-    def train_SAMME(self, X_train=None, Y_train=None):
+    def train_SAMME(self):
         """训练模型拟合数据(SAMME)"""
-        self.set_train_data(X_train, Y_train)
-        self.class_list = np.unique(Y_train)
+        self.class_list = np.unique(self.Y_train)
         # 初始化相关参数和模型集合
         self.estimator_models = []
         self.alphas, self.errors = [], []
@@ -165,7 +152,7 @@ class AdaBoostClassifier:
         for alpha, model in zip(self.alphas, self.estimator_models):
             Y_predict = model.predict(X_data)
             correct = np.array(Y_predict == self.class_list)
-            probs += alpha * (correct - (1 - correct)/(len(self.class_list) - 1))
+            probs += alpha * (correct - (1 - correct) / (len(self.class_list) - 1))
         Y_data = self.class_list[np.argmax(probs, axis=1)].reshape(len(X_data), -1)
         return Y_data
 

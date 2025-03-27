@@ -1,6 +1,6 @@
 """
 Copyright (c) 2023 LuChen Wang
-[Software Name] is licensed under Mulan PSL v2.
+MELON is licensed under Mulan PSL v2.
 You can use this software according to the terms and conditions of the Mulan
 PSL v2.
 You may obtain a copy of Mulan PSL v2 at:
@@ -10,22 +10,21 @@ KIND, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO
 NON-INFRINGEMENT, MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 See the Mulan PSL v2 for more details.
 """
-import warnings
 import numpy as np
+from Models import Model
 import matplotlib.pyplot as plt
 from Models.Utils import plot_data, random_generate_regression
 
 
-class PrincipalComponentAnalysis():
-    def __init__(self, X=None, num_top=None, threshold=None):
+class PrincipalComponentAnalysis(Model):
+    def __init__(self, X_train=None, num_top=None, threshold=None):
         """
         主成分分析(提取)
-        :param X: 需要降维的数据
+        :param X_train: 需要降维的数据
         :param num_top: 选择特征值最大的特征数量
         :param threshold: 贡献率累计超过的阈值
         """
-        self.X = None  # 需要降维的数据
-        self.set_data(X)
+        super().__init__(X_train, None)
         self.X_stand = None  # 标准化后的数据
         self.X_reduced = None  # 降维后的数据
         self.num_top = num_top  # 选择特征值最大的特征数量
@@ -36,28 +35,11 @@ class PrincipalComponentAnalysis():
         self.contribution_rate = None  # 特征值贡献率
         self.cum_contribution_rate = None  # 特征值累计贡献率
 
-    def set_data(self, X):
-        """给定训练数据"""
-        if X is not None:
-            if self.X is not None:
-                warnings.warn("Training data will be overwritten")
-            self.X = X.copy()
-
-    def set_parameters(self, **kwargs):
-        """重新修改相关参数"""
-        for param, value in kwargs.items():
-            if hasattr(self, param):  # 检查对象是否有该属性
-                if getattr(self, param) is not None:
-                    warnings.warn(f"Parameter '{param}' will be overwritten")
-                setattr(self, param, value)
-            else:
-                warnings.warn(f"Parameter '{param}' is not a valid parameter for this model")
-
-    def train(self, X=None):
+    def train(self, X_train=None):
         """对数据进行降维"""
-        self.set_data(X)
+        self.set_train_data(X_train, None)
         # 标准化数据
-        self.X_stand = self.standardize_data(self.X)
+        self.X_stand = self.standardize_data(self.X_train)
         # 计算协方差矩阵
         covar_mat = np.cov(self.X_stand.T)
         # 计算特征值和特征向量

@@ -1,6 +1,6 @@
 """
 Copyright (c) 2023 LuChen Wang
-[Software Name] is licensed under Mulan PSL v2.
+MELON is licensed under Mulan PSL v2.
 You can use this software according to the terms and conditions of the Mulan
 PSL v2.
 You may obtain a copy of Mulan PSL v2 at:
@@ -10,15 +10,15 @@ KIND, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO
 NON-INFRINGEMENT, MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 See the Mulan PSL v2 for more details.
 """
-import warnings
 import numpy as np
 import pandas as pd
+from Models import Model
 from Models.DecisionTree.DecisionTreeClassifier import DecisionTreeClassifier
 from Models.Utils import (calculate_accuracy, run_uniform_classification, run_double_classification,
                           run_circle_classification, run_moons_classification, plot_2dim_classification_sample)
 
 
-class RandomForestClassifier:
+class RandomForestClassifier(Model):
     def __init__(self, X_train=None, Y_train=None, n_estimators=10, criterion='gini',
                  max_depth=np.inf, max_features='sqrt', bootstrap=True):
         """
@@ -31,8 +31,7 @@ class RandomForestClassifier:
         :param max_features: 每次分裂节点时考虑的最大特征数(sqrt/log2)
         :param bootstrap: 是否对样本进行有放回抽样(否则使用原始数据)
         """
-        self.X_train = None  # 训练数据
-        self.Y_train = None  # 真实标签
+        super().__init__(X_train, Y_train)
         self.train_data = None  # 训练数据集（训练数据和真实标签的整合）
         self.X_columns = None  # 训练数据的列名称
         self.criterion = criterion  # 特征选择标准(entropy/gini)
@@ -42,28 +41,6 @@ class RandomForestClassifier:
         self.bootstrap = bootstrap  # 是否对样本进行有放回抽样
         self.random_forest = None  # 生成的随机森林
         self.class_list = None  # 要分类的类别列表
-        self.set_train_data(X_train, Y_train)
-
-    def set_train_data(self, X_train, Y_train):
-        """给定训练数据集和标签数据"""
-        if X_train is not None:
-            if self.X_train is not None:
-                warnings.warn("Training data will be overwritten")
-            self.X_train = X_train.copy()
-        if Y_train is not None:
-            if self.Y_train is not None:
-                warnings.warn("Training label will be overwritten")
-            self.Y_train = Y_train.copy()
-
-    def set_parameters(self, **kwargs):
-        """重新修改相关参数"""
-        for param, value in kwargs.items():
-            if hasattr(self, param):  # 检查对象是否有该属性
-                if getattr(self, param) is not None:
-                    warnings.warn(f"Parameter '{param}' will be overwritten")
-                setattr(self, param, value)
-            else:
-                warnings.warn(f"Parameter '{param}' is not a valid parameter for this model")
 
     def train(self, X_train=None, Y_train=None):
         """使用数据集训练模型"""

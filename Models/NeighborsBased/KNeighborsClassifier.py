@@ -1,6 +1,6 @@
 """
 Copyright (c) 2023 LuChen Wang
-[Software Name] is licensed under Mulan PSL v2.
+MELON is licensed under Mulan PSL v2.
 You can use this software according to the terms and conditions of the Mulan
 PSL v2.
 You may obtain a copy of Mulan PSL v2 at:
@@ -10,12 +10,12 @@ KIND, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO
 NON-INFRINGEMENT, MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 See the Mulan PSL v2 for more details.
 """
-import warnings
 import numpy as np
+from Models import Model
 from Models.Utils import plot_2dim_classification, run_uniform_classification, run_double_classification
 
 
-class KNeighborsClassifier():
+class KNeighborsClassifier(Model):
     def __init__(self, X_train=None, Y_train=None, n_neighbors=5, weights='uniform', metric='minkowski', p=2):
         """
         K-近邻分类模型
@@ -26,34 +26,11 @@ class KNeighborsClassifier():
         :param metric: 计算最近邻时的距离度量(minkowski:闵可夫斯基距离, manhattan:曼哈顿距离, euclidean:欧几里得距离)
         :param p: 计算minkowski距离的幂次，(p=1:曼哈顿距离，p=2:欧式距离)
         """
-        self.X_train = None  # 训练数据
-        self.Y_train = None  # 真实标签
-        self.set_train_data(X_train, Y_train)
+        super().__init__(X_train, Y_train)
         self.n_neighbors = n_neighbors  # 计算最近邻时数量
         self.weights = weights  # 计算邻居时的权重类型(uniform/distance)
         self.metric = metric  # 计算最近邻时的距离度量
         self.p = p  # 计算minkowski距离的幂次，(p=1:曼哈顿距离，p=2:欧式距离)
-
-    def set_train_data(self, X_train, Y_train):
-        """给定训练数据集和标签数据"""
-        if X_train is not None:
-            if self.X_train is not None:
-                warnings.warn("Training data will be overwritten")
-            self.X_train = X_train.copy()
-        if Y_train is not None:
-            if self.Y_train is not None:
-                warnings.warn("Training label will be overwritten")
-            self.Y_train = Y_train.copy()
-
-    def set_parameters(self, **kwargs):
-        """重新修改相关参数"""
-        for param, value in kwargs.items():
-            if hasattr(self, param):  # 检查对象是否有该属性
-                if getattr(self, param) is not None:
-                    warnings.warn(f"Parameter '{param}' will be overwritten")
-                setattr(self, param, value)
-            else:
-                warnings.warn(f"Parameter '{param}' is not a valid parameter for this model")
 
     def train(self, X_train=None, Y_train=None):
         """使用数据集训练模型"""

@@ -1,6 +1,6 @@
 """
 Copyright (c) 2023 LuChen Wang
-[Software Name] is licensed under Mulan PSL v2.
+MELON is licensed under Mulan PSL v2.
 You can use this software according to the terms and conditions of the Mulan
 PSL v2.
 You may obtain a copy of Mulan PSL v2 at:
@@ -10,33 +10,20 @@ KIND, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO
 NON-INFRINGEMENT, MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 See the Mulan PSL v2 for more details.
 """
-import warnings
 import numpy as np
+from Models import Model
 from Models.Utils import sigmoid, plot_2dim_classification, run_uniform_classification, run_double_classification
 
 
-class GaussianDiscriminantAnalysis():
+class GaussianDiscriminantAnalysis(Model):
     def __init__(self, X_train=None, Y_train=None):
         """
         高斯判别分析(二分类)
         :param X_train: 训练数据
         :param Y_train: 真实标签
         """
-        self.X_train = None  # 训练数据
-        self.Y_train = None  # 真实标签
-        self.set_train_data(X_train, Y_train)
+        super().__init__(X_train, Y_train)
         self.Weights = None  # 模型参数
-
-    def set_train_data(self, X_train, Y_train):
-        """给定训练数据集和标签数据"""
-        if X_train is not None:
-            if self.X_train is not None:
-                warnings.warn("Training data will be overwritten")
-            self.X_train = X_train.copy()
-        if Y_train is not None:
-            if self.Y_train is not None:
-                warnings.warn("Training label will be overwritten")
-            self.Y_train = Y_train.copy()
 
     def train(self, X_train=None, Y_train=None):
         """使用数据集训练模型"""

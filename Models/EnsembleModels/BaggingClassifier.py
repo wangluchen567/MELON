@@ -1,6 +1,6 @@
 """
 Copyright (c) 2023 LuChen Wang
-[Software Name] is licensed under Mulan PSL v2.
+MELON is licensed under Mulan PSL v2.
 You can use this software according to the terms and conditions of the Mulan
 PSL v2.
 You may obtain a copy of Mulan PSL v2 at:
@@ -11,16 +11,16 @@ NON-INFRINGEMENT, MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 See the Mulan PSL v2 for more details.
 """
 import copy
-import warnings
 import numpy as np
 import pandas as pd
+from Models import Model
 from Models.DecisionTree.DecisionTreeClassifier import DecisionTreeClassifier
 from Models.SupportVectorMachine.SupportVectorClassifier import SupportVectorClassifier
 from Models.Utils import (run_uniform_classification, run_double_classification,
                           run_circle_classification, run_moons_classification, plot_2dim_classification_sample)
 
 
-class BaggingClassifier:
+class BaggingClassifier(Model):
     def __init__(self, estimator, X_train=None, Y_train=None, n_estimators=10,
                  max_samples=1.0, max_features=1.0, bootstrap=True, bootstrap_features=False):
         """
@@ -34,8 +34,7 @@ class BaggingClassifier:
         :param bootstrap: 是否对样本进行有放回抽样
         :param bootstrap_features: 是否对特征进行有放回抽样
         """
-        self.X_train = None  # 训练数据
-        self.Y_train = None  # 真实标签
+        super().__init__(X_train, Y_train)
         self.estimator = estimator  # 基础估计器
         self.n_estimators = n_estimators  # 基础估计器数量
         self.max_samples = max_samples  # 抽取用于训练每个基础估计器的样本数
@@ -44,28 +43,6 @@ class BaggingClassifier:
         self.bootstrap_features = bootstrap_features  # 是否对特征进行有放回抽样(TO DO)
         self.estimator_models = None  # 初始化基础估计器集合
         self.class_list = None  # 要分类的类别列表
-        self.set_train_data(X_train, Y_train)
-
-    def set_train_data(self, X_train, Y_train):
-        """给定训练数据集和标签数据"""
-        if X_train is not None:
-            if self.X_train is not None:
-                warnings.warn("Training data will be overwritten")
-            self.X_train = X_train.copy()
-        if Y_train is not None:
-            if self.Y_train is not None:
-                warnings.warn("Training label will be overwritten")
-            self.Y_train = Y_train.copy()
-
-    def set_parameters(self, **kwargs):
-        """重新修改相关参数"""
-        for param, value in kwargs.items():
-            if hasattr(self, param):  # 检查对象是否有该属性
-                if getattr(self, param) is not None:
-                    warnings.warn(f"Parameter '{param}' will be overwritten")
-                setattr(self, param, value)
-            else:
-                warnings.warn(f"Parameter '{param}' is not a valid parameter for this model")
 
     def train(self, X_train=None, Y_train=None):
         """使用数据集训练模型"""
@@ -104,7 +81,7 @@ class BaggingClassifier:
             data_size = len(self.X_train)
             # 采样数据大小
             sample_size = self.max_samples if isinstance(self.max_samples, int) \
-                                        else int(data_size * self.max_samples)
+                else int(data_size * self.max_samples)
             # 对样本进行有放回采样
             indices = np.random.choice(data_size, size=sample_size, replace=True)
             return self.fetch(self.X_train, indices), self.fetch(self.Y_train, indices)

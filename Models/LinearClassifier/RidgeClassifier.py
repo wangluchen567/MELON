@@ -1,6 +1,6 @@
 """
 Copyright (c) 2023 LuChen Wang
-[Software Name] is licensed under Mulan PSL v2.
+MELON is licensed under Mulan PSL v2.
 You can use this software according to the terms and conditions of the Mulan
 PSL v2.
 You may obtain a copy of Mulan PSL v2 at:
@@ -10,12 +10,12 @@ KIND, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO
 NON-INFRINGEMENT, MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 See the Mulan PSL v2 for more details.
 """
-import warnings
 import numpy as np
+from Models import Model
 from Models.Utils import sigmoid, plot_2dim_classification, run_uniform_classification, run_double_classification
 
 
-class RidgeClassifier():
+class RidgeClassifier(Model):
     def __init__(self, X_train=None, Y_train=None, alpha=1.0):
         """
         岭回归(分类器)
@@ -23,32 +23,9 @@ class RidgeClassifier():
         :param Y_train: 真实标签
         :param alpha: 正则化系数
         """
-        self.X_train = None  # 训练数据
-        self.Y_train = None  # 真实标签
-        self.set_train_data(X_train, Y_train)
+        super().__init__(X_train, Y_train)
         self.alpha = alpha  # 正则化系数
         self.Weights = None  # 模型参数
-
-    def set_train_data(self, X_train, Y_train):
-        """给定训练数据集和标签数据"""
-        if X_train is not None:
-            if self.X_train is not None:
-                warnings.warn("Training data will be overwritten")
-            self.X_train = X_train.copy()
-        if Y_train is not None:
-            if self.Y_train is not None:
-                warnings.warn("Training label will be overwritten")
-            self.Y_train = Y_train.copy()
-
-    def set_parameters(self, **kwargs):
-        """重新修改相关参数"""
-        for param, value in kwargs.items():
-            if hasattr(self, param):  # 检查对象是否有该属性
-                if getattr(self, param) is not None:
-                    warnings.warn(f"Parameter '{param}' will be overwritten")
-                setattr(self, param, value)
-            else:
-                warnings.warn(f"Parameter '{param}' is not a valid parameter for this model")
 
     def train(self, X_train=None, Y_train=None):
         """使用数据集训练模型"""
@@ -88,6 +65,7 @@ class RidgeClassifier():
         """为二维分类数据集和结果画图"""
         plot_2dim_classification(self.X_train, self.Y_train, self.Weights, X_test, Y_test,
                                  Truth=Truth, pause=pause, n_iter=n_iter)
+
 
 if __name__ == '__main__':
     np.random.seed(100)

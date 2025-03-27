@@ -1,6 +1,6 @@
 """
 Copyright (c) 2023 LuChen Wang
-[Software Name] is licensed under Mulan PSL v2.
+MELON is licensed under Mulan PSL v2.
 You can use this software according to the terms and conditions of the Mulan
 PSL v2.
 You may obtain a copy of Mulan PSL v2 at:
@@ -10,25 +10,24 @@ KIND, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO
 NON-INFRINGEMENT, MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 See the Mulan PSL v2 for more details.
 """
-import warnings
 import numpy as np
+from Models import Model
 from Models.Utils import plot_cluster, run_blobs_cluster, run_circle_cluster, run_moons_cluster
 
 
-class DBSCAN():
-    def __init__(self, X=None, eps=0.5, min_samples=5, metric='minkowski', p=2, show=False):
+class DBSCAN(Model):
+    def __init__(self, X_train=None, eps=0.5, min_samples=5, metric='minkowski', p=2, show=False):
         """
         基于密度的噪声应用空间聚类
         Density-Based Spatial Clustering of Applications with Noise (DBSCAN)
-        :param X: 需要聚类的数据
+        :param X_train: 需要聚类的数据
         :param eps: 两个样本之间的最大距离，以确定一个样本是否在另一个样本的邻域内
         :param min_samples: 一个点的邻域中必须存在的最小样本数(包含自身)
         :param metric: 计算距离时的距离度量(minkowski:闵可夫斯基距离, manhattan:曼哈顿距离, euclidean:欧几里得距离)
         :param p: 计算minkowski距离的幂次，(p=1:曼哈顿距离，p=2:欧式距离)
         :param show: 是否展示迭代过程
         """
-        self.X = None  # 需要聚类的数据
-        self.set_data(X)  # 设置数据
+        super().__init__(X_train, None)
         self.labels = None  # 聚类后的结果
         self.eps = eps  # 两个样本之间的最大距离，以确定一个样本是否在另一个样本的邻域内
         self.min_samples = min_samples  # 一个点的邻域中必须存在的最小样本数(包含自身)
@@ -36,27 +35,10 @@ class DBSCAN():
         self.p = p  # 计算minkowski距离的幂次，(p=1)为曼哈顿距离，(p=2)为欧式距离
         self.show = show  # 是否展示迭代过程
 
-    def set_data(self, X):
-        """给定训练数据"""
-        if X is not None:
-            if self.X is not None:
-                warnings.warn("Training data will be overwritten")
-            self.X = X.copy()
-
-    def set_parameters(self, **kwargs):
-        """重新修改相关参数"""
-        for param, value in kwargs.items():
-            if hasattr(self, param):  # 检查对象是否有该属性
-                if getattr(self, param) is not None:
-                    warnings.warn(f"Parameter '{param}' will be overwritten")
-                setattr(self, param, value)
-            else:
-                warnings.warn(f"Parameter '{param}' is not a valid parameter for this model")
-
-    def train(self, X=None):
+    def train(self, X_train=None):
         """对数据进行聚类"""
-        self.set_data(X)
-        num_data = len(self.X)
+        self.set_train_data(X_train, None)
+        num_data = len(self.X_train)
         # 初始化所有点为噪声点（-1）
         self.labels = np.full(num_data, -1)
         # 第一个簇的下标
@@ -79,9 +61,9 @@ class DBSCAN():
     def get_neighbors(self, idx):
         """获取指定点的邻域内的所有点下标"""
         if (self.metric == 'manhattan') or (self.metric == 'minkowski' and self.p == 1):
-            distances = np.sum(np.abs(self.X - self.X[idx]), axis=1)
+            distances = np.sum(np.abs(self.X_train - self.X_train[idx]), axis=1)
         elif (self.metric == 'euclidean') or (self.metric == 'minkowski' and self.p == 2):
-            distances = np.sqrt(np.sum((self.X - self.X[idx]) ** 2, axis=1))
+            distances = np.sqrt(np.sum((self.X_train - self.X_train[idx]) ** 2, axis=1))
         else:
             raise ValueError(f"Unsupported metric: {self.metric}")
         neighbors = np.where(distances <= self.eps)[0]
@@ -114,7 +96,7 @@ class DBSCAN():
                 self.plot_cluster(pause=True)
 
     def plot_cluster(self, pause=False, n_iter=None, pause_time=0.01):
-        plot_cluster(self.X, self.labels, None, pause, n_iter, pause_time)
+        plot_cluster(self.X_train, self.labels, None, pause, n_iter, pause_time)
 
 
 if __name__ == '__main__':

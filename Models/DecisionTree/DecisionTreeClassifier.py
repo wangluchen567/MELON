@@ -1,6 +1,6 @@
 """
 Copyright (c) 2023 LuChen Wang
-[Software Name] is licensed under Mulan PSL v2.
+MELON is licensed under Mulan PSL v2.
 You can use this software according to the terms and conditions of the Mulan
 PSL v2.
 You may obtain a copy of Mulan PSL v2 at:
@@ -13,6 +13,7 @@ See the Mulan PSL v2 for more details.
 import warnings
 import numpy as np
 import pandas as pd
+from Models import Model
 from collections import deque
 from Models.DecisionTree.PlotTree import plot_tree
 from Models.DecisionTree.Node import ClassifierNode
@@ -20,7 +21,7 @@ from Models.Utils import (calculate_accuracy, run_uniform_classification, run_do
                           run_circle_classification, run_moons_classification, plot_2dim_classification_sample)
 
 
-class DecisionTreeClassifier():
+class DecisionTreeClassifier(Model):
     def __init__(self, X_train=None, Y_train=None, criterion='gini',
                  splitter='best', max_features=None, max_depth=np.inf):
         """
@@ -32,8 +33,7 @@ class DecisionTreeClassifier():
         :param max_features: 每次分裂时随机选择的最大特征数量(None/float/sqrt/log2)
         :param max_depth: 决策树最大深度
         """
-        self.X_train = None  # 训练数据
-        self.Y_train = None  # 真实标签
+        super().__init__(X_train, Y_train)
         self.train_data = None  # 训练数据集（训练数据和真实标签的整合）
         self.X_columns = None  # 训练数据的列名称
         self.attributes = None  # 特征名称
@@ -45,7 +45,6 @@ class DecisionTreeClassifier():
         self.decision_tree = None  # 最终得到的决策树
         self.class_list = None  # 需要分类的类别情况
         self.sample_weight = None  # 样本的权重
-        self.set_train_data(X_train, Y_train)
 
     def set_train_data(self, X_train, Y_train):
         """给定训练数据集和标签数据"""
@@ -71,16 +70,6 @@ class DecisionTreeClassifier():
             self.train_data = pd.concat([self.X_train, self.Y_train], axis=1)
             self.attributes = self.train_data.columns[:-1].tolist()
             self.class_list = np.unique(self.train_data.iloc[:, -1])
-
-    def set_parameters(self, **kwargs):
-        """重新修改相关参数"""
-        for param, value in kwargs.items():
-            if hasattr(self, param):  # 检查对象是否有该属性
-                if getattr(self, param) is not None:
-                    warnings.warn(f"Parameter '{param}' will be overwritten")
-                setattr(self, param, value)
-            else:
-                warnings.warn(f"Parameter '{param}' is not a valid parameter for this model")
 
     def train(self, X_train=None, Y_train=None, sample_weight=None):
         """使用数据集训练模型"""
