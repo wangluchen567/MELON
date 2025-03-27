@@ -1,0 +1,3 @@
+from .FisherDiscriminantAnalysis import FisherDiscriminantAnalysis
+from .GaussianDiscriminantAnalysis import GaussianDiscriminantAnalysis
+from .LinearDiscriminantAnalysis import LinearDiscriminantAnalysis

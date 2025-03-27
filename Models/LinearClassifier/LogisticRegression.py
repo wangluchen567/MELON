@@ -12,7 +12,7 @@ See the Mulan PSL v2 for more details.
 """
 import warnings
 import numpy as np
-from Models.GradientOptimizer.Optimizer import GradientDescent, Momentum, AdaGrad, RMSProp, Adam
+from Models.GradientOptimizer import GradientDescent, Momentum, AdaGrad, RMSProp, Adam
 from Models.Utils import sigmoid, plot_2dim_classification, run_uniform_classification, run_double_classification
 
 

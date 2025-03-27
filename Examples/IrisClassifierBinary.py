@@ -13,18 +13,13 @@ See the Mulan PSL v2 for more details.
 import numpy as np
 import pandas as pd
 from Models.Utils import normalize
-from Models.LinearClassifier.Perceptron import Perceptron
-from Models.LinearClassifier.GDClassifier import GDClassifier
-from Models.NaiveBayes.GaussianNaiveBayes import GaussianNaiveBayes
-from Models.LinearClassifier.RidgeClassifier import RidgeClassifier
-from Models.LinearClassifier.LogisticRegression import LogisticRegression
-from Models.NeighborsBased.KNeighborsClassifier import KNeighborsClassifier
-from Models.DecisionTree.DecisionTreeClassifier import DecisionTreeClassifier
-from Models.EnsembleModels.RandomForestClassifier import RandomForestClassifier
-from Models.SupportVectorMachine.SupportVectorClassifier import SupportVectorClassifier
-from Models.DiscriminantAnalysis.FisherDiscriminantAnalysis import FisherDiscriminantAnalysis
-from Models.DiscriminantAnalysis.LinearDiscriminantAnalysis import LinearDiscriminantAnalysis
-from Models.DiscriminantAnalysis.GaussianDiscriminantAnalysis import GaussianDiscriminantAnalysis
+from Models.NaiveBayes import *
+from Models.LinearClassifier import *
+from Models.DiscriminantAnalysis import *
+from Models.NeighborsBased import KNeighborsClassifier
+from Models.DecisionTree import DecisionTreeClassifier
+from Models.EnsembleModels import RandomForestClassifier
+from Models.SupportVectorMachine import SupportVectorClassifier
 
 
 def load_iris_data():
