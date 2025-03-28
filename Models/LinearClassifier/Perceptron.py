@@ -120,7 +120,7 @@ class Perceptron(Model):
         # 计算损失值(分类错误的比例)
         self.Loss = np.sum(self.Y_train * self.X_dot_W < 0) / len(self.X_train)
         # 加入正则化项
-        if self.penalty is None:
+        if self.penalty is None or self.penalty == 'None':
             pass
         elif self.penalty == 'l1':
             self.Loss += self.alpha * np.sum(np.abs(self.Weights))
@@ -140,7 +140,7 @@ class Perceptron(Model):
         # 求梯度向量
         self.Grad = - np.sum(self.Y_train * self.X_train_B * error_mask, axis=0).reshape(-1, 1) / len(self.X_train)
         # 加入正则化项
-        if self.penalty is None:
+        if self.penalty is None or self.penalty == 'None':
             pass
         elif self.penalty == 'l1':
             self.Grad += self.alpha * self.Weights * (self.Weights > 0)

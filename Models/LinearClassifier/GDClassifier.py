@@ -124,7 +124,7 @@ class GDClassifier(Model):
         """计算损失值"""
         self.cal_loss_()
         # 加入正则化项
-        if self.penalty is None:
+        if self.penalty is None or self.penalty == 'None':
             pass
         elif self.penalty == 'l1':
             self.Loss += self.alpha * np.sum(np.abs(self.Weights))
@@ -141,7 +141,7 @@ class GDClassifier(Model):
         """计算梯度值"""
         self.cal_grad_()
         # 加入正则化项
-        if self.penalty is None:
+        if self.penalty is None or self.penalty == 'None':
             pass
         elif self.penalty == 'l1':
             self.Grad += self.alpha * self.Weights * (self.Weights > 0)

@@ -124,7 +124,7 @@ class LogisticRegression(Model):
         self.Loss = - np.sum(self.Y_train_ * np.log(self.Y_train_prob) +
                              (1 - self.Y_train_) * np.log(1 - self.Y_train_prob)) / len(self.X_train)
         # 加入正则化项
-        if self.penalty is None:
+        if self.penalty is None or self.penalty == 'None':
             pass
         elif self.penalty == 'l1':
             self.Loss += self.alpha * np.sum(np.abs(self.Weights))
@@ -142,7 +142,7 @@ class LogisticRegression(Model):
         # 这里使用的是特殊标签矩阵Y_train_ (0/1)
         self.Grad = self.X_train_B.T @ (sigmoid(self.X_train_B @ self.Weights) - self.Y_train_) / len(self.X_train)
         # 加入正则化项
-        if self.penalty is None:
+        if self.penalty is None or self.penalty == 'None':
             pass
         elif self.penalty == 'l1':
             self.Grad += self.alpha * self.Weights * (self.Weights > 0)
