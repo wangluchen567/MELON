@@ -13,7 +13,7 @@ See the Mulan PSL v2 for more details.
 import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
-from .Optimizer import *
+from Optimizer import *
 
 
 class Function():

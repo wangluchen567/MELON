@@ -40,6 +40,7 @@ def plot_contrast_2D(cal_func, x_range, X_dict, color_dict):
         plt.xlabel('x')
         plt.ylabel('y')
         plt.ylim(bottom=np.min(Y) - 1)
+        plt.grid()
         plt.pause(0.1)
     plt.show()
 
