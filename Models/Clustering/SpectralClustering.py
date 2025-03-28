@@ -12,7 +12,7 @@ See the Mulan PSL v2 for more details.
 """
 import numpy as np
 from Models import Model
-from .KMeans import KMeans
+from Models.Clustering import KMeans
 from Models.Utils import plot_cluster, run_blobs_cluster, run_circle_cluster, run_moons_cluster
 
 

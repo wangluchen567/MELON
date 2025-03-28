@@ -183,7 +183,7 @@ class SupportVectorRegressor(Model):
 if __name__ == '__main__':
     np.random.seed(100)
     # 线性回归测试
-    model = SupportVectorRegressor(C=10, kernel=SupportVectorRegressor.LINEAR, max_iter=100, show=True)
+    model = SupportVectorRegressor(C=0.1, kernel=SupportVectorRegressor.LINEAR, max_iter=100, show=True)
     run_uniform_regression(model)
     # 多项式回归测试
     model = SupportVectorRegressor(C=10, kernel=SupportVectorRegressor.POLY, max_iter=100, show=True)

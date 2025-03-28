@@ -166,7 +166,7 @@ def random_generate_regression(X_size=100, X_feat=1, X_lower=0, X_upper=20, lowe
     return X_data, Y_data, Truth_Weights
 
 
-def random_generate_cluster(X_size=100, X_feat=2, n_clusters=3, cluster_std=1.0, lower=-10, upper=10):
+def random_generate_cluster(X_size=500, X_feat=2, n_clusters=3, cluster_std=1.0, lower=-10, upper=10):
     """
     随机生成聚类数据集
     :param X_size: 数据集大小
@@ -183,16 +183,23 @@ def random_generate_cluster(X_size=100, X_feat=2, n_clusters=3, cluster_std=1.0,
     X_data = np.zeros((X_size, X_feat))
     Y_data = np.zeros(X_size, dtype=int)
     # 计算每个类中数据点的数量
-    num_points = X_size // centers.shape[0]
-    extra_points = X_size % centers.shape[0]
+    points_per_cluster = X_size // n_clusters
+    remaining_points = X_size % n_clusters
+    start_idx = 0
     # 为每个中心点划分数据得到聚类数据集
     for i, center in enumerate(centers):
-        # 若无法平均划分则需要额外考虑
-        n_samples_i = num_points + (1 if i < extra_points else 0)
+        # 分配数据点数量
+        n_samples_i = points_per_cluster + (1 if i < remaining_points else 0)
         # 根据聚类中心随机生成正态分布的数据
-        X_data[i * num_points:(i + 1) * num_points, :] = np.random.normal(loc=center, scale=cluster_std,
-                                                                          size=(n_samples_i, X_feat))
-        Y_data[i * num_points:(i + 1) * num_points] = i
+        end_idx = start_idx + n_samples_i
+        X_data[start_idx:end_idx, :] = np.random.normal(
+            loc=center,
+            scale=cluster_std,
+            size=(n_samples_i, X_feat)
+        )
+        Y_data[start_idx:end_idx] = i
+        start_idx = end_idx
+
     return X_data, Y_data
 
 
@@ -581,7 +588,7 @@ def plot_2dim_classification_sample(model, X_data, Y_data, X_test=None, Y_test=N
         plt.show()
 
 
-def random_make_circles(num_samples=100, factor=0.8, noise=0.01, shuffle=True):
+def random_make_circles(num_samples=500, factor=0.5, noise=0.05, shuffle=True):
     """
     随机创建同心圆数据
     :param num_samples: 采样的数据大小
@@ -613,7 +620,7 @@ def random_make_circles(num_samples=100, factor=0.8, noise=0.01, shuffle=True):
     return X, Y
 
 
-def random_make_moons(num_samples=100, noise=0.1, shuffle=True):
+def random_make_moons(num_samples=500, noise=0.1, shuffle=True):
     """
     随机创建月亮数据(双半圆数据)
     :param num_samples: 采样的数据大小
@@ -752,6 +759,7 @@ def plot_2dim_regression_sample(model, X_data, Y_data, X_test=None, Y_test=None,
     y_min -= extra * y_range
     y_max += extra * y_range
     x_sample = np.linspace(x_min, x_max, sample_steps)
+    x_sample = x_sample[:, np.newaxis]
     y_sample = model.predict(x_sample)  # 使用模型得到预测数据
     # 若数据值比较大则使用科学计数法显示
     if np.max(np.abs(Y_data)) >= 1.e+2:
