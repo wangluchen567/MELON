@@ -21,7 +21,7 @@ Chen's MachinE Learning models Organized using Numpy
 conda create --name my_env python=3.9
 conda activate my_env
 ```
-**注意**：本项目支持 Python 3.7 及以上版本，建议使用 Python 3.9 以获得最佳兼容性。请确保已安装 Python 3.7 或更高版本。<br>
+**注意**：本项目支持 Python 3.7 及以上版本，建议使用 Python 3.9 以获得最佳兼容性。<br>
 **2. 安装必要包**<br>
 本项目依赖以下包: `numpy`、`pandas`、`matplotlib`、`tqdm`、`networkx`。请确保已安装 Python 3.7 或更高版本，运行以下命令一键安装必要包：<br>
 ```bash
@@ -35,7 +35,7 @@ pip install numpy pandas matplotlib tqdm networkx
 ### Examples: 模型使用示例
 
 ### Models: 机器学习模型
-- GradientOptimizer: 梯度优化器，包含SGD、等梯度优化算法，为模型中需要使用梯度优化的提供支持
+- GradientOptimizer: 梯度优化器，包含SGD、Adam等梯度优化算法，为模型中需要使用梯度优化的提供支持
 - SupportVectorMachine: 支持向量机，包含支持向量机分类器SVC和支持向量机回归器SVR，以及SMO算法的实现
 - DecisionTree: 决策树相关模型，包含决策树分类器和决策树回归器，并实现了树的绘制函数
 - Clustering: 聚类相关模型，包含K-means、谱聚类、DBSCAN等算法
@@ -46,6 +46,7 @@ pip install numpy pandas matplotlib tqdm networkx
 - MultiClassWrapper: 多分类包装器，包含一对一(OvO)分类包装器和多对多(OvR)分类包装器
 - NaiveBayes: 朴素贝叶斯模型，包含高斯朴素贝叶斯等模型
 - NeighborsBased: 基于邻居判别和回归的模型，包含K近邻分类与K近邻回归等模型
+- E
 
 ### Notes: 机器学习笔记和示例
 
@@ -67,9 +68,9 @@ pip install numpy pandas matplotlib tqdm networkx
 ### 梯度优化器
 
 - 各类梯度优化算法优化平方函数的表现<br>
-<img src="Notes/GradientOptimizer/Contrast21.gif" width="288" height="220"/> <img src="Notes/GradientOptimizer/Contrast22.gif" width="288" height="220"/><br/>
+<img src="Notes/GradientOptimizer/Contrasts_1D.gif" width="288" height="220"/> <img src="Notes/GradientOptimizer/Contrasts_2D1.gif" width="288" height="220"/><br/>
 - 各类梯度优化算法优化双曲抛物面(马鞍面)函数的表现<br>
-<img src="Notes/GradientOptimizer/Contrast31.gif" width="288" height="220"/> <img src="Notes/GradientOptimizer/Contrast32.gif" width="288" height="220"/><br/>
+<img src="Notes/GradientOptimizer/Contrasts_2D2.gif" width="288" height="220"/> <img src="Notes/GradientOptimizer/Contrasts_3D.gif" width="288" height="220"/><br/>
 
 ### 支持向量机
 
