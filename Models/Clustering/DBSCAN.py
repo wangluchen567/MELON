@@ -57,6 +57,7 @@ class DBSCAN(Model):
                 # 否则扩展簇
                 self.expand_cluster(idx, neighbors, cluster_id)
                 cluster_id += 1
+        return self.labels
 
     def get_neighbors(self, idx):
         """获取指定点的邻域内的所有点下标"""
