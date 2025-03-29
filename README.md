@@ -46,7 +46,7 @@ pip install numpy pandas matplotlib tqdm networkx
 - MultiClassWrapper: 多分类包装器，包含一对一(OvO)分类包装器和多对多(OvR)分类包装器
 - NaiveBayes: 朴素贝叶斯模型，包含高斯朴素贝叶斯等模型
 - NeighborsBased: 基于邻居判别和回归的模型，包含K近邻分类与K近邻回归等模型
-- E
+- EnsembleModels: 集成学习相关模型，包含Bagging和Boosting两类集成模型
 
 ### Notes: 机器学习笔记和示例
 
@@ -57,7 +57,8 @@ pip install numpy pandas matplotlib tqdm networkx
 - [x] 加入K-近邻算法
 - [ ] 加入层次聚类算法
 - [ ] 加入牛顿共轭梯度法
-- [ ] 加入拟牛顿法
+- [ ] 加入拟牛顿梯度法
+- [x] 加入集成学习相关模型
 - [ ] 加入梯度提升树相关模型
 - [ ] 实现sample_weight参数
 - [ ] debug AdaBoostClassifier for nonlinear classification
@@ -73,12 +74,13 @@ pip install numpy pandas matplotlib tqdm networkx
 <img src="Notes/GradientOptimizer/Contrasts_2D2.gif" width="288" height="220"/> <img src="Notes/GradientOptimizer/Contrasts_3D.gif" width="288" height="220"/><br/>
 
 ### 支持向量机
-
+- **支持向量机分类器与SMO算法的原理与公式推导可参见笔记[支持向量机分类器](./Notes/SupportVectorMachine/SupportVectorClassifier.md)**
 - 支持向量机分类器使用线性核函数对均匀随机数据和双点状随机数据分类效果<br>
 <img src="Notes/SupportVectorMachine/SVC1.gif" width="288" height="220"/> <img src="Notes/SupportVectorMachine/SVC2.gif" width="288" height="220"/><br/>
 - 支持向量机分类器使用不同伽马值的高斯核函数对同心圆随机数据分类效果<br>
 <img src="Notes/SupportVectorMachine/SVC3.gif" width="288" height="220"/> <img src="Notes/SupportVectorMachine/SVC4.gif" width="288" height="220"/><br/>
 
+- **支持向量机回归器与SMO算法的原理与公式推导可参见笔记[支持向量机回归器](./Notes/SupportVectorMachine/SupportVectorRegressor.md)**
 - 支持向量机回归器使用线性核函数对随机线性数据回归效果/使用多项式核函数对随机多项式数据回归效果<br>
 <img src="Notes/SupportVectorMachine/SVR1.gif" width="288" height="220"/> <img src="Notes/SupportVectorMachine/SVR2.gif" width="288" height="220"/><br/>
 - 支持向量机回归器使用高斯核函数对三角函数数据回归效果/对复杂三角函数数据回归效果<br>
@@ -98,12 +100,12 @@ pip install numpy pandas matplotlib tqdm networkx
 
 ### 线性分类器
 
-- Fisher线性判别分类器对均匀随机数据和双点状随机数据分类效果<br>
-<img src="Notes/LinearClassifier/FLD1.png" width="288" height="220"/> <img src="Notes/LinearClassifier/FLD2.png" width="288" height="220"/><br/>
 - 逻辑回归线性分类器对均匀随机数据和双点状随机数据分类效果<br>
 <img src="Notes/LinearClassifier/LogR1.gif" width="288" height="220"/> <img src="Notes/LinearClassifier/LogR2.gif" width="288" height="220"/><br/>
 - 感知机分类器对均匀随机数据和双点状随机数据分类效果<br>
 <img src="Notes/LinearClassifier/PP1.gif" width="288" height="220"/> <img src="Notes/LinearClassifier/PP2.gif" width="288" height="220"/><br/>
+- 待更新
+
 
 ### 线性回归器
 - 待更新
