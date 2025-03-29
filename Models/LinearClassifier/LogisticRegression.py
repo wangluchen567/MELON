@@ -154,11 +154,6 @@ class LogisticRegression(Model):
         else:
             raise ValueError(f"Unsupported penalty: {self.penalty}")
 
-    def plot_2dim(self, X_test=None, Y_test=None, Truth=None, pause=False, n_iter=None):
-        """为二维分类数据集和结果画图"""
-        plot_2dim_classification(self.X_train, self.Y_train, self.Weights, X_test, Y_test,
-                                 Truth=Truth, pause=pause, n_iter=n_iter)
-
     def no_change(self):
         """检查连续几次优化改善情况"""
         if len(self.loss_history) >= self.num_no_change:
@@ -168,6 +163,11 @@ class LogisticRegression(Model):
             if np.all(abs_diffs < self.tol):
                 return True
         return False
+
+    def plot_2dim(self, X_test=None, Y_test=None, Truth=None, pause=False, n_iter=None):
+        """为二维分类数据集和结果画图"""
+        plot_2dim_classification(self.X_train, self.Y_train, self.Weights, X_test, Y_test,
+                                 Truth=Truth, pause=pause, n_iter=n_iter)
 
 
 if __name__ == '__main__':
