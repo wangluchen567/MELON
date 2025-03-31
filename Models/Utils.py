@@ -112,13 +112,14 @@ def random_generate_classification(X_size=100, X_feat=2, X_lower=-1, X_upper=1, 
     return X_data, Y_data, TruthWeights
 
 
-def random_generate_double(X_size=100, X_feat=2, X_lower=-1, X_upper=1):
+def random_generate_double(X_size=100, X_feat=2, X_lower=-1, X_upper=1, factor=1.0):
     """
     随机生成两点散布的分类数据集
     :param X_size: 数据集大小
     :param X_feat: 数据集特征数
     :param X_lower: 随机生成的数据的下界
     :param X_upper: 随机生成的数据的上界
+    :param factor: 生成数据中心点的比例
     :return: 生成的数据集和真实值
     """
     # 确定随机的两个点坐标
@@ -126,7 +127,7 @@ def random_generate_double(X_size=100, X_feat=2, X_lower=-1, X_upper=1):
     # 先随机生成前n-1个变量值
     point1[:-1] = np.random.uniform(X_lower, X_upper, size=(1, X_feat - 1))
     # 得到剩下的一个变量值
-    point1[-1] = np.sqrt(1 - np.sum(point1[:-1] ** 2))
+    point1[-1] = np.sqrt(factor - np.sum(point1[:-1] ** 2))
     point2 = -point1
     conv = np.eye(len(point1)) * (X_upper - X_lower) * 0.1
     X1 = np.random.multivariate_normal(point1, conv, size=int(X_size / 2))
@@ -759,7 +760,6 @@ def plot_2dim_regression_sample(model, X_data, Y_data, X_test=None, Y_test=None,
     y_min -= extra * y_range
     y_max += extra * y_range
     x_sample = np.linspace(x_min, x_max, sample_steps)
-    x_sample = x_sample[:, np.newaxis]
     y_sample = model.predict(x_sample)  # 使用模型得到预测数据
     # 若数据值比较大则使用科学计数法显示
     if np.max(np.abs(Y_data)) >= 1.e+2:

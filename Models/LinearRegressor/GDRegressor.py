@@ -80,12 +80,12 @@ class GDRegressor(Model):
             if self.no_change():
                 # 若优化连续改变量小则停止优化
                 break
+            if self.show:
+                self.plot_2dim(pause=True, n_iter=self.n_iter)
             if self.n_iter >= self.max_iter:
                 # 受最大迭代次数限制优化提前结束
                 warnings.warn(f"Optimizer ended early (max_iter={self.max_iter})")
                 break
-            if self.show:
-                self.plot_2dim(pause=True, n_iter=self.n_iter + 1)
 
     def predict(self, X_data):
         """模型对测试集进行预测"""

@@ -136,13 +136,13 @@ class SupportVectorClassifier(Model):
             # 若没有可优化的项则跳出循环
             if optimize_end:
                 break
+            if self.show:
+                self.cal_weights()  # 每步都计算一下权重
+                self.plot_2dim(pause=True, n_iter=self.n_iter)
             if self.n_iter >= self.max_iter:
                 # 受最大迭代次数限制优化提前结束
                 warnings.warn(f"Optimizer ended early (max_iter={self.max_iter})")
                 break
-            if self.show:
-                self.cal_weights()  # 每步都计算一下权重
-                self.plot_2dim(pause=True, n_iter=self.n_iter + 1)
 
     def cal_kernel_mat(self, X, Y):
         """给定数据计算核函数矩阵"""

@@ -114,13 +114,13 @@ class SupportVectorRegressor(Model):
             if optimize_end:
                 # 若没有可优化的项则结束优化
                 break
+            if self.show:
+                self.cal_weights()
+                self.plot_2dim(pause=True, n_iter=self.n_iter)
             if self.n_iter >= self.max_iter:
                 # 受最大迭代次数限制优化提前结束
                 warnings.warn(f"Optimizer ended early (max_iter={self.max_iter})")
                 break
-            if self.show:
-                self.cal_weights()
-                self.plot_2dim(pause=True, n_iter=self.n_iter + 1)
 
     def cal_kernel_mat(self, X, Y):
         """给定数据计算核函数矩阵"""
@@ -186,8 +186,8 @@ if __name__ == '__main__':
     model = SupportVectorRegressor(C=0.1, kernel=SupportVectorRegressor.LINEAR, max_iter=100, show=True)
     run_uniform_regression(model)
     # 多项式回归测试
-    model = SupportVectorRegressor(C=10, kernel=SupportVectorRegressor.POLY, max_iter=100, show=True)
+    model = SupportVectorRegressor(C=1, kernel=SupportVectorRegressor.POLY, max_iter=100, show=True)
     run_poly_regression(model)
     # 三角函数(圆函数)回归测试
-    model = SupportVectorRegressor(C=10, kernel=SupportVectorRegressor.RBF, max_iter=100, show=True)
+    model = SupportVectorRegressor(C=100, kernel=SupportVectorRegressor.RBF, max_iter=100, show=True)
     run_circular_regression(model)
