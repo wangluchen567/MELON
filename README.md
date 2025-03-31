@@ -35,14 +35,14 @@ pip install numpy pandas matplotlib tqdm networkx
 ### Examples: 模型使用示例
 
 ### Models: 机器学习模型
-- GradientOptimizer: 梯度优化器，包含SGD、Adam等梯度优化算法，为模型中需要使用梯度优化的提供支持
+- GradientOptimizer: 梯度优化器，包含SGD/RMSProp/Adam等梯度优化算法，为模型中需要使用梯度优化的提供支持
 - SupportVectorMachine: 支持向量机，包含支持向量机分类器SVC和支持向量机回归器SVR，以及SMO算法的实现
 - DecisionTree: 决策树相关模型，包含决策树分类器和决策树回归器，并实现了树的绘制函数
 - Clustering: 聚类相关模型，包含K-means、谱聚类、DBSCAN等算法
 - DimensionReduction: 降维相关模型，包含PCA主成分分析等算法
 - DiscriminantAnalysis: 判别分析相关模型，包含线性判别分析、Fisher判别分析、高斯判别分析等模型
-- LinearClassifier: 线性分类相关模型，包含逻辑回归、感知机等模型
-- LinearRegressor: 线性回归相关模型，包含普通最小二乘线性回归、岭回归等模型
+- LinearClassifier: 线性分类相关模型，包含使用梯度优化的分类模型、逻辑回归、感知机等模型
+- LinearRegressor: 线性回归相关模型，包含使用梯度优化的回归模型、最小二乘线性回归、岭回归等模型
 - MultiClassWrapper: 多分类包装器，包含一对一(OvO)分类包装器和多对多(OvR)分类包装器
 - NaiveBayes: 朴素贝叶斯模型，包含高斯朴素贝叶斯等模型
 - NeighborsBased: 基于邻居判别和回归的模型，包含K近邻分类与K近邻回归等模型
@@ -100,16 +100,20 @@ pip install numpy pandas matplotlib tqdm networkx
 
 ### 线性分类器
 
+- 使用梯度优化的线性分类器对均匀随机数据和双点状随机数据分类效果(默认hinge损失)<br>
+<img src="Notes/LinearClassifier/GDC1.gif" width="288" height="220"/> <img src="Notes/LinearClassifier/GDC2.gif" width="288" height="220"/><br/>
 - 逻辑回归线性分类器对均匀随机数据和双点状随机数据分类效果<br>
 <img src="Notes/LinearClassifier/LogR1.gif" width="288" height="220"/> <img src="Notes/LinearClassifier/LogR2.gif" width="288" height="220"/><br/>
 - 感知机分类器对均匀随机数据和双点状随机数据分类效果<br>
 <img src="Notes/LinearClassifier/PP1.gif" width="288" height="220"/> <img src="Notes/LinearClassifier/PP2.gif" width="288" height="220"/><br/>
-- 待更新
-
 
 ### 线性回归器
-- 待更新
+- 使用梯度优化的线性回归器和岭回归(Ridge)对线性数据回归效果<br>
+<img src="Notes/LinearRegressor/GDR.gif" width="288" height="220"/> <img src="Notes/LinearRegressor/Ridge.png" width="288" height="220"/><br/>
 
+### 聚类模型
+- K-means、DBSCAN、谱聚类的聚类效果对比<br>
+<img src="Notes/Clustering/Cluster.png" width="500" height="450"/><br/>
 
 ## 参与贡献
 
