@@ -35,7 +35,7 @@ pip install numpy pandas matplotlib tqdm networkx
 ### Examples: 模型使用示例
 
 ### Models: 机器学习模型
-- GradientOptimizer: 梯度优化器，包含SGD/RMSProp/Adam等梯度优化算法，为模型中需要使用梯度优化的提供支持
+- GradientOptimizer: 梯度优化器，包含SGD/RMSProp/Adam等梯度优化算法，为使用梯度优化的模型提供支持
 - SupportVectorMachine: 支持向量机，包含支持向量机分类器SVC和支持向量机回归器SVR，以及SMO算法的实现
 - DecisionTree: 决策树相关模型，包含决策树分类器和决策树回归器，并实现了树的绘制函数
 - Clustering: 聚类相关模型，包含K-means、谱聚类、DBSCAN等算法
