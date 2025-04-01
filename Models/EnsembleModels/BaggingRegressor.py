@@ -14,8 +14,8 @@ import copy
 import numpy as np
 import pandas as pd
 from Models.Model import Model
-from Models.DecisionTree.DecisionTreeRegressor import DecisionTreeRegressor
-from Models.SupportVectorMachine.SupportVectorRegressor import SupportVectorRegressor
+from Models.DecisionTree import DecisionTreeRegressor
+from Models.SupportVectorMachine import SupportVectorRegressor
 from Models.Utils import (run_uniform_regression, plot_2dim_regression_sample,
                           run_circular_regression, run_poly_regression)
 

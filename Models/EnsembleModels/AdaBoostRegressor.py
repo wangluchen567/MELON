@@ -14,7 +14,7 @@ import copy
 import warnings
 import numpy as np
 from Models import Model
-from Models.DecisionTree.DecisionTreeRegressor import DecisionTreeRegressor
+from Models.DecisionTree import DecisionTreeRegressor
 from Models.Utils import (run_uniform_regression, plot_2dim_regression_sample,
                           run_circular_regression, run_poly_regression)
 

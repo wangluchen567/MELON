@@ -13,7 +13,7 @@ See the Mulan PSL v2 for more details.
 import numpy as np
 import pandas as pd
 from Models import Model
-from Models.DecisionTree.DecisionTreeClassifier import DecisionTreeClassifier
+from Models.DecisionTree import DecisionTreeClassifier
 from Models.Utils import (calculate_accuracy, run_uniform_classification, run_double_classification,
                           run_circle_classification, run_moons_classification, plot_2dim_classification_sample)
 

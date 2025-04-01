@@ -14,8 +14,8 @@ import copy
 import numpy as np
 import pandas as pd
 from Models import Model
-from Models.DecisionTree.DecisionTreeClassifier import DecisionTreeClassifier
-from Models.SupportVectorMachine.SupportVectorClassifier import SupportVectorClassifier
+from Models.DecisionTree import DecisionTreeClassifier
+from Models.SupportVectorMachine import SupportVectorClassifier
 from Models.Utils import (run_uniform_classification, run_double_classification,
                           run_circle_classification, run_moons_classification, plot_2dim_classification_sample)
 
