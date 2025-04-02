@@ -52,7 +52,6 @@ class Model():
 
     def predict(self, *args, **kwargs):
         """给定数据预测结果"""
-        pass
         # # 使用 np.unique 统计每个元素的出现次数
         # uniques, counts = np.unique(self.Y_train, return_counts=True)
         # # 找到出现次数最多的元素
@@ -60,9 +59,12 @@ class Model():
         # # 生成一个与输入数组形状相同的数组，其中每个元素都是出现次数最多的元素
         # result = np.full((len(X), 1), most_element)
         # return result
+        pass
 
     def predict_prob(self, *args, **kwargs):
+        """给定数据预测结果(预测概率)"""
         pass
 
     def plot_2dim(self, *args, **kwargs):
+        """为二维分类/回归数据集和结果画图"""
         pass
