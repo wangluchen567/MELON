@@ -18,7 +18,8 @@ from Models.Utils import plot_cluster, run_blobs_cluster, run_circle_cluster, ru
 class DBSCAN(Model):
     def __init__(self, X_train=None, eps=0.5, min_samples=5, metric='minkowski', p=2, show=False):
         """
-        基于密度的噪声应用空间聚类
+        基于密度的空间聚类算法（带噪声处理）
+
         Density-Based Spatial Clustering of Applications with Noise (DBSCAN)
         :param X_train: 需要聚类的数据
         :param eps: 两个样本之间的最大距离，以确定一个样本是否在另一个样本的邻域内

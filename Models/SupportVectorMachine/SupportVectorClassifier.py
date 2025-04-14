@@ -28,7 +28,7 @@ class SupportVectorClassifier(Model):
     def __init__(self, X_train=None, Y_train=None, C=10.0, tol=1.e-3, kernel=LINEAR,
                  gamma=None, degree=3.0, const=1.0, max_iter=1000, show=False):
         """
-        支持向量机分类模型
+        支持向量机分类器模型
         :param X_train: 训练数据
         :param Y_train: 真实标签
         :param C: 惩罚系数

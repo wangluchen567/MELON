@@ -1,9 +1,10 @@
 """
 序列最小优化算法
+
 Sequential Minimal Optimization
 
 Copyright (c) 2023 LuChen Wang
-[Software Name] is licensed under Mulan PSL v2.
+MELON is licensed under Mulan PSL v2.
 You can use this software according to the terms and conditions of the Mulan
 PSL v2.
 You may obtain a copy of Mulan PSL v2 at:
