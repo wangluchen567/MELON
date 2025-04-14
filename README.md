@@ -28,27 +28,79 @@ conda activate my_env
 pip install numpy pandas matplotlib tqdm networkx
 ```
 
-## 模型说明
+## 项目结构
 
 ### Dataset: 数据集
 
 ### Examples: 模型使用示例
 
+- CompareCluster: 聚类算法的效果对比
+- CompareLinearClassifier: 线性分类器的效果对比
+- CompareLinearRegressor: 线性回归器的效果对比
+- IrisClassifier: 对鸢尾花数据集进行分类效果对比
+- IrisClassifierBinary: 对鸢尾花数据集进行二分类效果对比
+
 ### Models: 机器学习模型
-- GradientOptimizer: 梯度优化器，包含SGD/RMSProp/Adam等梯度优化算法，为使用梯度优化的模型提供支持
-- SupportVectorMachine: 支持向量机，包含支持向量机分类器SVC和支持向量机回归器SVR，以及SMO算法的实现
-- DecisionTree: 决策树相关模型，包含决策树分类器和决策树回归器，并实现了树的绘制函数
-- Clustering: 聚类相关模型，包含K-means、谱聚类、DBSCAN等算法
-- DimensionReduction: 降维相关模型，包含PCA主成分分析等算法
-- DiscriminantAnalysis: 判别分析相关模型，包含线性判别分析、Fisher判别分析、高斯判别分析等模型
-- LinearClassifier: 线性分类相关模型，包含使用梯度优化的分类模型、逻辑回归、感知机等模型
-- LinearRegressor: 线性回归相关模型，包含使用梯度优化的回归模型、最小二乘线性回归、岭回归等模型
-- MultiClassWrapper: 多分类包装器，包含一对一(OvO)分类包装器和多对多(OvR)分类包装器
-- NaiveBayes: 朴素贝叶斯模型，包含高斯朴素贝叶斯等模型
-- NeighborsBased: 基于邻居判别和回归的模型，包含K近邻分类与K近邻回归等模型
-- EnsembleModels: 集成学习相关模型，包含Bagging和Boosting两类集成模型
+
+- **GradientOptimizer: 梯度优化器**
+  - Optimizer: 包含GD/RMSProp/Adam等梯度优化方法 
+
+- **SupportVectorMachine: 支持向量机**
+  - SupportVectorClassifier: 支持向量机分类器
+  - SupportVectorRegressor: 支持向量机分类器
+  - SequentialMinimalOptimization: 序列最小化算法
+
+- **DecisionTree: 决策树**
+  - DecisionTreeClassifier: 决策树分类器
+  - DecisionTreeRegressor: 决策树回归器
+  - PlotTree: 决策树绘制
+
+- **Clustering: 聚类算法**
+  - KMeans: K-均值聚类
+  - DBSCAN: 基于密度的空间聚类算法（带噪声处理）
+  - SpectralClustering: 谱聚类
+
+- **DimensionReduction: 降维相关**
+  - PrincipalComponentAnalysis: PCA主成分分析
+
+- **DiscriminantAnalysis: 判别分析相关**
+  - FisherDiscriminantAnalysis: Fisher判别分析
+  - GaussianDiscriminantAnalysis: 高斯判别分析
+  - LinearDiscriminantAnalysis: 线性判别分析
+
+- **LinearClassifier: 线性分类器**
+  - GDClassifier: 使用梯度优化的分类器
+  - LogisticRegression：逻辑回归分类器
+  - Perceptron: 感知机分类器
+  - RidgeClassifier: 岭回归分类器
+
+- **LinearRegressor: 线性回归器**
+  - GDRegressor: 使用梯度优化的回归器
+  - LinearRegression: 最小二乘线性回归器
+  - Ridge: 岭回归回归器
+
+- **MultiClassWrapper: 多分类包装器**
+  - OneVsOneClassifier: 一对一(OvO)分类包装器
+  - OneVsRestClassifier: 一对多(OvR)分类包装器
+
+- **NaiveBayes: 朴素贝叶斯相关**
+  - GaussianNaiveBayes: 高斯朴素贝叶斯
+
+- **NeighborsBased: 基于邻居相关**
+  - KNeighborsClassifier: K近邻分类器
+  - KNeighborsRegressor: K近邻回归器
+
+- **EnsembleModels: 集成学习相关**
+  - AdaBoostClassifier: 自适应提升分类器
+  - AdaBoostRegressor: 自适应提升回归器
+  - BaggingClassifier: 自助聚合分类器
+  - BaggingRegressor: 自助聚合回归器
+  - RandomForestClassifier: 随机森林分类器
+  - RandomForestRegressor: 随机森林回归
 
 ### Notes: 机器学习笔记和示例
+
+- **文件结构与Models相同**
 
 ## 更新计划
 - [x] 更新项目文档
