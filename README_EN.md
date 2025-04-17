@@ -173,7 +173,7 @@ pip install numpy pandas matplotlib tqdm networkx
 - Comparison of clustering effects of K-means, DBSCAN, and spectral clustering<br>
 <img src="Notes/Clustering/Cluster.png" width="500" height="450"/><br/>
 
-## Participation and Contribution
+## Contributions & Support
 
-**Luchen Wang**<br>
+**Author: Luchen Wang**<br>
 <small>(If you encounter any issues during use, feel free to contact via email: wangluchen567@qq.com)</small>

@@ -173,9 +173,9 @@ pip install numpy pandas matplotlib tqdm networkx
 - K-means、DBSCAN、谱聚类的聚类效果对比<br>
 <img src="Notes/Clustering/Cluster.png" width="500" height="450"/><br/>
 
-## 参与贡献
+## 项目贡献与支持
 
-**Luchen Wang**<br>
+**Author: Luchen Wang**<br>
 <small>（如在使用过程中遇到任何问题，可随时联系邮箱：wangluchen567@qq.com）</small>
 
 
