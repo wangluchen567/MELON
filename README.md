@@ -34,6 +34,14 @@ conda activate my_env
 pip install numpy pandas matplotlib tqdm networkx
 ```
 
+**3. 镜像源选择**
+
+如果在运行安装命令时发现下载速度较慢，可以尝试使用清华大学的镜像源进行安装。安装命令如下：
+```bash
+pip install numpy pandas matplotlib tqdm networkx -i https://pypi.tuna.tsinghua.edu.cn/simple
+```
+注意：如果无法访问上述镜像源，也可以选择其他可用的镜像源，例如中国科技大学、阿里云等。
+
 ## 项目结构
 
 ### Dataset: 数据集
