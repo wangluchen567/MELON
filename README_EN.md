@@ -1,10 +1,9 @@
-# MELON
-Language: [English](README_EN.md) | [中文](README.md)
+# 🍉 MELON
+💬 Language: [English](README_EN.md) | [中文](README.md)
 
-## Project Name
 Chen's MachinE Learning models Organized using Numpy
 
-## Project Introduction
+## 🔖 Project Introduction
 
 This is a machine learning algorithm and model library implemented with NumPy, aimed at helping those interested in machine learning gain a deep understanding of the underlying principles of various machine learning algorithms and models.
 To lower the learning barrier, this project references the API style of scikit-learn in its design but focuses on the implementation of core functionalities, resulting in a relatively streamlined feature set. Unlike mature industrial frameworks, this project emphasizes the transparency and readability of algorithm implementation, revealing the working principles of machine learning models through handwritten code.
@@ -13,7 +12,7 @@ We hope this project can help interested individuals build a solid understanding
 <br><br>
 **Special Note: `This code is for reference only in non-commercial purposes such as learning, competitions, and scientific research. Please acknowledge the source when copying the core code.`**
 
-## Installation Guide
+## 📚 Installation Guide
 
 **1. It is recommended to use `Anaconda` to create a `Python` environment**
 
@@ -35,19 +34,7 @@ and run the following command to install all necessary packages in one go:
 pip install numpy pandas matplotlib tqdm networkx
 ```
 
-## Project Structure
-
-### Dataset: Data Sets
-
-### Examples: Model Usage Examples
-
-- CompareCluster: Comparison of clustering algorithm effects
-- CompareLinearClassifier: Comparison of linear classifier effects
-- CompareLinearRegressor: Comparison of linear regressor effects
-- IrisClassifier: Classification effect comparison on the Iris dataset
-- IrisClassifierBinary: Binary classification effect comparison on the Iris dataset
-
-### Models: Machine Learning Models
+## 🎯 Core Components
 
 - **GradientOptimizer: Gradient Optimizers**
   - Optimizer: Includes gradient optimization methods such as GD, RMSProp, and Adam
@@ -67,7 +54,7 @@ pip install numpy pandas matplotlib tqdm networkx
   - DBSCAN: Density-Based Spatial Clustering of Applications with Noise
   - SpectralClustering: Spectral Clustering
 
-- **DimensionReduction: Dimensionality Reduction**
+- **DimensionReduction: Dimensionality Reduction Models**
   - PrincipalComponentAnalysis: Principal Component Analysis (PCA)
 
 - **DiscriminantAnalysis: Discriminant Analysis**
@@ -90,14 +77,14 @@ pip install numpy pandas matplotlib tqdm networkx
   - OneVsOneClassifier: One-vs-One (OvO) Classifier Wrapper
   - OneVsRestClassifier: One-vs-Rest (OvR) Classifier Wrapper
 
-- **NaiveBayes: Naive Bayes**
+- **NaiveBayes: Naive Bayes Models**
   - GaussianNaiveBayes: Gaussian Naive Bayes
 
-- **NeighborsBased: Neighbors-Based**
+- **NeighborsBased: Neighbors-Based Models**
   - KNeighborsClassifier: K-Nearest Neighbors Classifier
   - KNeighborsRegressor: K-Nearest Neighbors Regressor
 
-- **EnsembleModels: Ensemble Learning**
+- **EnsembleModels: Ensemble Learning Models**
   - AdaBoostClassifier: Adaptive Boosting Classifier
   - AdaBoostRegressor: Adaptive Boosting Regressor
   - BaggingClassifier: Bagging Classifier
@@ -105,11 +92,8 @@ pip install numpy pandas matplotlib tqdm networkx
   - RandomForestClassifier: Random Forest Classifier
   - RandomForestRegressor: Random Forest Regressor
 
-### Notes: Machine Learning Notes and Examples
 
-- **File structure is the same as Models**
-
-## Update Plan
+## 📝 Update Plan
 - [x] Update project documentation
 - [ ] Update algorithm notes
 - [x] Add Naive Bayes Classifier
@@ -122,7 +106,7 @@ pip install numpy pandas matplotlib tqdm networkx
 - [ ] Implement sample_weight parameter
 - [ ] Debug AdaBoostClassifier for nonlinear classification
 
-## Effect Demonstration
+## 🌈 Effect Demonstration
 
 ### Gradient Optimizer
 
@@ -173,7 +157,10 @@ pip install numpy pandas matplotlib tqdm networkx
 - Comparison of clustering effects of K-means, DBSCAN, and spectral clustering<br>
 <img src="Notes/Clustering/Cluster.png" width="500" height="450"/><br/>
 
-## Contributions & Support
+## 🤝 Contributions
 
-**Author: Luchen Wang**<br>
-<small>(If you encounter any issues during use, feel free to contact via email: wangluchen567@qq.com)</small>
+**Author: Luchen Wang**
+
+## ✉️ Contact Us
+
+**E-mail: wangluchen567@qq.com**

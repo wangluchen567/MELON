@@ -1,11 +1,10 @@
-# MELON
-Language：[English](README_EN.md) | [中文](README.md)
+# 🍉 MELON
+💬 Language：[English](README_EN.md) | [中文](README.md)
 
-## 项目名称
 基于NumPy构建的机器学习算法与模型库<br>
 Chen's MachinE Learning models Organized using Numpy
 
-## 项目简介
+## 🔖 项目简介
 
 这是一个基于NumPy实现的机器学习算法与模型库，旨在帮助对机器学习感兴趣的伙伴们深入理解机器学习各类算法和模型的底层原理。
 为了降低学习门槛，本项目在设计上参考了scikit-learn的API风格，但主要聚焦于核心功能的实现，因此功能相对精简。与成熟的工业级框架不同，本项目更注重算法实现的透明性和可读性，通过手写底层代码来揭示机器学习模型的工作原理。
@@ -14,7 +13,7 @@ Chen's MachinE Learning models Organized using Numpy
 <br><br>
 **特别说明：`本代码仅供参考学习、竞赛和科学研究等非商业用途，在复制核心代码时请注明出处`**
 
-## 安装教程
+## 📚 安装教程
 **1. 建议使用 `Anaconda` 创建 `Python` 环境**
 
 使用 Anaconda 创建环境可以方便地管理依赖包，避免版本冲突。建议从 [Anaconda 官网](https://www.anaconda.com/download/success) 下载并安装 Anaconda。如果需要特定版本，可以访问 [Anaconda所有版本下载地址](https://repo.anaconda.com/archive/)。
@@ -42,19 +41,7 @@ pip install numpy pandas matplotlib tqdm networkx -i https://pypi.tuna.tsinghua.
 ```
 注意：如果无法访问上述镜像源，也可以选择其他可用的镜像源，例如中国科技大学、阿里云等。
 
-## 项目结构
-
-### Dataset: 数据集
-
-### Examples: 模型使用示例
-
-- CompareCluster: 聚类算法的效果对比
-- CompareLinearClassifier: 线性分类器的效果对比
-- CompareLinearRegressor: 线性回归器的效果对比
-- IrisClassifier: 对鸢尾花数据集进行分类效果对比
-- IrisClassifierBinary: 对鸢尾花数据集进行二分类效果对比
-
-### Models: 机器学习模型
+## 🎯 核心实现
 
 - **GradientOptimizer: 梯度优化器**
   - Optimizer: 包含GD/RMSProp/Adam等梯度优化方法 
@@ -74,10 +61,10 @@ pip install numpy pandas matplotlib tqdm networkx -i https://pypi.tuna.tsinghua.
   - DBSCAN: 基于密度的空间聚类算法（带噪声处理）
   - SpectralClustering: 谱聚类
 
-- **DimensionReduction: 降维相关**
+- **DimensionReduction: 降维相关模型**
   - PrincipalComponentAnalysis: PCA主成分分析
 
-- **DiscriminantAnalysis: 判别分析相关**
+- **DiscriminantAnalysis: 判别分析相关模型**
   - FisherDiscriminantAnalysis: Fisher判别分析
   - GaussianDiscriminantAnalysis: 高斯判别分析
   - LinearDiscriminantAnalysis: 线性判别分析
@@ -97,14 +84,14 @@ pip install numpy pandas matplotlib tqdm networkx -i https://pypi.tuna.tsinghua.
   - OneVsOneClassifier: 一对一(OvO)分类包装器
   - OneVsRestClassifier: 一对多(OvR)分类包装器
 
-- **NaiveBayes: 朴素贝叶斯相关**
+- **NaiveBayes: 朴素贝叶斯相关模型**
   - GaussianNaiveBayes: 高斯朴素贝叶斯
 
-- **NeighborsBased: 基于邻居相关**
+- **NeighborsBased: 基于邻居相关模型**
   - KNeighborsClassifier: K近邻分类器
   - KNeighborsRegressor: K近邻回归器
 
-- **EnsembleModels: 集成学习相关**
+- **EnsembleModels: 集成学习相关模型**
   - AdaBoostClassifier: 自适应提升分类器
   - AdaBoostRegressor: 自适应提升回归器
   - BaggingClassifier: 自助聚合分类器
@@ -112,11 +99,37 @@ pip install numpy pandas matplotlib tqdm networkx -i https://pypi.tuna.tsinghua.
   - RandomForestClassifier: 随机森林分类器
   - RandomForestRegressor: 随机森林回归
 
-### Notes: 机器学习笔记和示例
+## 📦 项目结构
 
-- **文件结构与Models相同**
+```
+MELON/
+├── Datasets/                           # 机器学习相关数据集
+├── Examples/                           # 实现各种算法的具体实例
+│   ├── CompareCluster.py               # 聚类算法的效果对比
+│   ├── CompareLinearClassifier.py      # 线性分类器的效果对比
+│   ├── CompareLinearRegressor.py       # 线性回归器的效果对比
+│   ├── IrisClassifier.py               # 对鸢尾花数据集进行分类效果对比
+│   ├── IrisClassifierBinary.py         # 对鸢尾花数据集进行二分类效果对比
+├── Models/                             # 实现的机器学习模型
+│   ├── Clustering/                     # 聚类算法相关模型
+│   ├── DecisionTree/                   # 决策树相关模型
+│   ├── DimensionReduction/             # 降维相关模型
+│   ├── DiscriminantAnalysis/           # 判别分析相关模型
+│   ├── EnsembleModels/                 # 集成学习相关模型
+│   ├── GradientOptimizer/              # 梯度优化器
+│   ├── LinearClassifier/               # 线性分类器
+│   ├── LinearRegressor/                # 线性回归器
+│   ├── MultiClassWrapper/              # 多分类包装器
+│   ├── NaiveBayes/                     # 朴素贝叶斯相关模型
+│   ├── NeighborsBased/                 # 基于邻居相关模型
+│   ├── SupportVectorMachine/           # 支持向量机相关模型
+│   ├── Model.py                        # 机器学习模型父类
+│   └── Utils.py                        # 机器学习模型相关工具类
+├── Notes/                              # 机器学习模型实现 参考笔记
+└── README.md                           # 项目文档
+```
 
-## 更新计划
+## 📝 更新计划
 - [x] 更新项目文档
 - [ ] 更新算法笔记
 - [x] 加入朴素贝叶斯分类器
@@ -130,7 +143,7 @@ pip install numpy pandas matplotlib tqdm networkx -i https://pypi.tuna.tsinghua.
 - [ ] debug AdaBoostClassifier for nonlinear classification
 
 
-## 效果展示
+## 🌈 效果展示
 
 ### 梯度优化器
 
@@ -181,9 +194,11 @@ pip install numpy pandas matplotlib tqdm networkx -i https://pypi.tuna.tsinghua.
 - K-means、DBSCAN、谱聚类的聚类效果对比<br>
 <img src="Notes/Clustering/Cluster.png" width="500" height="450"/><br/>
 
-## 项目贡献与支持
+## 🤝 项目贡献
 
-**Author: Luchen Wang**<br>
-<small>（如在使用过程中遇到任何问题，可随时联系邮箱：wangluchen567@qq.com）</small>
+**Author: Luchen Wang**
 
+## ✉️ 联系我们
+
+**邮箱: wangluchen567@qq.com**
 
