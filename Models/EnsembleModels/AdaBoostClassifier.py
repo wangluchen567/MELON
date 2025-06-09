@@ -81,11 +81,11 @@ class AdaBoostClassifier(Model):
         # 训练每一个弱分类器以逐渐实现补充以求分类正确
         for i in range(self.n_estimators):
             # 创建一个弱分类器
-            model = copy.deepcopy(self.estimator)
+            base_model = copy.deepcopy(self.estimator)
             # 使用当前样本权重训练弱分类器
-            model.train(self.X_train, self.Y_train, sample_weight=sample_weights)
+            base_model.train(self.X_train, self.Y_train, sample_weight=sample_weights)
             # 得到该分类器的类别预测概率, 形状必须为(X_train.len, class_list.len)
-            Y_prob = model.predict_prob(self.X_train)
+            Y_prob = base_model.predict_prob(self.X_train)
             # 将概率包含零的部分进行裁剪（避免log(0)）
             Y_prob = np.clip(Y_prob, 1e-15, 1 - 1e-15)
             # 计算每个样本的真实类别对应的log概率
@@ -98,15 +98,15 @@ class AdaBoostClassifier(Model):
             sample_weights *= weights_update
             sample_weights /= np.sum(sample_weights)  # 归一化
             # 保存基分类器
-            self.estimator_models.append(model)
+            self.estimator_models.append(base_model)
 
     def predict_SAMMER(self, X_data):
         """给定数据预测结果(SAMME.R)"""
         # 初始化类别得分
         class_scores = np.zeros((len(X_data), len(self.class_list)))
         # 对每个基分类器，累加其对各类别的log概率
-        for model in self.estimator_models:
-            prob = np.clip(model.predict_prob(X_data), 1e-15, 1 - 1e-15)
+        for base_model in self.estimator_models:
+            prob = np.clip(base_model.predict_prob(X_data), 1e-15, 1 - 1e-15)
             class_scores += np.log(prob)
         # 选择得分最高的类别
         Y_data = self.class_list[np.argmax(class_scores, axis=1)].reshape(-1, 1)
@@ -123,11 +123,11 @@ class AdaBoostClassifier(Model):
         # 训练每一个弱分类器以逐渐实现补充以求分类正确
         for i in range(self.n_estimators):
             # 创建一个弱分类器
-            model = copy.deepcopy(self.estimator)
+            base_model = copy.deepcopy(self.estimator)
             # 使用当前样本权重训练弱分类器
-            model.train(self.X_train, self.Y_train, sample_weights)
+            base_model.train(self.X_train, self.Y_train, sample_weights)
             # 得到该分类器的类别预测
-            Y_predict = model.predict(self.X_train)
+            Y_predict = base_model.predict(self.X_train)
             # 得到分类错误的位置mask向量
             incorrect = np.array(Y_predict != self.Y_train).flatten()
             # 然后计算该弱分类器的加权错误率
@@ -144,13 +144,13 @@ class AdaBoostClassifier(Model):
             sample_weights *= np.exp(-alpha * (1 - incorrect))
             sample_weights /= np.sum(sample_weights)  # 归一化
             # 保存该弱分类器
-            self.estimator_models.append(model)
+            self.estimator_models.append(base_model)
 
     def predict_SAMME(self, X_data):
         """给定数据预测结果(SAMME)"""
         probs = np.zeros((len(X_data), len(self.class_list)))
-        for alpha, model in zip(self.alphas, self.estimator_models):
-            Y_predict = model.predict(X_data)
+        for alpha, base_model in zip(self.alphas, self.estimator_models):
+            Y_predict = base_model.predict(X_data)
             correct = np.array(Y_predict == self.class_list)
             probs += alpha * (correct - (1 - correct) / (len(self.class_list) - 1))
         Y_data = self.class_list[np.argmax(probs, axis=1)].reshape(len(X_data), -1)

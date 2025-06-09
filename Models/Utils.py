@@ -77,6 +77,19 @@ def calculate_accuracy(Truth, Predict):
     return accuracy
 
 
+def cal_mae_metrics(Truth, Predict):
+    """
+    计算回归结果的MAE指标值
+    :param Truth: 真实值
+    :param Predict: 预测值
+    :return: 准确率
+    """
+    if len(Truth.flatten()) != len(Predict.flatten()):
+        raise ValueError("The number of real labels and predicted labels does not match")
+    mae_value = np.mean(np.abs(Truth.flatten() - Predict.flatten()))
+    return mae_value
+
+
 def cal_mse_metrics(Truth, Predict):
     """
     计算回归结果的MSE指标值

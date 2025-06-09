@@ -55,7 +55,7 @@ class AdaBoostRegressor(Model):
         # 训练每一个弱回归器
         for i in range(self.n_estimators):
             # 创建一个弱回归器
-            model = copy.deepcopy(self.estimator)
+            base_model = copy.deepcopy(self.estimator)
             # 判断是否使用采样方式
             if self.sampling:
                 # 每次采取自助采样的方式采样数据集
@@ -66,11 +66,11 @@ class AdaBoostRegressor(Model):
             Y_samples = self.Y_train[sample_idx]
             # 使用当前样本权重训练弱回归器
             if self.sampling:
-                model.train(X_samples, Y_samples)
+                base_model.train(X_samples, Y_samples)
             else:
-                model.train(X_samples, Y_samples, sample_weight=sample_weights)
+                base_model.train(X_samples, Y_samples, sample_weight=sample_weights)
             # 得到该弱回归器的回归值
-            Y_predict = model.predict(X_samples)
+            Y_predict = base_model.predict(X_samples)
             # 计算归一化误差
             abs_error = np.abs(Y_predict - Y_samples).flatten()
             max_error = np.max(abs_error)
@@ -91,12 +91,12 @@ class AdaBoostRegressor(Model):
             # sample_weights *= np.power(beta, (1 - err_t) * self.learning_rate)
             sample_weights *= np.exp(-alpha * (1 - err_t))
             sample_weights /= np.sum(sample_weights)
-            self.estimator_models.append(model)
+            self.estimator_models.append(base_model)
 
     def predict(self, X_data):
         """给定数据预测结果"""
         # 得到每个模型输出的结果，形状为 (num_data, num_estimator)
-        Y_predicts = np.array([model.predict(X_data).flatten() for model in self.estimator_models]).T
+        Y_predicts = np.array([base_model.predict(X_data).flatten() for base_model in self.estimator_models]).T
         # 对每个样本的所有基学习器预测值进行升序排序，返回的是排序后的索引值
         sorted_idx = np.argsort(Y_predicts, axis=1)  # 按预测值排序
         # 将基学习器的权重按预测值从小到大排列，并对排序后的权重按行计算累积和

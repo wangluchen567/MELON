@@ -51,11 +51,11 @@ class BaggingRegressor(Model):
             # 有放回采样样本(或原始样本)
             X_sample, Y_sample = self.sampling()
             # 使用采样的样本构建基础估计器
-            model = copy.deepcopy(self.estimator)
+            base_model = copy.deepcopy(self.estimator)
             # 使用训练数据进行训练
-            model.train(X_sample, Y_sample)
+            base_model.train(X_sample, Y_sample)
             # 将模型加入集合
-            self.estimator_models.append(model)
+            self.estimator_models.append(base_model)
 
     def predict(self, X_data):
         """模型对测试集进行预测"""
