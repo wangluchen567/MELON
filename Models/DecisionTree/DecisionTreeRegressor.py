@@ -17,12 +17,13 @@ from Models import Model
 from collections import deque
 from Models.DecisionTree.PlotTree import plot_tree
 from Models.DecisionTree.Node import RegressorNode
-from Models.Utils import (run_uniform_regression, plot_2dim_regression_sample,
-                          run_circular_regression, run_poly_regression)
+from Models.DecisionTree.TreeUtils import cal_mse, cal_weighted_mse, cal_mae, cal_weighted_mae
+from Models.Utils import (run_uniform_regression, plot_2dim_regression_sample, run_circular_regression,
+                          run_poly_regression)
 
 
 class DecisionTreeRegressor(Model):
-    def __init__(self, X_train=None, Y_train=None, criterion='mse',
+    def __init__(self, X_train=None, Y_train=None, criterion='mae',
                  splitter='best', max_features=None, max_depth=np.inf):
         """
         决策树回归器模型
@@ -406,21 +407,17 @@ class DecisionTreeRegressor(Model):
     def cal_mse(target, sample_weight=None):
         """计算均方误差"""
         if sample_weight is None:
-            return np.mean((target - np.mean(target)) ** 2)
+            return cal_mse(np.array(target))
         else:
-            weighted_mean = np.average(target, weights=sample_weight)
-            weighted_mse = np.average((target - weighted_mean) ** 2, weights=sample_weight)
-            return weighted_mse
+            return cal_weighted_mse(np.array(target), sample_weight)
 
     @staticmethod
     def cal_mae(target, sample_weight):
         """计算平均绝对误差"""
         if sample_weight is None:
-            return np.mean(np.abs(target - np.mean(target)))
+            return cal_mae(np.array(target))
         else:
-            weighted_mean = np.average(target, weights=sample_weight)
-            weighted_mae = np.average(np.abs(target - weighted_mean), weights=sample_weight)
-            return weighted_mae
+            return cal_weighted_mae(np.array(target), sample_weight)
 
     @staticmethod
     def check_discrete(dtype_):
