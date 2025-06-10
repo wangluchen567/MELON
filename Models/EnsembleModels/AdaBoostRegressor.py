@@ -42,7 +42,7 @@ class AdaBoostRegressor(Model):
         self.alphas = []  # 基础学习器权重
         self.errors = []  # 记录加权误差历史
         if self.estimator is None:
-            # 默认使用决策树树桩
+            # 默认使用决策树模型
             self.estimator = DecisionTreeRegressor(max_depth=self.max_depth)
 
     def train(self, X_train=None, Y_train=None):

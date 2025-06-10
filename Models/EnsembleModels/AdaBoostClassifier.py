@@ -11,6 +11,7 @@ NON-INFRINGEMENT, MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 See the Mulan PSL v2 for more details.
 """
 import copy
+import cProfile
 import warnings
 import numpy as np
 import pandas as pd
@@ -22,7 +23,7 @@ from Models.Utils import (calculate_accuracy, run_uniform_classification, run_do
 
 class AdaBoostClassifier(Model):
     def __init__(self, estimator=None, X_train=None, Y_train=None, n_estimators=10,
-                 learning_rate=1.0, algorithm='SAMME.R'):
+                 learning_rate=1.0, max_depth=1, algorithm='SAMME.R'):
         """
         AdaBoost 自适应提升 分类器
         :param estimator: 基础学习器(弱学习器)
@@ -30,12 +31,14 @@ class AdaBoostClassifier(Model):
         :param Y_train: 真实标签
         :param n_estimators: 基础学习器数量
         :param learning_rate: 学习率，用于缩放弱学习器的权重
+        :param max_depth: 当基础学习器为决策树时决策树最大深度
         :param algorithm: 训练算法的类型('SAMME'/'SAMME.R')
         """
         super().__init__(X_train, Y_train)
         self.estimator = estimator  # 基础学习器(弱学习器)
         self.n_estimators = n_estimators  # 基础学习器数量
         self.learning_rate = learning_rate  # 学习率
+        self.max_depth = max_depth  # 决策树最大深度
         self.algorithm = algorithm  # 训练算法的类型
         self.class_list = None  # 要分类的类别列表
         self.estimator_models = []  # 初始化基础估计器集合
@@ -43,8 +46,8 @@ class AdaBoostClassifier(Model):
         self.errors = []  # 记录加权错误率历史
         self.losses = []  # 记录加权损失值历史
         if self.estimator is None:
-            # 默认使用决策树树桩
-            self.estimator = DecisionTreeClassifier(max_depth=1)
+            # 默认使用决策树模型
+            self.estimator = DecisionTreeClassifier(max_depth=self.max_depth)
 
     def train(self, X_train=None, Y_train=None):
         """训练模型拟合数据"""
@@ -178,7 +181,8 @@ if __name__ == '__main__':
     # run_watermelon_example()
     np.random.seed(100)
     model = AdaBoostClassifier()
-    run_uniform_classification(model)
-    run_double_classification(model)
-    run_circle_classification(model)
-    run_moons_classification(model)
+    cProfile.run("run_uniform_classification(model)", sort='cumulative')
+    # run_uniform_classification(model)
+    # run_double_classification(model)
+    # run_circle_classification(model)
+    # run_moons_classification(model)
