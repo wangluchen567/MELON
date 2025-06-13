@@ -11,7 +11,6 @@ NON-INFRINGEMENT, MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 See the Mulan PSL v2 for more details.
 """
 import copy
-import cProfile
 import warnings
 import numpy as np
 import pandas as pd
@@ -181,8 +180,7 @@ if __name__ == '__main__':
     # run_watermelon_example()
     np.random.seed(100)
     model = AdaBoostClassifier()
-    cProfile.run("run_uniform_classification(model)", sort='cumulative')
-    # run_uniform_classification(model)
-    # run_double_classification(model)
-    # run_circle_classification(model)
-    # run_moons_classification(model)
+    run_uniform_classification(model)
+    run_double_classification(model)
+    run_circle_classification(model)
+    run_moons_classification(model)

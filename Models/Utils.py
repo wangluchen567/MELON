@@ -419,7 +419,8 @@ def plot_cluster(X, labels, centers=None, pause=False, n_iter=None, pause_time=0
         plt.show()
 
 
-def run_uniform_classification(model, X_size=100, X_feat=2, X_lower=-1, X_upper=1, lower=-1, upper=1, train_ratio=0.8):
+def run_uniform_classification(model, X_size=100, X_feat=2, X_lower=-1, X_upper=1,
+                               lower=-1, upper=1, train_ratio=0.8, show=True):
     """
     指定模型对均匀数据的分类测试
     :param model: 指定模型
@@ -430,6 +431,7 @@ def run_uniform_classification(model, X_size=100, X_feat=2, X_lower=-1, X_upper=
     :param lower: 随机生成参数的范围最小值
     :param upper: 随机生成参数的范围最大值
     :param train_ratio: 训练集所占比例
+    :param show: 是否为结果进行全采样画图
     :return: None
     """
     # 生成数据集
@@ -458,10 +460,11 @@ def run_uniform_classification(model, X_size=100, X_feat=2, X_lower=-1, X_upper=
     test_accuracy = calculate_accuracy(Y_test, Y_test_pred)
     print("Test Accuracy:  {:.3f} %".format(test_accuracy * 100))
     # 对结果进行画图
-    model.plot_2dim(X_test, Y_test, Truth=Truth_Weights)
+    if show:
+        model.plot_2dim(X_test, Y_test, Truth=Truth_Weights)
 
 
-def run_double_classification(model, X_size=100, X_feat=2, X_lower=-1, X_upper=1, train_ratio=0.8):
+def run_double_classification(model, X_size=100, X_feat=2, X_lower=-1, X_upper=1, train_ratio=0.8, show=True):
     """
     指定模型对两散点式数据的分类测试
     :param model: 指定模型
@@ -470,6 +473,7 @@ def run_double_classification(model, X_size=100, X_feat=2, X_lower=-1, X_upper=1
     :param X_lower: 随机生成的数据集下界
     :param X_upper: 随机生成的数据集上界
     :param train_ratio: 训练集所占比例
+    :param show: 是否为结果进行全采样画图
     :return: None
     """
     # 生成数据集
@@ -497,10 +501,11 @@ def run_double_classification(model, X_size=100, X_feat=2, X_lower=-1, X_upper=1
     test_accuracy = calculate_accuracy(Y_test, Y_test_pred)
     print("Test Accuracy:  {:.3f} %".format(test_accuracy * 100))
     # 画图展示效果
-    model.plot_2dim(X_test, Y_test)
+    if show:
+        model.plot_2dim(X_test, Y_test)
 
 
-def run_uniform_regression(model, X_size=100, X_feat=1, X_lower=0, X_upper=20, train_ratio=0.8):
+def run_uniform_regression(model, X_size=100, X_feat=1, X_lower=0, X_upper=20, train_ratio=0.8, show=True):
     """
     指定模型对随机生成的回归数据进行回归测试
     :param model: 指定模型
@@ -509,6 +514,7 @@ def run_uniform_regression(model, X_size=100, X_feat=1, X_lower=0, X_upper=20, t
     :param X_lower: 随机生成的数据集下界
     :param X_upper: 随机生成的数据集上界
     :param train_ratio: 训练集所占比例
+    :param show: 是否为结果进行全采样画图
     :return: None
     """
     # 生成数据集
@@ -537,7 +543,8 @@ def run_uniform_regression(model, X_size=100, X_feat=1, X_lower=0, X_upper=20, t
     test_mse = cal_mse_metrics(Y_test, Y_test_pred)
     print("Test MSE Metrics:  {:.3f}".format(test_mse))
     # 对结果进行画图
-    model.plot_2dim(X_test, Y_test, Truth=Truth_Weights)
+    if show:
+        model.plot_2dim(X_test, Y_test, Truth=Truth_Weights)
 
 
 def plot_2dim_classification_sample(model, X_data, Y_data, X_test=None, Y_test=None, neg_label=-1, support=None,
@@ -671,7 +678,7 @@ def random_make_moons(num_samples=500, noise=0.1, shuffle=True):
     return X, Y
 
 
-def run_circle_classification(model, X_size=100, factor=0.5, noise=0.1, train_ratio=0.8):
+def run_circle_classification(model, X_size=100, factor=0.5, noise=0.1, train_ratio=0.8, show=True):
     """
     指定模型对同心圆数据的分类测试
     :param model: 指定模型
@@ -679,6 +686,7 @@ def run_circle_classification(model, X_size=100, factor=0.5, noise=0.1, train_ra
     :param factor: 内外圆之间的比例因子
     :param noise: 噪声扰动程度
     :param train_ratio: 训练集所占比例
+    :param show: 是否为结果进行全采样画图
     :return: None
     """
     # 生成数据集
@@ -705,16 +713,18 @@ def run_circle_classification(model, X_size=100, factor=0.5, noise=0.1, train_ra
     test_accuracy = calculate_accuracy(Y_test, Y_test_pred)
     print("Test Accuracy:  {:.3f} %".format(test_accuracy * 100))
     # 对结果进行画图
-    model.plot_2dim(X_test, Y_test)
+    if show:
+        model.plot_2dim(X_test, Y_test)
 
 
-def run_moons_classification(model, X_size=100, noise=0.1, train_ratio=0.8):
+def run_moons_classification(model, X_size=100, noise=0.1, train_ratio=0.8, show=True):
     """
     指定模型对月亮数据(双半圆数据)的分类测试
     :param model: 指定模型
     :param X_size: 随机生成的数据集大小
     :param noise: 噪声扰动程度
     :param train_ratio: 训练集所占比例
+    :param show: 是否为结果进行全采样画图
     :return: None
     """
     # 生成数据集
@@ -741,7 +751,8 @@ def run_moons_classification(model, X_size=100, noise=0.1, train_ratio=0.8):
     test_accuracy = calculate_accuracy(Y_test, Y_test_pred)
     print("Test Accuracy:  {:.3f} %".format(test_accuracy * 100))
     # 对结果进行画图
-    model.plot_2dim(X_test, Y_test)
+    if show:
+        model.plot_2dim(X_test, Y_test)
 
 
 def plot_2dim_regression_sample(model, X_data, Y_data, X_test=None, Y_test=None, support=None,
@@ -822,7 +833,8 @@ def random_make_circular(num_samples=100, lower=0, upper=10, slope=0, bias=0, no
     return X, Y
 
 
-def run_circular_regression(model, X_size=100, X_lower=0, X_upper=15, slope=3, bias=3, noise=0.1, train_ratio=0.8):
+def run_circular_regression(model, X_size=100, X_lower=0, X_upper=15,
+                            slope=3, bias=3, noise=0.1, train_ratio=0.8, show=True):
     """
     指定模型对三角函数(圆函数)数据的回归测试
     :param model: 指定模型
@@ -833,6 +845,7 @@ def run_circular_regression(model, X_size=100, X_lower=0, X_upper=15, slope=3, b
     :param bias: 生成的函数截距（偏置）
     :param noise: 噪声扰动程度
     :param train_ratio: 训练集所占比例
+    :param show: 是否为结果进行全采样画图
     :return: None
     """
     # 生成数据集
@@ -856,7 +869,8 @@ def run_circular_regression(model, X_size=100, X_lower=0, X_upper=15, slope=3, b
     test_mse = cal_mse_metrics(Y_test, Y_test_pred)
     print("Test MSE Metrics:  {:.3f}".format(test_mse))
     # 对结果进行画图
-    model.plot_2dim(X_test, Y_test)
+    if show:
+        model.plot_2dim(X_test, Y_test)
 
 
 def random_make_poly(num_samples=100, lower=0, upper=10, degree=3, gamma=3, constant=3, noise=0.1, shuffle=True):
@@ -885,7 +899,7 @@ def random_make_poly(num_samples=100, lower=0, upper=10, degree=3, gamma=3, cons
 
 
 def run_poly_regression(model, X_size=100, X_lower=-5, X_upper=5,
-                        degree=3, gamma=3, constant=3, noise=10, train_ratio=0.8):
+                        degree=3, gamma=3, constant=3, noise=10, train_ratio=0.8, show=True):
     """
     指定模型对多项式函数数据的回归测试
     :param model: 指定模型
@@ -897,6 +911,7 @@ def run_poly_regression(model, X_size=100, X_lower=-5, X_upper=5,
     :param constant: 常数项值
     :param noise: 噪声扰动程度
     :param train_ratio: 训练集所占比例
+    :param show: 是否为结果进行全采样画图
     :return: None
     """
     # 生成数据集
@@ -920,7 +935,8 @@ def run_poly_regression(model, X_size=100, X_lower=-5, X_upper=5,
     test_mse = cal_mse_metrics(Y_test, Y_test_pred)
     print("Test MSE Metrics:  {:.3f}".format(test_mse))
     # 对结果进行画图
-    model.plot_2dim(X_test, Y_test)
+    if show:
+        model.plot_2dim(X_test, Y_test)
 
 
 def run_blobs_cluster(model, X_size=500, X_feat=2, n_clusters=5):
