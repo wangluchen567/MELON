@@ -12,7 +12,6 @@ See the Mulan PSL v2 for more details.
 """
 import numpy as np
 import pandas as pd
-from Models.Utils import normalize, calculate_accuracy
 from Models.NaiveBayes import *
 from Models.LinearClassifier import *
 from Models.MultiClassWrapper import *
@@ -21,6 +20,8 @@ from Models.NeighborsBased import KNeighborsClassifier
 from Models.DecisionTree import DecisionTreeClassifier
 from Models.EnsembleModels import RandomForestClassifier
 from Models.SupportVectorMachine import SupportVectorClassifier
+from Models.EnsembleModels import GradientBoostingClassifier
+from Models.Utils import normalize, calculate_accuracy
 
 
 def load_iris_data():
@@ -124,3 +125,5 @@ if __name__ == '__main__':
     dtc_model = DecisionTreeClassifier(max_depth=3, criterion='entropy')
     run_classifier(dtc_model, X_train, Y_train, X_test, Y_test)
     dtc_model.plot_tree()
+    gbc_model = GradientBoostingClassifier()
+    run_classifier(gbc_model, X_train, Y_train, X_test, Y_test)
