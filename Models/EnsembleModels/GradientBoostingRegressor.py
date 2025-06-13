@@ -42,7 +42,7 @@ class GradientBoostingRegressor(Model):
         self.max_depth = max_depth  # 当基础学习器为决策树时决策树最大深度
         self.estimator_models = []  # 初始化基础估计器集合
         self.losses = []  # 记录损失值历史
-        self.predicts = None  # 初始化初始预测
+        self.initials = None  # 初始化初始预测
         if self.estimator is None:
             # 默认使用决策树模型
             self.estimator = DecisionTreeRegressor(max_depth=self.max_depth)
@@ -52,14 +52,12 @@ class GradientBoostingRegressor(Model):
         self.set_train_data(X_train, Y_train)
         self.estimator_models = []
         # 初始化初始预测
-        self.predicts = self.init_predicts()
-        F_train = np.full_like(self.Y_train, self.predicts)
+        self.initials = self.get_initials()
+        F_train = np.full_like(self.Y_train, self.initials, dtype=float)
         # 记录损失值
         self.losses.append(self.cal_loss(F_train))
         # 训练每一个弱回归器以拟合残差
         for i in range(self.n_estimators):
-            # 创建一个弱回归器
-            base_model = copy.deepcopy(self.estimator)
             # 若使用子采样则对样本进行无放回采样
             if self.subsample < 1.0:
                 sample_idx = np.random.choice(len(self.X_train), size=len(self.X_train), replace=False)
@@ -71,9 +69,11 @@ class GradientBoostingRegressor(Model):
                 Y_samples = self.Y_train
                 F_samples = F_train
             # 计算伪残差(负梯度)
-            residual = self.cal_residual(Y_samples, F_samples)
+            residuals = self.cal_residual(Y_samples, F_samples)
+            # 创建一个基础学习器
+            base_model = copy.deepcopy(self.estimator)
             # 训练基础学习器拟合残差
-            base_model.train(X_samples, residual)
+            base_model.train(X_samples, residuals)
             # 更新模型预测(全量样本)
             F_train += self.learning_rate * base_model.predict(self.X_train)
             # 记录损失值
@@ -83,12 +83,12 @@ class GradientBoostingRegressor(Model):
 
     def predict(self, X_data):
         """给定数据预测结果"""
-        Y_data = np.full((len(X_data), 1), self.predicts)
+        Y_data = np.full((len(X_data), 1), self.initials)
         for base_model in self.estimator_models:
             Y_data += self.learning_rate * base_model.predict(X_data)
         return Y_data
 
-    def init_predicts(self):
+    def get_initials(self):
         """初始化预测值"""
         if self.loss_type.lower() == 'mse':
             return np.mean(self.Y_train)
