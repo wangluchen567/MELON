@@ -121,9 +121,11 @@ if __name__ == '__main__':
     # 随机森林模型可以直接用于多分类
     dtc_model = RandomForestClassifier(n_estimators=10)
     run_classifier(dtc_model, X_train, Y_train, X_test, Y_test)
+    # 梯度提升分类模型可以直接用于多分类
+    gbc_model = GradientBoostingClassifier()
+    run_classifier(gbc_model, X_train, Y_train, X_test, Y_test)
     # 决策树模型可以直接用于多分类
     dtc_model = DecisionTreeClassifier(max_depth=3, criterion='entropy')
     run_classifier(dtc_model, X_train, Y_train, X_test, Y_test)
     dtc_model.plot_tree()
-    gbc_model = GradientBoostingClassifier()
-    run_classifier(gbc_model, X_train, Y_train, X_test, Y_test)
+
