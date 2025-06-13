@@ -91,6 +91,8 @@ pip install numpy pandas matplotlib tqdm networkx
   - BaggingRegressor: Bagging Regressor
   - RandomForestClassifier: Random Forest Classifier
   - RandomForestRegressor: Random Forest Regressor
+  - GradientBoostingClassifier: Gradient Boosting Classifier
+  - GradientBoostingRegressor： Gradient Boosting Regressor
 
 
 ## 📝 Update Plan
@@ -102,7 +104,7 @@ pip install numpy pandas matplotlib tqdm networkx
 - [ ] Add Newton-Conjugate Gradient method
 - [ ] Add Quasi-Newton Gradient method
 - [x] Add ensemble learning models
-- [ ] Add gradient boosting tree models
+- [x] Add gradient boosting models
 - [ ] Implement sample_weight parameter
 - [ ] Debug AdaBoostClassifier for nonlinear classification
 

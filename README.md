@@ -97,7 +97,9 @@ pip install numpy pandas matplotlib tqdm networkx -i https://pypi.tuna.tsinghua.
   - BaggingClassifier: 自助聚合分类器
   - BaggingRegressor: 自助聚合回归器
   - RandomForestClassifier: 随机森林分类器
-  - RandomForestRegressor: 随机森林回归
+  - RandomForestRegressor: 随机森林回归器
+  - GradientBoostingClassifier: 梯度提升分类器
+  - GradientBoostingRegressor： 梯度提升回归器
 
 ## 📦 项目结构
 
@@ -138,7 +140,7 @@ MELON/
 - [ ] 加入牛顿共轭梯度法
 - [ ] 加入拟牛顿梯度法
 - [x] 加入集成学习相关模型
-- [ ] 加入梯度提升树相关模型
+- [x] 加入梯度提升相关模型
 - [ ] 实现sample_weight参数
 - [ ] debug AdaBoostClassifier for nonlinear classification
 
