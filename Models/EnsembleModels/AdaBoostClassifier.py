@@ -40,17 +40,23 @@ class AdaBoostClassifier(Model):
         self.max_depth = max_depth  # 决策树最大深度
         self.algorithm = algorithm  # 训练算法的类型
         self.class_list = None  # 要分类的类别列表
-        self.estimator_models = []  # 初始化基础估计器集合
-        self.alphas = []  # 基础学习器权重
-        self.errors = []  # 记录加权错误率历史
-        self.losses = []  # 记录加权损失值历史
+        self.estimator_models = None  # 初始化基础估计器集合
+        self.alphas = None  # 基础学习器权重
+        self.errors = None  # 记录加权错误率历史
+        self.losses = None  # 记录加权损失值历史
         if self.estimator is None:
             # 默认使用决策树模型
             self.estimator = DecisionTreeClassifier(max_depth=self.max_depth)
+        if not isinstance(self.estimator, Model):
+            raise ValueError("The base estimator must be a subclass of the Model")
 
     def train(self, X_train=None, Y_train=None):
         """训练模型拟合数据"""
         self.set_train_data(X_train, Y_train)
+        self.alphas = []  # 基础学习器权重
+        self.errors = []  # 记录加权错误率历史
+        self.losses = []  # 记录加权损失值历史
+        self.estimator_models = []  # 初始化基础估计器集合
         if self.algorithm == 'SAMME.R':
             return self.train_SAMMER()
         elif self.algorithm == 'SAMME':

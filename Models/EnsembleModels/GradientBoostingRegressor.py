@@ -14,8 +14,8 @@ import copy
 import numpy as np
 from Models import Model
 from Models.DecisionTree import DecisionTreeRegressor
-from Models.Utils import (run_uniform_regression, plot_2dim_regression_sample,
-                          run_circular_regression, run_poly_regression)
+from Models.Utils import plot_changes, plot_2dim_regression_sample
+from Models.Utils import run_uniform_regression, run_circular_regression, run_poly_regression
 
 
 class GradientBoostingRegressor(Model):
@@ -40,8 +40,8 @@ class GradientBoostingRegressor(Model):
         self.subsample = subsample  # 子采样率
         assert 0.0 < self.subsample <= 1.0
         self.max_depth = max_depth  # 当基础学习器为决策树时决策树最大深度
-        self.estimator_models = []  # 初始化基础估计器集合
-        self.losses = []  # 记录损失值历史
+        self.estimator_models = None  # 初始化基础估计器集合
+        self.losses = None  # 记录损失值历史
         self.initials = None  # 初始化初始预测
         if self.estimator is None:
             # 默认使用决策树模型
@@ -51,6 +51,7 @@ class GradientBoostingRegressor(Model):
         """训练模型拟合数据"""
         self.set_train_data(X_train, Y_train)
         self.estimator_models = []
+        self.losses = []  # 原损失值历史置空
         # 初始化初始预测
         self.initials = self.get_initials()
         F_train = np.full_like(self.Y_train, self.initials, dtype=float)
@@ -121,6 +122,10 @@ class GradientBoostingRegressor(Model):
         Y_train = np.array(self.Y_train)
         plot_2dim_regression_sample(self, X_train, Y_train, X_test, Y_test)
 
+    def plot_loss_change(self):
+        model_name = self.__class__.__name__
+        plot_changes(self.losses, title=model_name, x_label='n_iter', y_label='train loss')
+
 
 if __name__ == '__main__':
     np.random.seed(100)
@@ -128,3 +133,4 @@ if __name__ == '__main__':
     run_uniform_regression(model)
     run_poly_regression(model)
     run_circular_regression(model)
+    model.plot_loss_change()

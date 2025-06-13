@@ -236,6 +236,26 @@ def plot_data(X, hold=False):
         plt.show()
 
 
+def plot_changes(values, title=None, x_label=None, y_label=None, pause=False, n_iter=None, pause_time=0.15):
+    """绘制变化指标"""
+    if not pause: plt.figure()
+    plt.clf()
+    plt.plot(np.arange(len(values)), values)
+    if title:
+        plt.title(title)
+    if x_label:
+        plt.xlabel(x_label)
+    if y_label:
+        plt.ylabel(y_label)
+    plt.grid()
+    if pause:
+        if n_iter:
+            plt.title("iter: " + str(n_iter))
+        plt.pause(pause_time)
+    else:
+        plt.show()
+
+
 def plot_2dim_classification(X_data, Y_data, Weights, X_test=None, Y_test=None, neg_label=-1, Truth=None, support=None,
                              ratio=0.15, pause=False, n_iter=None, pause_time=0.15):
     """

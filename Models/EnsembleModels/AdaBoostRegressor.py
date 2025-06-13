@@ -38,18 +38,22 @@ class AdaBoostRegressor(Model):
         self.learning_rate = learning_rate  # 学习率
         self.max_depth = max_depth  # 当基础学习器为决策树时决策树最大深度
         self.sampling = sampling  # 是否使用自助采样实现样本不同权重
-        self.estimator_models = []  # 初始化基础估计器集合
-        self.alphas = []  # 基础学习器权重
-        self.errors = []  # 记录加权误差历史
+        self.estimator_models = None  # 初始化基础估计器集合
+        self.alphas = None  # 基础学习器权重
+        self.errors = None  # 记录加权误差历史
         if self.estimator is None:
             # 默认使用决策树模型
             self.estimator = DecisionTreeRegressor(max_depth=self.max_depth)
+        if not isinstance(self.estimator, Model):
+            raise ValueError("The base estimator must be a subclass of the Model")
 
     def train(self, X_train=None, Y_train=None):
         """训练模型拟合数据"""
         self.set_train_data(X_train, Y_train)
-        self.estimator_models = []
-        self.alphas, self.errors = [], []
+        self.alphas = []  # 基础学习器权重
+        self.errors = []  # 记录加权错误率历史
+        self.losses = []  # 记录加权损失值历史
+        self.estimator_models = []  # 初始化基础估计器集合
         # 初始化样本权重
         sample_weights = np.ones(len(self.X_train)) / len(self.X_train)
         # 训练每一个弱回归器

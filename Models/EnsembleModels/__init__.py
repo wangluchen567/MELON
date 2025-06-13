@@ -3,5 +3,6 @@ from .AdaBoostRegressor import AdaBoostRegressor
 from .BaggingClassifier import BaggingClassifier
 from .BaggingRegressor import BaggingRegressor
 from .GradientBoostingClassifier import GradientBoostingClassifier
+from .GradientBoostingRegressor import GradientBoostingRegressor
 from .RandomForestClassifier import RandomForestClassifier
 from .RandomForestRegressor import RandomForestRegressor

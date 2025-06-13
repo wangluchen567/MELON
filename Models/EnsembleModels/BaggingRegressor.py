@@ -42,6 +42,11 @@ class BaggingRegressor(Model):
         self.bootstrap = bootstrap  # 是否对样本进行有放回抽样
         self.bootstrap_features = bootstrap_features  # 是否对特征进行有放回抽样
         self.estimator_models = None  # 初始化基础估计器集合
+        if self.estimator is None:
+            # 默认使用决策树模型
+            self.estimator = DecisionTreeRegressor()
+        if not isinstance(self.estimator, Model):
+            raise ValueError("The base estimator must be a subclass of the Model")
 
     def train(self, X_train=None, Y_train=None):
         """使用数据集训练模型"""
