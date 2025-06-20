@@ -397,9 +397,9 @@ H, \quad \quad\alpha_2^{new} > H\\
 L, \quad \quad\alpha_2^{new} < L
 \end{cases}
 $$
-我们得到了$\alpha_2$，接下来需要根据$\alpha_2$求得$\alpha_1$，已知$\gamma = \alpha_1 - s \alpha_2=\alpha_1 - y_1y_2 \alpha_2$，所以有：
+我们得到了$\alpha_2$，接下来需要根据$\alpha_2$求得$\alpha_1$，已知$\gamma = \alpha_1 + s \alpha_2=\alpha_1 + y_1y_2 \alpha_2$，所以有：
 $$
-\gamma =\alpha_1^{old} - y_1y_2 \alpha_2^{old}=\alpha_1^{new} - y_1y_2 \alpha_2^{new,clipped}
+\gamma =\alpha_1^{old} + y_1y_2 \alpha_2^{old}=\alpha_1^{new} + y_1y_2 \alpha_2^{new,clipped}
 $$
 最终得到$\alpha_1^{new}$的值为：
 $$

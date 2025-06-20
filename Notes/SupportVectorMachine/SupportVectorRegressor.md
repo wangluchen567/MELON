@@ -557,9 +557,9 @@ H, \quad \quad\beta_2^{new} > H\\
 L, \quad \quad\beta_2^{new} < L
 \end{cases}
 $$
-我们得到了$\beta_2$，接下来需要根据$\beta_2$求得$\beta_1$，已知$\gamma = \beta_1 - s \beta_2=\beta_1 - z_1z_2 \beta_2$，所以有：
+我们得到了$\beta_2$，接下来需要根据$\beta_2$求得$\beta_1$，已知$\gamma = \beta_1 + s \beta_2=\beta_1 + z_1z_2 \beta_2$，所以有：
 $$
-\gamma =\beta_1^{old} - z_1z_2 \beta_2^{old}=\beta_1^{new} - z_1z_2 \beta_2^{new,clipped}
+\gamma =\beta_1^{old} + z_1z_2 \beta_2^{old}=\beta_1^{new} + z_1z_2 \beta_2^{new,clipped}
 $$
 最终得到$\beta_1^{new}$的值为：
 $$
