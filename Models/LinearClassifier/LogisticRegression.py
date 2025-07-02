@@ -80,6 +80,7 @@ class LogisticRegression(Model):
         while True:
             # 计算训练数据与参数的点积
             self.Y_train_prob = self.predict_prob(self.X_train)
+            self.Y_train_prob = np.clip(self.Y_train_prob, 1.e-15, 1 - 1.e-15)  # 防止数值下溢
             self.cal_loss()  # 计算损失
             self.cal_grad()  # 计算梯度
             self.optimizer.step()  # 优化器优化一步

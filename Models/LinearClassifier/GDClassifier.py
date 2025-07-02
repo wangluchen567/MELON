@@ -160,6 +160,7 @@ class GDClassifier(Model):
             self.Loss = np.sum(np.maximum(0, 1 - self.Y_train * self.X_dot_W)) / len(self.X_train)
         elif self.loss == "log":
             Y_train_prob = self.predict_prob(self.X_train)
+            Y_train_prob = np.clip(Y_train_prob, 1.e-15, 1 - 1.e-15)  # 防止数值下溢
             self.Loss = - np.sum(self.Y_train_ * np.log(Y_train_prob) +
                                  (1 - self.Y_train_) * np.log(1 - Y_train_prob)) / len(self.X_train)
         elif self.loss == "perceptron":

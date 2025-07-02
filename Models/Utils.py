@@ -601,11 +601,11 @@ def plot_2dim_classification_sample(model, X_data, Y_data, X_test=None, Y_test=N
     x_sample = np.stack((x1.flat, x2.flat), axis=1)  # 生成采样数据
     y_sample = model.predict(x_sample)  # 使用模型得到预测数据
     y_sample = y_sample.reshape(x1.shape)  # 改变形状与采样点相同
-    # 为方便绘制图像，这里将y_sample中-1标签转换为1标签
+    # 为方便绘制图像，这里将y_sample中-1标签转换为0标签
     y_sample[y_sample == -1] = 0
-    cm_light = mpl.colors.ListedColormap(['#A0A0FF', '#FF8080'])
+    colormap = mpl.colors.ListedColormap(['#A0A0FF', '#FF8080'])
     # 绘制采样图像
-    plt.pcolormesh(x1, x2, y_sample, cmap=cm_light)
+    plt.pcolormesh(x1, x2, y_sample, cmap=colormap)
     # 绘制数据集位置点
     plt.scatter(X_data[Y_data.flatten() == 1, 0], X_data[Y_data.flatten() == 1, 1], c='red')
     plt.scatter(X_data[Y_data.flatten() == neg_label, 0], X_data[Y_data.flatten() == neg_label, 1], c='blue')
