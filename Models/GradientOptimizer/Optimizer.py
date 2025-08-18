@@ -36,9 +36,9 @@ class Optimizer:
         raise NotImplementedError
 
 
-class GradientDescent(Optimizer):
+class SGD(Optimizer):
     def __init__(self, model, learning_rate=0.01):
-        super(GradientDescent, self).__init__(model, learning_rate)
+        super(SGD, self).__init__(model, learning_rate)
         # 记录梯度更新速度
         self.v = 0
 

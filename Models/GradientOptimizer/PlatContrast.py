@@ -109,3 +109,34 @@ def plot_contrast_3D(cal_func, x_range, y_range, XY_dict, color_dict):
         ax.view_init(elev=60, azim=120)
         plt.pause(0.1)
     plt.show()
+
+
+def plot_contrast_contour_beale(cal_func, x_range, y_range, XY_dict, color_dict):
+    x = np.linspace(x_range[0], x_range[1], 100)
+    y = np.linspace(y_range[0], y_range[1], 100)
+    X, Y = np.meshgrid(x, y)
+    Z = cal_func(X, Y)
+    len_history = 0
+    for k in XY_dict.keys():
+        PXY = np.array(XY_dict[k])
+        len_history = len(PXY)
+
+    plt.figure(figsize=(10, 8))
+    for i in range(len_history):
+        plt.clf()
+        contour = plt.contour(X, Y, Z, levels=np.logspace(0, 5, 35), cmap='jet', alpha=0.5)
+        plt.plot(3, 0.5, 'r*')  # 标记最小值点
+        # plt.colorbar(contour)
+        for k in XY_dict.keys():
+            PXY = np.array(XY_dict[k])
+            plt.plot(PXY[:i + 1, 0], PXY[:i + 1, 1], color=color_dict[k], label=k)
+            plt.scatter(PXY[i, 0], PXY[i, 1], c=color_dict[k])
+
+        plt.legend()
+        plt.title("iter: " + str(i))
+        plt.xlabel('x1')
+        plt.ylabel('x2')
+        plt.xlim(x_range[0], x_range[1])
+        plt.ylim(y_range[0], y_range[1])
+        plt.pause(0.1)
+    plt.show()

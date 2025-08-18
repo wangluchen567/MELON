@@ -51,14 +51,14 @@ def contrast_2D():
     def cal_grad(x): return 2 * x
 
     X_dict = dict()
-    grad_types = ['GD', 'Momentum', 'AdaGrad', 'RMSProp', 'Adam']
+    grad_types = ['SGD', 'Momentum', 'AdaGrad', 'RMSProp', 'Adam']
     for k in grad_types:
         func = Function(cal_func, cal_grad, init_value=5, grad_type=k, learning_rate=0.1)
         func.optimize(epochs=100)
         X_dict[k] = func.history
 
     x_range = [-5, 5]
-    color_dict = {'GD': 'red', 'Momentum': 'blue', 'AdaGrad': 'orange', 'RMSProp': 'teal', 'Adam': 'purple'}
+    color_dict = {'SGD': 'red', 'Momentum': 'blue', 'AdaGrad': 'orange', 'RMSProp': 'teal', 'Adam': 'purple'}
     plot_contrast_2D(cal_func, x_range, X_dict, color_dict)
 
 
@@ -68,7 +68,7 @@ def contrast_contour():
     def cal_grad(x): return 2 * x
 
     XY_dict = dict()
-    grad_types = ['GD', 'Momentum', 'AdaGrad', 'RMSProp', 'Adam']
+    grad_types = ['SGD', 'Momentum', 'AdaGrad', 'RMSProp', 'Adam']
     for k in grad_types:
         func = Function(cal_func, cal_grad, init_value=np.array([3, 4]), grad_type=k, learning_rate=0.1)
         func.optimize(epochs=100)
@@ -76,7 +76,7 @@ def contrast_contour():
 
     x_range = [-5, 5]
     y_range = [-5, 5]
-    color_dict = {'GD': 'red', 'Momentum': 'blue', 'AdaGrad': 'orange', 'RMSProp': 'teal', 'Adam': 'purple'}
+    color_dict = {'SGD': 'red', 'Momentum': 'blue', 'AdaGrad': 'orange', 'RMSProp': 'teal', 'Adam': 'purple'}
     plot_contrast_contour(cal_func, x_range, y_range, XY_dict, color_dict)
 
 
@@ -86,7 +86,7 @@ def contrast_contour2():
     def cal_grad(x): return np.array([2 * x[0], -2 * x[1]])
 
     XY_dict = dict()
-    grad_types = ['GD', 'Momentum', 'AdaGrad', 'RMSProp', 'Adam']
+    grad_types = ['SGD', 'Momentum', 'AdaGrad', 'RMSProp', 'Adam']
     for k in grad_types:
         func = Function(cal_func, cal_grad, init_value=np.array([4, 0.001]), grad_type=k, learning_rate=0.1)
         func.optimize(epochs=100)
@@ -94,7 +94,7 @@ def contrast_contour2():
 
     x_range = [-5, 5]
     y_range = [-5, 5]
-    color_dict = {'GD': 'red', 'Momentum': 'blue', 'AdaGrad': 'orange', 'RMSProp': 'teal', 'Adam': 'purple'}
+    color_dict = {'SGD': 'red', 'Momentum': 'blue', 'AdaGrad': 'orange', 'RMSProp': 'teal', 'Adam': 'purple'}
     plot_contrast_contour(cal_func, x_range, y_range, XY_dict, color_dict)
 
 
@@ -104,7 +104,7 @@ def contrast_3D():
     def cal_grad(x): return np.array([2 * x[0], -2 * x[1]])
 
     XY_dict = dict()
-    grad_types = ['GD', 'Momentum', 'AdaGrad', 'RMSProp', 'Adam']
+    grad_types = ['SGD', 'Momentum', 'AdaGrad', 'RMSProp', 'Adam']
     for k in grad_types:
         func = Function(cal_func, cal_grad, init_value=np.array([4, 0.001]), grad_type=k, learning_rate=0.1)
         func.optimize(epochs=100)
@@ -112,7 +112,7 @@ def contrast_3D():
 
     x_range = [-5, 5]
     y_range = [-5, 5]
-    color_dict = {'GD': 'red', 'Momentum': 'blue', 'AdaGrad': 'orange', 'RMSProp': 'teal', 'Adam': 'purple'}
+    color_dict = {'SGD': 'red', 'Momentum': 'blue', 'AdaGrad': 'orange', 'RMSProp': 'teal', 'Adam': 'purple'}
     plot_contrast_3D(cal_func, x_range, y_range, XY_dict, color_dict)
 
 

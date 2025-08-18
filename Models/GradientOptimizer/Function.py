@@ -30,7 +30,7 @@ class Function():
         self.cal_grad = cal_grad  # 求梯度值的函数
         self.Weights = init_value  # 要优化的初始值
         self.Grad = 0  # 初始化梯度值
-        dict = {'GD': GradientDescent, 'Momentum': Momentum, 'AdaGrad': AdaGrad, 'RMSProp': RMSProp, 'Adam': Adam}
+        dict = {'SGD': SGD, 'Momentum': Momentum, 'AdaGrad': AdaGrad, 'RMSProp': RMSProp, 'Adam': Adam}
         self.optimizer = dict[grad_type](self, learning_rate)
         self.history = [self.Weights]
 

@@ -13,7 +13,7 @@ See the Mulan PSL v2 for more details.
 import warnings
 import numpy as np
 from Models import Model
-from Models.GradientOptimizer import GradientDescent, Momentum, AdaGrad, RMSProp, Adam
+from Models.GradientOptimizer import SGD, Momentum, AdaGrad, RMSProp, Adam
 from Models.Utils import sigmoid, plot_2dim_classification, run_uniform_classification, run_double_classification
 
 
@@ -56,7 +56,7 @@ class Perceptron(Model):
 
     def init_optimizer(self):
         """初始化优化器"""
-        dict = {'GD': GradientDescent, 'Momentum': Momentum, 'AdaGrad': AdaGrad, 'RMSProp': RMSProp, 'Adam': Adam}
+        dict = {'SGD': SGD, 'Momentum': Momentum, 'AdaGrad': AdaGrad, 'RMSProp': RMSProp, 'Adam': Adam}
         self.optimizer = dict[self.optim](self, self.lr)
 
     def init_weights(self):

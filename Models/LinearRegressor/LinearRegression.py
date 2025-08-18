@@ -28,13 +28,13 @@ class LinearRegression(Model):
         """使用数据集训练模型"""
         self.set_train_data(X_train, Y_train)
         # 在数据最后一列添加一列单位矩阵作为偏置b
-        X_B = np.concatenate((self.X_train, np.ones((len(self.X_train), 1))), axis=1)
+        # X_B = np.concatenate((self.X_train, np.ones((len(self.X_train), 1))), axis=1)
         # 使用公式计算参数
         # 公式: W = (XT @ X) ^ -1 @ XT @ Y
         # self.Weights = np.linalg.inv(X_B.T.dot(X_B)).dot(X_B.T).dot(self.Y_train)
         # 直接利用伪逆函数求参数，伪逆：X^+ = (XT @ X) ^ -1 @ XT
         # 公式: W = X^+ @ Y
-        self.Weights = np.linalg.pinv(X_B).dot(self.Y_train)
+        self.Weights = np.linalg.pinv(np.c_[self.X_train, np.ones(len(self.X_train))]).dot(self.Y_train)
 
     def predict(self, X_data):
         """模型对测试集进行预测"""

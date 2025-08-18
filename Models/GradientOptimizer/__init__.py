@@ -1,7 +1,7 @@
 from .Function import Function
 from .Optimizer import (
     Optimizer,
-    GradientDescent,
+    SGD,
     Momentum,
     AdaGrad,
     RMSProp,
