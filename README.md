@@ -43,12 +43,14 @@ pip install numpy pandas matplotlib tqdm networkx -i https://pypi.tuna.tsinghua.
 
 ## 🎯 核心实现
 
+**说明**：超链接指向相关模块的实现笔记 📝
+
 - **GradientOptimizer: 梯度优化器**
   - Optimizer: 包含GD/RMSProp/Adam等梯度优化方法 
 
 - **SupportVectorMachine: 支持向量机**
-  - SupportVectorClassifier: 支持向量机分类器
-  - SupportVectorRegressor: 支持向量机分类器
+  - SupportVectorClassifier: [支持向量机分类器](./Notes/SupportVectorMachine/SupportVectorClassifier.md)
+  - SupportVectorRegressor: [支持向量机回归器](./Notes/SupportVectorMachine/SupportVectorRegressor.md)
   - SequentialMinimalOptimization: 序列最小化算法
 
 - **DecisionTree: 决策树**
@@ -156,13 +158,13 @@ MELON/
 <img src="Notes/GradientOptimizer/Contrasts_2D2.gif" width="288" height="220"/> <img src="Notes/GradientOptimizer/Contrasts_3D.gif" width="288" height="220"/><br/>
 
 ### 支持向量机
-- **支持向量机分类器与SMO算法的原理与公式推导可参见笔记[支持向量机分类器](./Notes/SupportVectorMachine/SupportVectorClassifier.md)**
+
 - 支持向量机分类器使用线性核函数对均匀随机数据和双点状随机数据分类效果<br>
 <img src="Notes/SupportVectorMachine/SVC1.gif" width="288" height="220"/> <img src="Notes/SupportVectorMachine/SVC2.gif" width="288" height="220"/><br/>
 - 支持向量机分类器使用不同伽马值的高斯核函数对同心圆随机数据分类效果<br>
 <img src="Notes/SupportVectorMachine/SVC3.gif" width="288" height="220"/> <img src="Notes/SupportVectorMachine/SVC4.gif" width="288" height="220"/><br/>
 
-- **支持向量机回归器与SMO算法的原理与公式推导可参见笔记[支持向量机回归器](./Notes/SupportVectorMachine/SupportVectorRegressor.md)**
+
 - 支持向量机回归器使用线性核函数对随机线性数据回归效果/使用多项式核函数对随机多项式数据回归效果<br>
 <img src="Notes/SupportVectorMachine/SVR1.gif" width="288" height="220"/> <img src="Notes/SupportVectorMachine/SVR2.gif" width="288" height="220"/><br/>
 - 支持向量机回归器使用高斯核函数对三角函数数据回归效果/对复杂三角函数数据回归效果<br>

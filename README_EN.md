@@ -36,12 +36,14 @@ pip install numpy pandas matplotlib tqdm networkx
 
 ## 🎯 Core Components
 
+**Note**: The hyperlinks point to the implementation notes of the respective modules.📝
+
 - **GradientOptimizer: Gradient Optimizers**
   - Optimizer: Includes gradient optimization methods such as GD, RMSProp, and Adam
 
 - **SupportVectorMachine: Support Vector Machines**
-  - SupportVectorClassifier: Support Vector Machine Classifier
-  - SupportVectorRegressor: Support Vector Machine Regressor
+  - SupportVectorClassifier: [Support Vector Machine Classifier](./Notes/SupportVectorMachine/SupportVectorClassifier.md)
+  - SupportVectorRegressor: [Support Vector Machine Regressor](./Notes/SupportVectorMachine/SupportVectorRegressor.md)
   - SequentialMinimalOptimization: Sequential Minimal Optimization algorithm
 
 - **DecisionTree: Decision Trees**
@@ -95,7 +97,7 @@ pip install numpy pandas matplotlib tqdm networkx
   - GradientBoostingRegressor： Gradient Boosting Regressor
 
 
-## 📝 Update Plan
+## 📅 更新计划
 - [x] Update project documentation
 - [ ] Update algorithm notes
 - [x] Add Naive Bayes Classifier
