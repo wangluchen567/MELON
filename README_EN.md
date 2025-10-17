@@ -5,7 +5,7 @@ Chen's MachinE Learning models Organized using Numpy
 
 ## 🔖 Project Introduction
 
-This is a machine learning algorithm and model library implemented with NumPy, aimed at helping those interested in machine learning gain a deep understanding of the underlying principles of various machine learning algorithms and models.
+This project is a machine learning algorithms and models library implemented from scratch based on NumPy, aimed at helping those interested in machine learning to gain an in-depth understanding of the underlying principles of various algorithms and models.
 To lower the learning barrier, this project references the API style of scikit-learn in its design but focuses on the implementation of core functionalities, resulting in a relatively streamlined feature set. Unlike mature industrial frameworks, this project emphasizes the transparency and readability of algorithm implementation, revealing the working principles of machine learning models through handwritten code.
 It should be noted that this project is more suitable for learning and experimental purposes. For production environments, we recommend using more feature-rich professional frameworks such as [scikit-learn](https://scikit-learn.org/).<br>
 We hope this project can help interested individuals build a solid understanding of machine learning models and algorithms, laying a strong foundation for further learning and research in the field of machine learning and artificial intelligence.
